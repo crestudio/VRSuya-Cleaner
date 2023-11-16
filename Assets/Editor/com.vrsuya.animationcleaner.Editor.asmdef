@@ -1,0 +1,17 @@
+{
+    "name": "com.vrsuya.animationcleaner.Editor",
+    "references": [
+        "GUID:526c5068e65857344a2a69ce8a56d5df"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
