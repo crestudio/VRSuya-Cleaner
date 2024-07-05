@@ -4,7 +4,6 @@ using System.Linq;
 
 using UnityEditor;
 using UnityEngine;
-using VRC.SDKBase.Midi;
 
 /*
  * VRSuya Animation Cleaner
@@ -159,6 +158,7 @@ namespace com.vrsuya.animationcleaner {
 			return;
 		}
 
+		/// <summary>시간이 0인 프레임을 제외하고 나머지 키프레임을 제거합니다.</summary>
 		private void RemoveKeyframes(AnimationClip CurrentAnimationClip) {
 			AnimationCurve[] CurrentCurves = AnimationUtility.GetCurveBindings(CurrentAnimationClip).Select(curveBinding => AnimationUtility.GetEditorCurve(CurrentAnimationClip, curveBinding)).ToArray();
 			foreach (var Curve in CurrentCurves) {

@@ -10,6 +10,7 @@ namespace com.vrsuya.animationcleaner {
 
     [CustomEditor(typeof(AnimationCleaner))]
     public class AnimationCleanerEditor : Editor {
+
 		SerializedProperty SerializedArmAnimationClips;
 		SerializedProperty SerializedForearmAnimationClips;
 		SerializedProperty SerializedHandAnimationClips;
