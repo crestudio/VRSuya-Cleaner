@@ -13,7 +13,7 @@ using UnityEngine;
 namespace com.vrsuya.animationcleaner {
 
 	[ExecuteInEditMode]
-	[AddComponentMenu("VRSuya Animation Cleaner")]
+	[AddComponentMenu("VRSuya/VRSuya Animation Cleaner")]
 	public class AnimationCleaner : MonoBehaviour {
 
 		// 애니메이션 클립 변수
