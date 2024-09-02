@@ -23,13 +23,32 @@ namespace com.vrsuya.animationcleaner {
 				EditorUtility.CopySerialized(OriginalAnimationClip, MirroredAnimationClip);
 				EditorCurveBinding[] Bindings = AnimationUtility.GetCurveBindings(MirroredAnimationClip);
 				foreach (EditorCurveBinding Binding in Bindings) {
-					AnimationCurve NewCurve = AnimationUtility.GetEditorCurve(MirroredAnimationClip, Binding);
-					for (int Index = 0; Index < NewCurve.keys.Length; Index++) {
-						Keyframe OriginalKey = NewCurve.keys[Index];
-						OriginalKey.value = -OriginalKey.value;
-						NewCurve.MoveKey(Index, OriginalKey);
+					AnimationCurve Curve = AnimationUtility.GetEditorCurve(OriginalAnimationClip, Binding);
+					if (Binding.propertyName.Contains("Left-Right")) {
+						for (int Index = 0; Index < Curve.keys.Length; Index++) {
+							Curve.keys[Index].value = -Curve.keys[Index].value;
+						}
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, Binding, Curve);
+					} else if (Binding.propertyName.Contains("Left") && !Binding.propertyName.Contains("Left-Right")) {
+						EditorCurveBinding newBinding = Binding;
+						newBinding.propertyName = Binding.propertyName.Replace("Left", "Right");
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, newBinding, Curve);
+					} else if (Binding.propertyName.Contains("Right") && !Binding.propertyName.Contains("Left-Right")) {
+						EditorCurveBinding newBinding = Binding;
+						newBinding.propertyName = Binding.propertyName.Replace("Right", "Left");
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, newBinding, Curve);
+					} else if (Binding.propertyName.Contains("RootT.x") || 
+						Binding.propertyName.Contains("RootQ.x") ||
+						Binding.propertyName.Contains("RootQ.y") ||
+						Binding.propertyName.Contains("RootQ.z") ||
+						Binding.propertyName.Contains("RootQ.w")) {
+						for (int Index = 0; Index < Curve.keys.Length; Index++) {
+							Curve.keys[Index].value = -Curve.keys[Index].value;
+						}
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, Binding, Curve);
+					} else {
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, Binding, Curve);
 					}
-					AnimationUtility.SetEditorCurve(MirroredAnimationClip, Binding, NewCurve);
 				}
 				string OriginalAssetPath = AssetDatabase.GetAssetPath(OriginalAnimationClip);
 				string NewAssetPath = System.IO.Path.GetDirectoryName(OriginalAssetPath) + "/" + MirroredAnimationClip.name + "_Mirrored.anim";
