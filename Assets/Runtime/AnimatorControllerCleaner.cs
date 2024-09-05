@@ -19,22 +19,21 @@ namespace com.vrsuya.animationcleaner {
 	public class AnimatorControllerCleaner : ScriptableObject {
 
 		[SerializeField]
-		public static AnimatorController TargetAnimatorController = null;
-		public static string[] TargetfileIDs = new string[0];
+		public AnimatorController TargetAnimatorController = null;
+		public string[] TargetfileIDs = new string[0];
 
 		private static string AssetFilePath = string.Empty;
 		private static readonly string fileIdPattern = @"fileID:\s*(\d+)";
 
 		/// <summary>파일에서 해당 되는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
-		public static void RemoveStructureByFileID() {
+		public void RemoveStructureByFileID() {
 			if (TargetAnimatorController && TargetfileIDs.Length > 0) {
 				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
 				if (!string.IsNullOrEmpty(AssetFilePath)) {
 					string[] AssetFile = File.ReadAllLines(AssetFilePath);
 					List<int> RemoveLineIndex = new List<int>();
 					foreach (string TargetfileID in TargetfileIDs) {
-						AnimatorControllerCleaner newInstance = new AnimatorControllerCleaner();
-						RemoveLineIndex.AddRange(newInstance.GetRemoveLines(AssetFile, TargetfileID));
+						RemoveLineIndex.AddRange(GetRemoveLines(AssetFile, TargetfileID));
 					}
 					if (RemoveLineIndex.Count > 0) {
 						List<string> newAssetFile = new List<string>(AssetFile);

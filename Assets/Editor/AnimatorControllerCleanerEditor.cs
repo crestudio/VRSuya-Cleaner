@@ -11,19 +11,16 @@ namespace com.vrsuya.animationcleaner {
 	[CustomEditor(typeof(AnimatorControllerCleaner))]
 	public class AnimatorControllerCleanerEditor : EditorWindow {
 
-		SerializedObject SerializedObject;
 		AnimatorControllerCleaner AnimatorControllerCleanerInstance;
-
+		SerializedObject SerializedAnimatorControllerCleaner;
 		SerializedProperty SerializedTargetAnimatorController;
 		SerializedProperty SerializedTargetfileIDs;
 
 		void OnEnable() {
-			if (!AnimatorControllerCleanerInstance) {
-				AnimatorControllerCleanerInstance = CreateInstance<AnimatorControllerCleaner>();
-			}
-			SerializedObject = new SerializedObject(AnimatorControllerCleanerInstance);
-			SerializedTargetAnimatorController = SerializedObject.FindProperty("TargetAnimatorController");
-			SerializedTargetfileIDs = SerializedObject.FindProperty("TargetfileIDs");
+			AnimatorControllerCleanerInstance = CreateInstance<AnimatorControllerCleaner>();
+			SerializedAnimatorControllerCleaner = new SerializedObject(AnimatorControllerCleanerInstance);
+			SerializedTargetAnimatorController = SerializedAnimatorControllerCleaner.FindProperty("TargetAnimatorController");
+			SerializedTargetfileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetfileIDs");
 		}
 
 		[MenuItem("Tools/VRSuya/AnimatorController Cleaner", priority = 1000)]
@@ -34,7 +31,11 @@ namespace com.vrsuya.animationcleaner {
 		}
 
 		void OnGUI() {
-			SerializedObject.Update();
+			if (SerializedAnimatorControllerCleaner == null) {
+				Close();
+				return;
+			}
+			SerializedAnimatorControllerCleaner.Update();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
@@ -61,12 +62,12 @@ namespace com.vrsuya.animationcleaner {
 			GUILayout.FlexibleSpace();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			if (GUILayout.Button("정리", GUILayout.Width(100))) {
-				AnimatorControllerCleaner.RemoveStructureByFileID();
+				AnimatorControllerCleanerInstance.RemoveStructureByFileID();
 			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
-			SerializedObject.ApplyModifiedProperties();
+			SerializedAnimatorControllerCleaner.ApplyModifiedProperties();
 			return;
 		}
 	}
