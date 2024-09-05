@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using UnityEditor;
@@ -37,13 +38,11 @@ namespace com.vrsuya.animationcleaner {
 					}
 					if (RemoveLineIndex.Count > 0) {
 						List<string> newAssetFile = new List<string>(AssetFile);
-						int[] RemoveLineIndexs = RemoveLineIndex.ToArray();
+						int[] RemoveLineIndexs = RemoveLineIndex.Distinct().ToArray();
 						Array.Sort(RemoveLineIndexs);
 						Array.Reverse(RemoveLineIndexs);
 						foreach (int TargetIndex in RemoveLineIndexs) {
-							if (TargetIndex >= 0 && TargetIndex < newAssetFile.Count) {
-								newAssetFile.RemoveAt(TargetIndex);
-							}
+							newAssetFile.RemoveAt(TargetIndex);
 						}
 						File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
 						Debug.LogWarning("[AnimatorControllerCleaner] AnimatorController에서 총 " + RemoveLineIndex.Count + "줄의 데이터가 정리 되었습니다!");
