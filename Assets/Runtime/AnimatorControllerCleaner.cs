@@ -71,7 +71,7 @@ namespace com.vrsuya.animationcleaner {
 					isDeleting = false;
 					break;
 				}
-				if (isDeleting && !string.IsNullOrEmpty(ExtractFileIDFromLine(TargetFile[Line]))) {
+				if (isDeleting && !TargetFile[Line].Contains("guid:") && !string.IsNullOrEmpty(ExtractFileIDFromLine(TargetFile[Line]))) {
 					RemoveLineIndex.Add(Line);
 					RemoveLineIndex.AddRange(GetRemoveLines(TargetFile, ExtractFileIDFromLine(TargetFile[Line])));
 				}
