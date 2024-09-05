@@ -87,7 +87,11 @@ namespace com.vrsuya.animationcleaner {
 		private string ExtractFileIDFromLine(string Line) {
 			Match fileIDMatch = Regex.Match(Line, fileIdPattern);
 			if (fileIDMatch.Success) {
-				return fileIDMatch.Groups[1].Value;
+				if (fileIDMatch.Groups[1].Value != "0") {
+					return fileIDMatch.Groups[1].Value;
+				} else {
+					return string.Empty;
+				}
 			} else {
 				return string.Empty;
 			}
