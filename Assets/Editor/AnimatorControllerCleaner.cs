@@ -14,23 +14,46 @@ namespace com.vrsuya.animationcleaner {
 
 	public class AnimatorControllerCleaner : Editor {
 
-		public static void RemoveUnreferencedStates(AnimatorController TargetAnimatorController) {
+		public static void CleanInvalidAnimatorStates(AnimatorController TargetAnimatorController) {
 			if (TargetAnimatorController == null) {
 				Debug.LogError("[AnimatorControllerCleaner] 유효하지 않은 AnimatorController 입니다!");
 				return;
 			}
 			int RemovedCount = 0;
-			List<AnimatorState> AllStates = new List<AnimatorState>();
-			HashSet<AnimatorState> ReferencedStates = new HashSet<AnimatorState>();
 			foreach (var TargetLayer in TargetAnimatorController.layers) {
 				AnimatorStateMachine TargetStateMachine = TargetLayer.stateMachine;
-				CollectAllStates(TargetStateMachine, AllStates);
-				CollectReferencedStates(TargetStateMachine, ReferencedStates);
-			}
-			foreach (var TargetState in AllStates) {
-				if (!ReferencedStates.Contains(TargetState)) {
-					Debug.LogWarning("[AnimatorControllerCleaner] " + TargetState.name + " 이름의 State를 정리 중!");
-					RemoveStateFromStateMachine(TargetAnimatorController, TargetState);
+				List<AnimatorState> InvalidStates = new List<AnimatorState>();
+				List<AnimatorStateTransition> InvalidTransitions = new List<AnimatorStateTransition>();
+				List<AnimatorStateMachine> InvalidStateMachines = new List<AnimatorStateMachine>();
+				foreach (var TargetState in TargetStateMachine.states) {
+					if (TargetState.state == null) {
+						InvalidStates.Add(TargetState.state);
+					}
+				}
+				foreach (var InvalidState in InvalidStates) {
+					TargetStateMachine.RemoveState(InvalidState);
+					RemovedCount++;
+				}
+				foreach (var TargetState in TargetStateMachine.states) {
+					foreach (var TargetTransition in TargetState.state.transitions) {
+						if (TargetTransition.destinationState == null) {
+							InvalidTransitions.Add(TargetTransition);
+						}
+					}
+				}
+				foreach (var InvalidTransition in InvalidTransitions) {
+					foreach (var TargetState in TargetStateMachine.states) {
+						TargetState.state.RemoveTransition(InvalidTransition);
+					}
+					RemovedCount++;
+				}
+				foreach (var SubStateMachine in TargetStateMachine.stateMachines) {
+					if (SubStateMachine.stateMachine == null) {
+						InvalidStateMachines.Add(SubStateMachine.stateMachine);
+					}
+				}
+				foreach (var InvalidStateMachine in InvalidStateMachines) {
+					TargetStateMachine.RemoveStateMachine(InvalidStateMachine);
 					RemovedCount++;
 				}
 			}
@@ -38,52 +61,6 @@ namespace com.vrsuya.animationcleaner {
 				Debug.LogWarning("[AnimatorControllerCleaner] AnimatorController에서 총 " + RemovedCount + "건의 데이터가 정리 되었습니다!");
 			} else {
 				Debug.Log("[AnimatorControllerCleaner] AnimatorController의 모든 구성요소가 유효합니다!");
-			}
-		}
-
-		private static void CollectAllStates(AnimatorStateMachine TargetStateMachine, List<AnimatorState> AllStates) {
-			foreach (var TargetState in TargetStateMachine.states) {
-				AllStates.Add(TargetState.state);
-			}
-			foreach (var SubStateMachine in TargetStateMachine.stateMachines) {
-				CollectAllStates(SubStateMachine.stateMachine, AllStates);
-			}
-		}
-
-		private static void CollectReferencedStates(AnimatorStateMachine TargetStateMachine, HashSet<AnimatorState> ReferencedStates) {
-			foreach (var TargetState in TargetStateMachine.states) {
-				foreach (var TargetTransition in TargetState.state.transitions) {
-					if (TargetTransition.destinationState != null) {
-						ReferencedStates.Add(TargetTransition.destinationState);
-					}
-					if (TargetTransition.destinationStateMachine != null) {
-						CollectReferencedStates(TargetTransition.destinationStateMachine, ReferencedStates);
-					}
-				}
-			}
-			foreach (var SubStateMachine in TargetStateMachine.stateMachines) {
-				CollectReferencedStates(SubStateMachine.stateMachine, ReferencedStates);
-			}
-			return;
-		}
-
-		private static void RemoveStateFromStateMachine(AnimatorController TargetAnimatorController, AnimatorState TargetState) {
-			foreach (var TargetLayer in TargetAnimatorController.layers) {
-				AnimatorStateMachine TargetStateMachine = TargetLayer.stateMachine;
-				RemoveStateRecursively(TargetStateMachine, TargetState);
-			}
-			return;
-		}
-
-		private static void RemoveStateRecursively(AnimatorStateMachine TargetStateMachine, AnimatorState TargetState) {
-			for (int Index = 0; Index < TargetStateMachine.states.Length; Index++) {
-				if (TargetStateMachine.states[Index].state == TargetState) {
-					TargetStateMachine.RemoveState(TargetState);
-					return;
-				}
-			}
-			foreach (var SubStateMachine in TargetStateMachine.stateMachines) {
-				RemoveStateRecursively(SubStateMachine.stateMachine, TargetState);
 			}
 			return;
 		}
@@ -117,7 +94,7 @@ namespace com.vrsuya.animationcleaner {
 			GUILayout.FlexibleSpace();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			if (GUILayout.Button("Clean", GUILayout.Width(100))) {
-				AnimatorControllerCleaner.RemoveUnreferencedStates(TargetAnimatorController);
+				AnimatorControllerCleaner.CleanInvalidAnimatorStates(TargetAnimatorController);
 			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
