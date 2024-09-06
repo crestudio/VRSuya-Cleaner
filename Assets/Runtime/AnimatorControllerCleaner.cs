@@ -107,6 +107,9 @@ namespace com.vrsuya.animationcleaner {
 								.Exists(VaildItem => Item == VaildItem)).ToList();
 							if (InvaildfileIDs.Count > 0) TargetfileIDs = TargetfileIDs.Concat(InvaildfileIDs.ToArray()).Distinct().ToArray();
 						}
+						foreach (string TargetfileID in AllAnimatorStateTransitionfileIDs) {
+							AllVaildAnimatorStateTransitionfileIDs.AddRange(GetAnimatorStateTransitions(TargetfileID));
+						}
 						if (AllAnimatorStateTransitionfileIDs.Count > 0 && AllVaildAnimatorStateTransitionfileIDs.Count > 0) {
 							List<string> InvaildfileIDs = AllAnimatorStateTransitionfileIDs
 								.Where(Item => !AllVaildAnimatorStateTransitionfileIDs
