@@ -34,6 +34,8 @@ namespace com.vrsuya.animationcleaner {
 		private static List<string> AllAnimatorStateTransitionfileIDs = new List<string>();
 		private static List<string> AllVaildAnimatorStateTransitionfileIDs = new List<string>();
 
+		private static List<int> NeedRemoveLineIndex = new List<int>();
+
 		private static readonly string StructureStartPattern = $"--- !u!";
 		private static readonly string fileIdPattern = @"fileID:\s*(-?\d+)";
 		private static readonly string HeaderfileIdPattern = @"&(-?\d+)";
@@ -61,6 +63,7 @@ namespace com.vrsuya.animationcleaner {
 							}
 						}
 					}
+					RemoveLineIndex.AddRange(NeedRemoveLineIndex);
 					if (RemoveLineIndex.Count > 0) {
 						List<string> newAssetFile = new List<string>(AssetFile);
 						int[] RemoveLineIndexs = RemoveLineIndex.Distinct().ToArray();
@@ -92,6 +95,7 @@ namespace com.vrsuya.animationcleaner {
 					AllVaildAnimatorStatefileIDs = new List<string>();
 					AllAnimatorStateTransitionfileIDs = GetAllAnimatorStateTransitions();
 					AllVaildAnimatorStateTransitionfileIDs = new List<string>();
+					NeedRemoveLineIndex = new List<int>();
 					if (RootAnimatorStateMachinefileIDs.Count > 0) {
 						Debug.Log("[AnimatorControllerCleaner] 루트 상태 머신 갯수 : " + RootAnimatorStateMachinefileIDs.Count);
 						foreach (string TargetfileID in RootAnimatorStateMachinefileIDs) {
@@ -268,7 +272,11 @@ namespace com.vrsuya.animationcleaner {
 				if (isAnimatorState && isAnimatorStateTransition && AssetFile[Line].Contains("- {fileID: ")) {
 					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
-						AnimatorStateTransitionfileIDs.Add(ChildfileID);
+						if (VerifyAnimatorStateTransitions(ChildfileID)) {
+							AnimatorStateTransitionfileIDs.Add(ChildfileID);
+						} else {
+							NeedRemoveLineIndex.Add(Line);
+						}
 					}
 				}
 			}
