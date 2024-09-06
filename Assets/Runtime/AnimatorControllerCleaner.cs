@@ -39,6 +39,19 @@ namespace com.vrsuya.animationcleaner {
 					foreach (string TargetfileID in TargetfileIDs) {
 						RemoveLineIndex.AddRange(GetRemoveLines(TargetfileID));
 					}
+					for (int Try = 0; Try < 5; Try++) {
+						List<int> TryRemoveLineIndex = RemoveLineIndex.ToList();
+						foreach (int TargetIndex in TryRemoveLineIndex) {
+							if (AssetFile[TargetIndex].Contains("fileID:")) {
+								if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
+									string newTargetfileID = ExtractFileIDFromLine(AssetFile[TargetIndex]);
+									if (!string.IsNullOrEmpty(newTargetfileID)) {
+										RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
+									}
+								}
+							}
+						}
+					}
 					if (RemoveLineIndex.Count > 0) {
 						List<string> newAssetFile = new List<string>(AssetFile);
 						int[] RemoveLineIndexs = RemoveLineIndex.Distinct().ToArray();
@@ -197,21 +210,15 @@ namespace com.vrsuya.animationcleaner {
 		private List<int> GetRemoveLines(string TargetfileID) {
 			List<int> RemoveLineIndex = new List<int>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
-			string[] AssetFileSegment = new ArraySegment<string>(AssetFile, StartIndex, AssetFile.Length - StartIndex).ToArray();
-			int EndSubIndex = Array.FindIndex(AssetFileSegment, Line => Line.StartsWith(StructureStartPattern) && !Line.Contains($"&{TargetfileID}"));
-			int EndIndex = (EndSubIndex != -1) ? EndSubIndex + StartIndex : AssetFile.Length;
-			var Indexs = Enumerable.Range(StartIndex, EndIndex - StartIndex + 1);
-			RemoveLineIndex.AddRange(Indexs);
-			for (int Index = StartIndex; Index <= EndIndex; Index++) {
-				if (AssetFile[Index].Contains("fileID:")) {
-					if (!AssetFile[Index].Contains("guid:")) {
-						string newTargetfileID = ExtractFileIDFromLine(AssetFile[Index]);
-						if (!string.IsNullOrEmpty(newTargetfileID)) {
-							RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
-						}
-					}
+			int EndIndex = AssetFile.Length;
+			for (int Index = StartIndex; Index < EndIndex; Index++) {
+				if (AssetFile[Index].StartsWith(StructureStartPattern) && !AssetFile[Index].Contains($"&{TargetfileID}")) {
+					EndIndex = Index;
+					break;
 				}
 			}
+			var Indexs = Enumerable.Range(StartIndex, EndIndex - StartIndex);
+			RemoveLineIndex.AddRange(Indexs);
 			return RemoveLineIndex;
 		}
 
