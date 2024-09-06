@@ -61,6 +61,10 @@ namespace com.vrsuya.animationcleaner {
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
+			if (GUILayout.Button("추가", GUILayout.Width(100))) {
+				AnimatorControllerCleanerInstance.GetNULLfileID();
+			}
+			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("정리", GUILayout.Width(100))) {
 				AnimatorControllerCleanerInstance.RemoveStructureByFileID();
 			}
