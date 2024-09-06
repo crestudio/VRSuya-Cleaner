@@ -80,7 +80,7 @@ namespace com.vrsuya.animationcleaner {
 							List<string> InvaildfileIDs = AllAnimatorStatefileIDs
 								.Where(Item => !AllVaildAnimatorStatefileIDs
 								.Exists(VaildItem => Item == VaildItem)).ToList();
-							TargetfileIDs = TargetfileIDs.Concat(InvaildfileIDs.ToArray()).Distinct().ToArray();
+							if (InvaildfileIDs.Count > 0) TargetfileIDs = TargetfileIDs.Concat(InvaildfileIDs.ToArray()).Distinct().ToArray();
 						}
 					}
 				}
