@@ -278,15 +278,18 @@ namespace com.vrsuya.animationcleaner {
 		private List<int> GetRemoveLines(string TargetfileID) {
 			List<int> RemoveLineIndex = new List<int>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
-			int EndIndex = AssetFile.Length;
-			for (int Index = StartIndex; Index < EndIndex; Index++) {
-				if (AssetFile[Index].StartsWith(StructureStartPattern) && !AssetFile[Index].Contains($"&{TargetfileID}")) {
-					EndIndex = Index;
-					break;
+			if (StartIndex != -1) {
+				int EndIndex = AssetFile.Length;
+				for (int Index = StartIndex; Index < EndIndex; Index++) {
+					Debug.Log(Index);
+					if (AssetFile[Index].StartsWith(StructureStartPattern) && !AssetFile[Index].Contains($"&{TargetfileID}")) {
+						EndIndex = Index;
+						break;
+					}
 				}
+				var Indexs = Enumerable.Range(StartIndex, EndIndex - StartIndex);
+				RemoveLineIndex.AddRange(Indexs);
 			}
-			var Indexs = Enumerable.Range(StartIndex, EndIndex - StartIndex);
-			RemoveLineIndex.AddRange(Indexs);
 			return RemoveLineIndex;
 		}
 
