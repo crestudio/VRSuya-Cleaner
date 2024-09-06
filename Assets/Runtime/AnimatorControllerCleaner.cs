@@ -219,7 +219,7 @@ namespace com.vrsuya.animationcleaner {
 		/// <summary>해당 헤더에 유효한 fileID가 있다면 해당 값을 반환합니다.</summary>
 		/// <returns>String 형태의 fileID</returns>
 		private string ExtractFileIDFromHeader(string Line) {
-			Match fileIDMatch = Regex.Match(Line, fileIdPattern);
+			Match fileIDMatch = Regex.Match(Line, HeaderfileIdPattern);
 			if (fileIDMatch.Success) {
 				return fileIDMatch.Groups[1].Value;
 			} else {
