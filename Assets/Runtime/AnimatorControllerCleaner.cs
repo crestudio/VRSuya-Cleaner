@@ -22,8 +22,8 @@ namespace com.vrsuya.animationcleaner {
 		[SerializeField]
 		public AnimatorController TargetAnimatorController = null;
 		public string[] TargetfileIDs = new string[0];
+		private string AssetFilePath = string.Empty;
 
-		private static string AssetFilePath = string.Empty;
 		private static readonly string fileIdPattern = @"fileID:\s*(\d+)";
 		private static readonly string StructureStartPattern = $"--- !u!";
 
