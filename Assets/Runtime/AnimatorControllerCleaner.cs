@@ -207,11 +207,15 @@ namespace com.vrsuya.animationcleaner {
 					isDeleting = false;
 					break;
 				}
-				if (isDeleting && !AssetFile[Line].Contains("guid:") && !string.IsNullOrEmpty(ExtractFileIDFromLine(AssetFile[Line]))) {
-					RemoveLineIndex.Add(Line);
-					RemoveLineIndex.AddRange(GetRemoveLines(ExtractFileIDFromLine(AssetFile[Line])));
-				}
 				if (isDeleting) {
+					if (AssetFile[Line].Contains("fileID:")) {
+						if (!AssetFile[Line].Contains("guid:")) {
+							string newTargetfileID = ExtractFileIDFromLine(AssetFile[Line]);
+							if (!string.IsNullOrEmpty(newTargetfileID)) {
+								RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
+							}
+						}
+					}
 					RemoveLineIndex.Add(Line);
 				}
 			}
