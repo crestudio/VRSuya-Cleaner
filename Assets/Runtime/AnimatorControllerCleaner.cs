@@ -100,6 +100,7 @@ namespace com.vrsuya.animationcleaner {
 						AllAnimatorStateMachinefileIDs.AddRange(RootAnimatorStateMachinefileIDs);
 						AllAnimatorStateMachinefileIDs.AddRange(ChildAnimatorStateMachinefileIDs);
 						Debug.Log("[AnimatorControllerCleaner] 모든 상태 머신 갯수 : " + AllAnimatorStateMachinefileIDs.Count);
+						Debug.Log("[AnimatorControllerCleaner] 파일에 존재하는 상태 갯수 : " + AllAnimatorStatefileIDs.Count);
 						foreach (string TargetfileID in AllAnimatorStateMachinefileIDs) {
 							AllVaildAnimatorStatefileIDs.AddRange(GetAnimatorStates(TargetfileID));
 						}
@@ -111,10 +112,11 @@ namespace com.vrsuya.animationcleaner {
 							Debug.Log("[AnimatorControllerCleaner] 잘못된 상태 갯수 : " + InvaildfileIDs.Count);
 							if (InvaildfileIDs.Count > 0) TargetfileIDs = TargetfileIDs.Concat(InvaildfileIDs.ToArray()).Distinct().ToArray();
 						}
+						Debug.Log("[AnimatorControllerCleaner] 파일에 존재하는 트랜지션 갯수 : " + AllAnimatorStateTransitionfileIDs.Count);
 						foreach (string TargetfileID in AllVaildAnimatorStatefileIDs) {
 							AllVaildAnimatorStateTransitionfileIDs.AddRange(GetAnimatorStateTransitions(TargetfileID));
 						}
-						Debug.Log("[AnimatorControllerCleaner] 존재하는 트랜지션 갯수 : " + AllVaildAnimatorStateTransitionfileIDs.Count);
+						Debug.Log("[AnimatorControllerCleaner] 상태에 존재하는 트랜지션 갯수 : " + AllVaildAnimatorStateTransitionfileIDs.Count);
 						if (AllAnimatorStateTransitionfileIDs.Count > 0) {
 							List<string> UnknownInvaildfileIDs = AllAnimatorStateTransitionfileIDs
 								.Where(Item => !AllVaildAnimatorStateTransitionfileIDs
