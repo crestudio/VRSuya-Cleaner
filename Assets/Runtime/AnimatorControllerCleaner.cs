@@ -109,7 +109,11 @@ namespace com.vrsuya.animationcleaner {
 					}
 				}
 			}
-			return RootAnimatorStateMachinefileID;
+			string[] newRootAnimatorStateMachinefileID = RootAnimatorStateMachinefileID.ToArray();
+			if (newRootAnimatorStateMachinefileID.Length > 1) {
+				Array.Sort(newRootAnimatorStateMachinefileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			}
+			return newRootAnimatorStateMachinefileID.ToList();
 		}
 
 		/// <summary>파일에서 유효한 자식 AnimatorStateMachine들의 fileID들을 재귀적으로 반환 합니다.</summary>
@@ -134,7 +138,11 @@ namespace com.vrsuya.animationcleaner {
 					}
 				}
 			}
-			return ChildAnimatorStateMachinefileID;
+			string[] newChildAnimatorStateMachinefileID = ChildAnimatorStateMachinefileID.ToArray();
+			if (newChildAnimatorStateMachinefileID.Length > 1) {
+				Array.Sort(newChildAnimatorStateMachinefileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			}
+			return newChildAnimatorStateMachinefileID.ToList();
 		}
 
 		/// <summary>파일에서 유효한 AnimatorStateMachine의 AnimatorState fileID들을 반환 합니다.</summary>
@@ -158,7 +166,11 @@ namespace com.vrsuya.animationcleaner {
 					}
 				}
 			}
-			return AnimatorStatesfileID;
+			string[] newAnimatorStatesfileID = AnimatorStatesfileID.ToArray();
+			if (newAnimatorStatesfileID.Length > 1) {
+				Array.Sort(newAnimatorStatesfileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			}
+			return newAnimatorStatesfileID.ToList();
 		}
 
 		/// <summary>파일에서AnimatorState fileID들을 반환 합니다.</summary>
@@ -172,7 +184,11 @@ namespace com.vrsuya.animationcleaner {
 					}
 				}
 			}
-			return AnimatorStatesfileID;
+			string[] newAnimatorStatesfileID = AnimatorStatesfileID.ToArray();
+			if (newAnimatorStatesfileID.Length > 1) {
+				Array.Sort(newAnimatorStatesfileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			}
+			return newAnimatorStatesfileID.ToList();
 		}
 
 		/// <summary>파일에서 fileID에 해당되는 라인 인덱스들을 반환 합니다.</summary>
