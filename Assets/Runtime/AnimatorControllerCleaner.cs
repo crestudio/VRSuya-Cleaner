@@ -57,7 +57,7 @@ namespace com.vrsuya.animationcleaner {
 								if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
 									string newTargetfileID = ExtractFileIDFromLine(AssetFile[TargetIndex]);
 									if (!string.IsNullOrEmpty(newTargetfileID)) {
-										RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
+										if (!VerifyfileID(newTargetfileID)) RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
 									}
 								}
 							}
@@ -328,6 +328,21 @@ namespace com.vrsuya.animationcleaner {
 				}
 				if (isAnimatorStateTransition && AssetFile[Line].Contains("m_IsExit: 1")) {
 					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>유효한 fileID인지 여부를 반환 합니다.</summary>
+		/// <returns>fileID 유효 여부</returns>
+		private bool VerifyfileID(string TargetfileID) {
+			int Index = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
+			if (Index != -1) {
+				if (AssetFile[Index + 1].Contains("AnimatorState:")) {
+					if (AllVaildAnimatorStatefileIDs.Exists(fileID => TargetfileID == fileID)) return true;
+				}
+				if (AssetFile[Index + 1].Contains("AnimatorStateTransition:")) {
+					return VerifyAnimatorStateTransitions(TargetfileID);
 				}
 			}
 			return false;
