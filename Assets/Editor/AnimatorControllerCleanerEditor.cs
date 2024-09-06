@@ -13,14 +13,14 @@ namespace com.vrsuya.animationcleaner {
 
 		AnimatorControllerCleaner AnimatorControllerCleanerInstance;
 		SerializedObject SerializedAnimatorControllerCleaner;
-		SerializedProperty SerializedTargetAnimatorController;
-		SerializedProperty SerializedTargetRemovefileIDs;
+		SerializedProperty SerializedTargetAnimatorControllers;
+		SerializedProperty SerializedTargetUserRemovefileIDs;
 
 		void OnEnable() {
 			AnimatorControllerCleanerInstance = CreateInstance<AnimatorControllerCleaner>();
 			SerializedAnimatorControllerCleaner = new SerializedObject(AnimatorControllerCleanerInstance);
-			SerializedTargetAnimatorController = SerializedAnimatorControllerCleaner.FindProperty("TargetAnimatorController");
-			SerializedTargetRemovefileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetRemovefileIDs");
+			SerializedTargetAnimatorControllers = SerializedAnimatorControllerCleaner.FindProperty("TargetAnimatorControllers");
+			SerializedTargetUserRemovefileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetUserRemovefileIDs");
 		}
 
 		[MenuItem("Tools/VRSuya/AnimatorController Cleaner", priority = 1000)]
@@ -54,7 +54,7 @@ namespace com.vrsuya.animationcleaner {
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("추가", GUILayout.Width(100))) {
-				AnimatorControllerCleanerInstance.GetNULLfileID();
+				AnimatorControllerCleanerInstance.AddAnimatorControllers();
 			}
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("정리", GUILayout.Width(100))) {
