@@ -57,16 +57,16 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서 fileID에 해당되는 라인 인덱스들을 반환 합니다.</summary>
 		/// <returns>삭제해야 될 Int 형태의 Index 리스트</returns>
-		private List<int> GetRemoveLines(string[] TargetFile, string TargetFileID) {
+		private List<int> GetRemoveLines(string[] TargetFile, string TargetfileID) {
 			List<int> RemoveLineIndex = new List<int>();
 			bool isDeleting = false;
 			for (int Line = 0; Line < TargetFile.Length; Line++) {
-				if (TargetFile[Line].StartsWith(StructureStartPattern) && TargetFile[Line].Contains($"&{TargetFileID}")) {
+				if (TargetFile[Line].StartsWith(StructureStartPattern) && TargetFile[Line].Contains($"&{TargetfileID}")) {
 					isDeleting = true;
 					RemoveLineIndex.Add(Line);
 					continue;
 				}
-				if (isDeleting && TargetFile[Line].StartsWith(StructureStartPattern) && !TargetFile[Line].Contains($"&{TargetFileID}")) {
+				if (isDeleting && TargetFile[Line].StartsWith(StructureStartPattern) && !TargetFile[Line].Contains($"&{TargetfileID}")) {
 					isDeleting = false;
 					break;
 				}
