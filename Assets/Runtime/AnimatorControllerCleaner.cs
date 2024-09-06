@@ -266,9 +266,7 @@ namespace com.vrsuya.animationcleaner {
 				if (isAnimatorState && isAnimatorStateTransition && AssetFile[Line].Contains("- {fileID: ")) {
 					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
-						if (AllVaildAnimatorStatefileIDs.Exists(StatefileID => StatefileID == ChildfileID)) {
-							AnimatorStateTransitionfileIDs.Add(ChildfileID);
-						}
+						AnimatorStateTransitionfileIDs.Add(ChildfileID);
 					}
 				}
 			}
@@ -310,7 +308,7 @@ namespace com.vrsuya.animationcleaner {
 					isAnimatorStateTransition = false;
 					break;
 				}
-				if (isAnimatorStateTransition && AssetFile[Line].Contains("m_State")) {
+				if (isAnimatorStateTransition && AssetFile[Line].Contains("m_DstState")) {
 					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
 						if (AllVaildAnimatorStatefileIDs.Exists(fileID => ChildfileID == fileID)) {
