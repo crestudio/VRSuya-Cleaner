@@ -14,13 +14,13 @@ namespace com.vrsuya.animationcleaner {
 		AnimatorControllerCleaner AnimatorControllerCleanerInstance;
 		SerializedObject SerializedAnimatorControllerCleaner;
 		SerializedProperty SerializedTargetAnimatorController;
-		SerializedProperty SerializedTargetfileIDs;
+		SerializedProperty SerializedTargetRemovefileIDs;
 
 		void OnEnable() {
 			AnimatorControllerCleanerInstance = CreateInstance<AnimatorControllerCleaner>();
 			SerializedAnimatorControllerCleaner = new SerializedObject(AnimatorControllerCleanerInstance);
 			SerializedTargetAnimatorController = SerializedAnimatorControllerCleaner.FindProperty("TargetAnimatorController");
-			SerializedTargetfileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetfileIDs");
+			SerializedTargetRemovefileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetRemovefileIDs");
 		}
 
 		[MenuItem("Tools/VRSuya/AnimatorController Cleaner", priority = 1000)]
@@ -55,7 +55,7 @@ namespace com.vrsuya.animationcleaner {
 			GUILayout.EndHorizontal();
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
-			EditorGUILayout.PropertyField(SerializedTargetfileIDs, GUIContent.none);
+			EditorGUILayout.PropertyField(SerializedTargetRemovefileIDs, GUIContent.none);
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);

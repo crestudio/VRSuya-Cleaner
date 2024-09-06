@@ -21,7 +21,7 @@ namespace com.vrsuya.animationcleaner {
 
 		[SerializeField]
 		public AnimatorController TargetAnimatorController = null;
-		public string[] TargetfileIDs = new string[0];
+		public string[] TargetRemovefileIDs = new string[0];
 
 		private static string AssetFilePath = string.Empty;
 		private static string[] AssetFile = new string[0];
@@ -42,12 +42,12 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서 해당 되는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
 		public void RemoveStructureByFileID() {
-			if (TargetAnimatorController && TargetfileIDs.Length > 0) {
+			if (TargetAnimatorController && TargetRemovefileIDs.Length > 0) {
 				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
 				if (!string.IsNullOrEmpty(AssetFilePath)) {
 					AssetFile = File.ReadAllLines(AssetFilePath);
 					List<int> RemoveLineIndex = new List<int>();
-					foreach (string TargetfileID in TargetfileIDs) {
+					foreach (string TargetfileID in TargetRemovefileIDs) {
 						RemoveLineIndex.AddRange(GetRemoveLines(TargetfileID));
 					}
 					for (int Try = 0; Try < 5; Try++) {
@@ -110,11 +110,11 @@ namespace com.vrsuya.animationcleaner {
 						}
 						Debug.Log("[AnimatorControllerCleaner] 유효한 상태 갯수 : " + AllVaildAnimatorStatefileIDs.Count);
 						if (AllAnimatorStatefileIDs.Count > 0) {
-							List<string> InvaildfileIDs = AllAnimatorStatefileIDs
+							List<string> InvaildStatefileIDs = AllAnimatorStatefileIDs
 								.Where(Item => !AllVaildAnimatorStatefileIDs
 								.Exists(VaildItem => Item == VaildItem)).ToList();
-							Debug.Log("[AnimatorControllerCleaner] 잘못된 상태 갯수 : " + InvaildfileIDs.Count);
-							if (InvaildfileIDs.Count > 0) TargetfileIDs = TargetfileIDs.Concat(InvaildfileIDs.ToArray()).Distinct().ToArray();
+							Debug.Log("[AnimatorControllerCleaner] 잘못된 상태 갯수 : " + InvaildStatefileIDs.Count);
+							if (InvaildStatefileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildStatefileIDs.ToArray()).Distinct().ToArray();
 						}
 						Debug.Log("[AnimatorControllerCleaner] 파일에 존재하는 트랜지션 갯수 : " + AllAnimatorStateTransitionfileIDs.Count);
 						foreach (string TargetfileID in AllVaildAnimatorStatefileIDs) {
@@ -122,20 +122,20 @@ namespace com.vrsuya.animationcleaner {
 						}
 						Debug.Log("[AnimatorControllerCleaner] 상태에 존재하는 트랜지션 갯수 : " + AllVaildAnimatorStateTransitionfileIDs.Count);
 						if (AllAnimatorStateTransitionfileIDs.Count > 0) {
-							List<string> UnknownInvaildfileIDs = AllAnimatorStateTransitionfileIDs
+							List<string> UnknownTransitionfileIDs = AllAnimatorStateTransitionfileIDs
 								.Where(Item => !AllVaildAnimatorStateTransitionfileIDs
 								.Exists(VaildItem => Item == VaildItem)).ToList();
-							Debug.Log("[AnimatorControllerCleaner] 검사가 필요한 트랜지션 갯수 : " + UnknownInvaildfileIDs.Count);
-							List<string> VaildfileIDs = new List<string>();
-							foreach (string TargetfileID in UnknownInvaildfileIDs) {
-								if (VerifyAnimatorStateTransitions(TargetfileID)) VaildfileIDs.Add(TargetfileID);
+							Debug.Log("[AnimatorControllerCleaner] 검사가 필요한 트랜지션 갯수 : " + UnknownTransitionfileIDs.Count);
+							List<string> VaildTransitionfileIDs = new List<string>();
+							foreach (string TargetfileID in UnknownTransitionfileIDs) {
+								if (VerifyAnimatorStateTransitions(TargetfileID)) VaildTransitionfileIDs.Add(TargetfileID);
 							}
-							Debug.Log("[AnimatorControllerCleaner] 유효한 트랜지션 갯수 : " + VaildfileIDs.Count);
-							List<string> InvaildfileIDs = UnknownInvaildfileIDs
-								.Where(Item => !VaildfileIDs
+							Debug.Log("[AnimatorControllerCleaner] 유효한 트랜지션 갯수 : " + VaildTransitionfileIDs.Count);
+							List<string> InvaildTransitionfileIDs = UnknownTransitionfileIDs
+								.Where(Item => !VaildTransitionfileIDs
 								.Exists(VaildItem => Item == VaildItem)).ToList();
-							Debug.Log("[AnimatorControllerCleaner] 잘못된 트랜지션 갯수 : " + InvaildfileIDs.Count);
-							if (InvaildfileIDs.Count > 0) TargetfileIDs = TargetfileIDs.Concat(InvaildfileIDs.ToArray()).Distinct().ToArray();
+							Debug.Log("[AnimatorControllerCleaner] 잘못된 트랜지션 갯수 : " + InvaildTransitionfileIDs.Count);
+							if (InvaildTransitionfileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildTransitionfileIDs.ToArray()).Distinct().ToArray();
 						}
 					}
 				}
