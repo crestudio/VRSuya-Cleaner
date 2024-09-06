@@ -25,6 +25,7 @@ namespace com.vrsuya.animationcleaner {
 
 		private static string AssetFilePath = string.Empty;
 		private static readonly string fileIdPattern = @"fileID:\s*(\d+)";
+		private static readonly string StructureStartPattern = $"--- !u!";
 
 		/// <summary>파일에서 해당 되는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
 		public void RemoveStructureByFileID() {
@@ -59,7 +60,6 @@ namespace com.vrsuya.animationcleaner {
 		private List<int> GetRemoveLines(string[] TargetFile, string TargetFileID) {
 			List<int> RemoveLineIndex = new List<int>();
 			bool isDeleting = false;
-			string StructureStartPattern = $"--- !u!";
 			for (int Line = 0; Line < TargetFile.Length; Line++) {
 				if (TargetFile[Line].StartsWith(StructureStartPattern) && TargetFile[Line].Contains($"&{TargetFileID}")) {
 					isDeleting = true;
