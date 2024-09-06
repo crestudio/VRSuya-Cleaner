@@ -50,36 +50,40 @@ namespace com.vrsuya.animationcleaner {
 						AssetFile = File.ReadAllLines(AssetFilePath);
 						GetNULLfileID(TargetAnimatorController);
 						TargetRemovefileIDs = TargetRemovefileIDs.Concat(TargetUserRemovefileIDs).ToArray();
-						List<int> RemoveLineIndex = new List<int>();
-						foreach (string TargetfileID in TargetRemovefileIDs) {
-							RemoveLineIndex.AddRange(GetRemoveLines(TargetfileID));
-						}
-						for (int Try = 0; Try < 3; Try++) {
-							List<int> TryRemoveLineIndex = RemoveLineIndex.ToList();
-							foreach (int TargetIndex in TryRemoveLineIndex) {
-								if (AssetFile[TargetIndex].Contains("fileID:")) {
-									if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
-										string newTargetfileID = ExtractFileIDFromLine(AssetFile[TargetIndex]);
-										if (!string.IsNullOrEmpty(newTargetfileID)) {
-											if (!VerifyfileID(newTargetfileID)) RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
+						if (TargetRemovefileIDs.Length > 0) {
+							List<int> RemoveLineIndex = new List<int>();
+							foreach (string TargetfileID in TargetRemovefileIDs) {
+								RemoveLineIndex.AddRange(GetRemoveLines(TargetfileID));
+							}
+							for (int Try = 0; Try < 3; Try++) {
+								List<int> TryRemoveLineIndex = RemoveLineIndex.ToList();
+								foreach (int TargetIndex in TryRemoveLineIndex) {
+									if (AssetFile[TargetIndex].Contains("fileID:")) {
+										if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
+											string newTargetfileID = ExtractFileIDFromLine(AssetFile[TargetIndex]);
+											if (!string.IsNullOrEmpty(newTargetfileID)) {
+												if (!VerifyfileID(newTargetfileID)) RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
+											}
 										}
 									}
 								}
 							}
-						}
-						RemoveLineIndex.AddRange(NeedRemoveLineIndex);
-						if (RemoveLineIndex.Count > 0) {
-							List<string> newAssetFile = new List<string>(AssetFile);
-							int[] RemoveLineIndexs = RemoveLineIndex.Distinct().ToArray();
-							Array.Sort(RemoveLineIndexs);
-							Array.Reverse(RemoveLineIndexs);
-							foreach (int TargetIndex in RemoveLineIndexs) {
-								newAssetFile.RemoveAt(TargetIndex);
+							RemoveLineIndex.AddRange(NeedRemoveLineIndex);
+							if (RemoveLineIndex.Count > 0) {
+								List<string> newAssetFile = new List<string>(AssetFile);
+								int[] RemoveLineIndexs = RemoveLineIndex.Distinct().ToArray();
+								Array.Sort(RemoveLineIndexs);
+								Array.Reverse(RemoveLineIndexs);
+								foreach (int TargetIndex in RemoveLineIndexs) {
+									newAssetFile.RemoveAt(TargetIndex);
+								}
+								File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
+								Debug.LogWarning("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "에서 총 " + RemoveLineIndex.Count + "줄의 데이터가 정리 되었습니다!");
+							} else {
+								Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "의 모든 구성요소가 유효합니다!");
 							}
-							File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
-							Debug.LogWarning("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "에서 총 " + RemoveLineIndex.Count + "줄의 데이터가 정리 되었습니다!");
 						} else {
-							Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "의 모든 구성요소가 유효합니다!");
+							Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "에는 수정사항이 없습니다!");
 						}
 					}
 				}
