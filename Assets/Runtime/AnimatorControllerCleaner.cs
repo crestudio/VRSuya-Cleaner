@@ -196,27 +196,20 @@ namespace com.vrsuya.animationcleaner {
 		/// <returns>삭제해야 될 Int 형태의 Index 리스트</returns>
 		private List<int> GetRemoveLines(string TargetfileID) {
 			List<int> RemoveLineIndex = new List<int>();
-			bool isDeleting = false;
-			for (int Line = 0; Line < AssetFile.Length; Line++) {
-				if (AssetFile[Line].StartsWith(StructureStartPattern) && AssetFile[Line].Contains($"&{TargetfileID}")) {
-					isDeleting = true;
-					RemoveLineIndex.Add(Line);
-					continue;
-				}
-				if (isDeleting && AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
-					isDeleting = false;
-					break;
-				}
-				if (isDeleting) {
-					if (AssetFile[Line].Contains("fileID:")) {
-						if (!AssetFile[Line].Contains("guid:")) {
-							string newTargetfileID = ExtractFileIDFromLine(AssetFile[Line]);
-							if (!string.IsNullOrEmpty(newTargetfileID)) {
-								RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
-							}
+			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
+			string[] AssetFileSegment = new ArraySegment<string>(AssetFile, StartIndex, AssetFile.Length - StartIndex).ToArray();
+			int EndSubIndex = Array.FindIndex(AssetFileSegment, Line => Line.StartsWith(StructureStartPattern) && !Line.Contains($"&{TargetfileID}"));
+			int EndIndex = (EndSubIndex != -1) ? EndSubIndex + StartIndex : AssetFile.Length;
+			var Indexs = Enumerable.Range(StartIndex, EndIndex - StartIndex + 1);
+			RemoveLineIndex.AddRange(Indexs);
+			for (int Index = StartIndex; Index <= EndIndex; Index++) {
+				if (AssetFile[Index].Contains("fileID:")) {
+					if (!AssetFile[Index].Contains("guid:")) {
+						string newTargetfileID = ExtractFileIDFromLine(AssetFile[Index]);
+						if (!string.IsNullOrEmpty(newTargetfileID)) {
+							RemoveLineIndex.AddRange(GetRemoveLines(newTargetfileID));
 						}
 					}
-					RemoveLineIndex.Add(Line);
 				}
 			}
 			return RemoveLineIndex;
