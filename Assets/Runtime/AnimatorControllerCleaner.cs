@@ -105,7 +105,7 @@ namespace com.vrsuya.animationcleaner {
 		/// <summary>파일에서 유효한 루트 AnimatorStateMachine들을 fileID들을 반환 합니다.</summary>
 		/// <returns>유효한 루트 AnimatorStateMachine들의 fileID 리스트</returns>
 		private List<string> GetRootAnimatorStateMachine() {
-			List<string> RootAnimatorStateMachinefileID = new List<string>();
+			List<string> RootAnimatorStateMachinefileIDs = new List<string>();
 			bool isAnimatorController = false;
 			for (int Line = 0; Line < AssetFile.Length; Line++) {
 				if (AssetFile[Line].StartsWith("AnimatorController")) {
@@ -119,21 +119,21 @@ namespace com.vrsuya.animationcleaner {
 				if (isAnimatorController && AssetFile[Line].Contains("m_StateMachine")) {
 					string TargetfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(TargetfileID)) {
-						RootAnimatorStateMachinefileID.Add(TargetfileID);
+						RootAnimatorStateMachinefileIDs.Add(TargetfileID);
 					}
 				}
 			}
-			string[] newRootAnimatorStateMachinefileID = RootAnimatorStateMachinefileID.ToArray();
-			if (newRootAnimatorStateMachinefileID.Length > 1) {
-				Array.Sort(newRootAnimatorStateMachinefileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			string[] newRootAnimatorStateMachinefileIDs = RootAnimatorStateMachinefileIDs.ToArray();
+			if (newRootAnimatorStateMachinefileIDs.Length > 1) {
+				Array.Sort(newRootAnimatorStateMachinefileIDs, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
 			}
-			return newRootAnimatorStateMachinefileID.ToList();
+			return newRootAnimatorStateMachinefileIDs.ToList();
 		}
 
 		/// <summary>파일에서 유효한 자식 AnimatorStateMachine들의 fileID들을 재귀적으로 반환 합니다.</summary>
 		/// <returns>유효한 자식 AnimatorStateMachine들의 fileID 리스트</returns>
 		private List<string> GetChildAnimatorStateMachine(string TargetfileID) {
-			List<string> ChildAnimatorStateMachinefileID = new List<string>();
+			List<string> ChildAnimatorStateMachinefileIDs = new List<string>();
 			bool isAnimatorStateMachine = false;
 			for (int Line = 0; Line < AssetFile.Length; Line++) {
 				if (AssetFile[Line].StartsWith(StructureStartPattern) && AssetFile[Line].Contains($"&{TargetfileID}")) {
@@ -147,22 +147,22 @@ namespace com.vrsuya.animationcleaner {
 				if (isAnimatorStateMachine && AssetFile[Line].Contains("m_StateMachine")) {
 					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
-						ChildAnimatorStateMachinefileID.Add(ChildfileID);
-						ChildAnimatorStateMachinefileID.AddRange(GetChildAnimatorStateMachine(ChildfileID));
+						ChildAnimatorStateMachinefileIDs.Add(ChildfileID);
+						ChildAnimatorStateMachinefileIDs.AddRange(GetChildAnimatorStateMachine(ChildfileID));
 					}
 				}
 			}
-			string[] newChildAnimatorStateMachinefileID = ChildAnimatorStateMachinefileID.ToArray();
-			if (newChildAnimatorStateMachinefileID.Length > 1) {
-				Array.Sort(newChildAnimatorStateMachinefileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			string[] newChildAnimatorStateMachinefileIDs = ChildAnimatorStateMachinefileIDs.ToArray();
+			if (newChildAnimatorStateMachinefileIDs.Length > 1) {
+				Array.Sort(newChildAnimatorStateMachinefileIDs, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
 			}
-			return newChildAnimatorStateMachinefileID.ToList();
+			return newChildAnimatorStateMachinefileIDs.ToList();
 		}
 
 		/// <summary>파일에서 유효한 AnimatorStateMachine의 AnimatorState fileID들을 반환 합니다.</summary>
 		/// <returns>유효한 AnimatorState들의 fileID 리스트</returns>
 		private List<string> GetAnimatorStates(string TargetfileID) {
-			List<string> AnimatorStatesfileID = new List<string>();
+			List<string> AnimatorStatefileIDs = new List<string>();
 			bool isAnimatorStateMachine = false;
 			for (int Line = 0; Line < AssetFile.Length; Line++) {
 				if (AssetFile[Line].StartsWith(StructureStartPattern) && AssetFile[Line].Contains($"&{TargetfileID}")) {
@@ -176,33 +176,33 @@ namespace com.vrsuya.animationcleaner {
 				if (isAnimatorStateMachine && AssetFile[Line].Contains("m_State")) {
 					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
-						AnimatorStatesfileID.Add(ChildfileID);
+						AnimatorStatefileIDs.Add(ChildfileID);
 					}
 				}
 			}
-			string[] newAnimatorStatesfileID = AnimatorStatesfileID.ToArray();
-			if (newAnimatorStatesfileID.Length > 1) {
-				Array.Sort(newAnimatorStatesfileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			string[] newAnimatorStatefileIDs = AnimatorStatefileIDs.ToArray();
+			if (newAnimatorStatefileIDs.Length > 1) {
+				Array.Sort(newAnimatorStatefileIDs, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
 			}
-			return newAnimatorStatesfileID.ToList();
+			return newAnimatorStatefileIDs.ToList();
 		}
 
-		/// <summary>파일에서AnimatorState fileID들을 반환 합니다.</summary>
+		/// <summary>파일에서 AnimatorState fileID들을 반환 합니다.</summary>
 		/// <returns>AnimatorState들의 fileID 리스트</returns>
 		private List<string> GetAllAnimatorStates() {
-			List<string> AnimatorStatesfileID = new List<string>();
+			List<string> AnimatorStatefileIDs = new List<string>();
 			for (int Line = 0; Line < AssetFile.Length; Line++) {
 				if (AssetFile[Line].StartsWith(StructureStartPattern)) {
 					if (AssetFile[Line + 1].Contains("AnimatorState:")) {
-						AnimatorStatesfileID.Add(ExtractFileIDFromHeader(AssetFile[Line]));
+						AnimatorStatefileIDs.Add(ExtractFileIDFromHeader(AssetFile[Line]));
 					}
 				}
 			}
-			string[] newAnimatorStatesfileID = AnimatorStatesfileID.ToArray();
-			if (newAnimatorStatesfileID.Length > 1) {
-				Array.Sort(newAnimatorStatesfileID, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
+			string[] newAnimatorStateTransitionfileIDs = AnimatorStateTransitionfileIDs.ToArray();
+			if (newAnimatorStateTransitionfileIDs.Length > 1) {
+				Array.Sort(newAnimatorStateTransitionfileIDs, (a, b) => string.Compare(a, b, StringComparison.Ordinal));
 			}
-			return newAnimatorStatesfileID.ToList();
+			return newAnimatorStateTransitionfileIDs.ToList();
 		}
 
 		/// <summary>파일에서 fileID에 해당되는 라인 인덱스들을 반환 합니다.</summary>
