@@ -103,8 +103,8 @@ namespace com.vrsuya.animationcleaner {
 						foreach (string TargetfileID in AllAnimatorStateMachinefileIDs) {
 							AllVaildAnimatorStatefileIDs.AddRange(GetAnimatorStates(TargetfileID));
 						}
-						if (AllAnimatorStatefileIDs.Count > 0 && AllVaildAnimatorStatefileIDs.Count > 0) {
 						Debug.Log("[AnimatorControllerCleaner] 유효한 상태 갯수 : " + AllVaildAnimatorStatefileIDs.Count);
+						if (AllAnimatorStatefileIDs.Count > 0) {
 							List<string> InvaildfileIDs = AllAnimatorStatefileIDs
 								.Where(Item => !AllVaildAnimatorStatefileIDs
 								.Exists(VaildItem => Item == VaildItem)).ToList();
@@ -114,8 +114,8 @@ namespace com.vrsuya.animationcleaner {
 						foreach (string TargetfileID in AllVaildAnimatorStatefileIDs) {
 							AllVaildAnimatorStateTransitionfileIDs.AddRange(GetAnimatorStateTransitions(TargetfileID));
 						}
-						if (AllAnimatorStateTransitionfileIDs.Count > 0 && AllVaildAnimatorStateTransitionfileIDs.Count > 0) {
 						Debug.Log("[AnimatorControllerCleaner] 존재하는 트랜지션 갯수 : " + AllVaildAnimatorStateTransitionfileIDs.Count);
+						if (AllAnimatorStateTransitionfileIDs.Count > 0) {
 							List<string> UnknownInvaildfileIDs = AllAnimatorStateTransitionfileIDs
 								.Where(Item => !AllVaildAnimatorStateTransitionfileIDs
 								.Exists(VaildItem => Item == VaildItem)).ToList();
