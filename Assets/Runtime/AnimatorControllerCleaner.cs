@@ -226,15 +226,6 @@ namespace com.vrsuya.animationcleaner {
 				return string.Empty;
 			}
 		}
-
-		/// <summary>요청한 GUID를 파일 이름으로 반환합니다. 2번째 인자는 확장명 포함 여부를 결정합니다.</summary>
-		/// <returns>파일 이름</returns>
-		private string GUIDToAssetName(string GUID, bool OnlyFileName) {
-			string FileName = "";
-			FileName = AssetDatabase.GUIDToAssetPath(GUID).Split('/')[AssetDatabase.GUIDToAssetPath(GUID).Split('/').Length - 1];
-			if (OnlyFileName) FileName = FileName.Split('.')[0];
-			return FileName;
-		}
 	}
 }
 #endif
