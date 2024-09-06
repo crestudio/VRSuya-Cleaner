@@ -22,8 +22,9 @@ namespace com.vrsuya.animationcleaner {
 		[SerializeField]
 		public AnimatorController TargetAnimatorController = null;
 		public string[] TargetfileIDs = new string[0];
-		private string AssetFilePath = string.Empty;
 
+		private static string AssetFilePath = string.Empty;
+		private static string[] AssetFile = new string[0];
 		private static readonly string StructureStartPattern = $"--- !u!";
 		private static readonly string fileIdPattern = @"fileID:\s*(-?\d+)";
 		private static readonly string HeaderfileIdPattern = @"&(-?\d+)";
@@ -33,10 +34,10 @@ namespace com.vrsuya.animationcleaner {
 			if (TargetAnimatorController && TargetfileIDs.Length > 0) {
 				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
 				if (!string.IsNullOrEmpty(AssetFilePath)) {
-					string[] AssetFile = File.ReadAllLines(AssetFilePath);
+					AssetFile = File.ReadAllLines(AssetFilePath);
 					List<int> RemoveLineIndex = new List<int>();
 					foreach (string TargetfileID in TargetfileIDs) {
-						RemoveLineIndex.AddRange(GetRemoveLines(AssetFile, TargetfileID));
+						RemoveLineIndex.AddRange(GetRemoveLines(TargetfileID));
 					}
 					if (RemoveLineIndex.Count > 0) {
 						List<string> newAssetFile = new List<string>(AssetFile);
@@ -61,20 +62,20 @@ namespace com.vrsuya.animationcleaner {
 			if (TargetAnimatorController) {
 				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
 				if (!string.IsNullOrEmpty(AssetFilePath)) {
-					string[] AssetFile = File.ReadAllLines(AssetFilePath);
-					List<string> RootAnimatorStateMachinefileIDs = GetRootAnimatorStateMachine(AssetFile);
+					AssetFile = File.ReadAllLines(AssetFilePath);
+					List<string> RootAnimatorStateMachinefileIDs = GetRootAnimatorStateMachine();
 					List<string> ChildAnimatorStateMachinefileIDs = new List<string>();
 					List<string> AllAnimatorStateMachinefileIDs = new List<string>();
-					List<string> AllAnimatorStatefileIDs = GetAllAnimatorStates(AssetFile);
+					List<string> AllAnimatorStatefileIDs = GetAllAnimatorStates();
 					List<string> AllVaildAnimatorStatefileIDs = new List<string>();
 					if (RootAnimatorStateMachinefileIDs.Count > 0) {
 						foreach (string TargetfileID in RootAnimatorStateMachinefileIDs) {
-							ChildAnimatorStateMachinefileIDs.AddRange(GetChildAnimatorStateMachine(AssetFile, TargetfileID));
+							ChildAnimatorStateMachinefileIDs.AddRange(GetChildAnimatorStateMachine(TargetfileID));
 						}
 						AllAnimatorStateMachinefileIDs.AddRange(RootAnimatorStateMachinefileIDs);
 						AllAnimatorStateMachinefileIDs.AddRange(ChildAnimatorStateMachinefileIDs);
 						foreach (string TargetfileID in AllAnimatorStateMachinefileIDs) {
-							AllVaildAnimatorStatefileIDs.AddRange(GetAnimatorStates(AssetFile, TargetfileID));
+							AllVaildAnimatorStatefileIDs.AddRange(GetAnimatorStates(TargetfileID));
 						}
 						if (AllAnimatorStatefileIDs.Count > 0 && AllVaildAnimatorStatefileIDs.Count > 0) {
 							List<string> InvaildfileIDs = AllAnimatorStatefileIDs
@@ -90,20 +91,20 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서 유효한 루트 AnimatorStateMachine들을 fileID들을 반환 합니다.</summary>
 		/// <returns>유효한 루트 AnimatorStateMachine들의 fileID 리스트</returns>
-		private List<string> GetRootAnimatorStateMachine(string[] TargetFile) {
+		private List<string> GetRootAnimatorStateMachine() {
 			List<string> RootAnimatorStateMachinefileID = new List<string>();
 			bool isAnimatorController = false;
-			for (int Line = 0; Line < TargetFile.Length; Line++) {
-				if (TargetFile[Line].StartsWith("AnimatorController")) {
+			for (int Line = 0; Line < AssetFile.Length; Line++) {
+				if (AssetFile[Line].StartsWith("AnimatorController")) {
 					isAnimatorController = true;
 					continue;
 				}
-				if (isAnimatorController && TargetFile[Line].StartsWith(StructureStartPattern)) {
+				if (isAnimatorController && AssetFile[Line].StartsWith(StructureStartPattern)) {
 					isAnimatorController = false;
 					break;
 				}
-				if (isAnimatorController && TargetFile[Line].Contains("m_StateMachine")) {
-					string TargetfileID = ExtractFileIDFromLine(TargetFile[Line]);
+				if (isAnimatorController && AssetFile[Line].Contains("m_StateMachine")) {
+					string TargetfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(TargetfileID)) {
 						RootAnimatorStateMachinefileID.Add(TargetfileID);
 					}
@@ -118,23 +119,23 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서 유효한 자식 AnimatorStateMachine들의 fileID들을 재귀적으로 반환 합니다.</summary>
 		/// <returns>유효한 자식 AnimatorStateMachine들의 fileID 리스트</returns>
-		private List<string> GetChildAnimatorStateMachine(string[] TargetFile, string TargetfileID) {
+		private List<string> GetChildAnimatorStateMachine(string TargetfileID) {
 			List<string> ChildAnimatorStateMachinefileID = new List<string>();
 			bool isAnimatorStateMachine = false;
-			for (int Line = 0; Line < TargetFile.Length; Line++) {
-				if (TargetFile[Line].StartsWith(StructureStartPattern) && TargetFile[Line].Contains($"&{TargetfileID}")) {
+			for (int Line = 0; Line < AssetFile.Length; Line++) {
+				if (AssetFile[Line].StartsWith(StructureStartPattern) && AssetFile[Line].Contains($"&{TargetfileID}")) {
 					isAnimatorStateMachine = true;
 					continue;
 				}
-				if (isAnimatorStateMachine && TargetFile[Line].StartsWith(StructureStartPattern) && !TargetFile[Line].Contains($"&{TargetfileID}")) {
+				if (isAnimatorStateMachine && AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
 					isAnimatorStateMachine = false;
 					break;
 				}
-				if (isAnimatorStateMachine && TargetFile[Line].Contains("m_StateMachine")) {
-					string ChildfileID = ExtractFileIDFromLine(TargetFile[Line]);
+				if (isAnimatorStateMachine && AssetFile[Line].Contains("m_StateMachine")) {
+					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
 						ChildAnimatorStateMachinefileID.Add(ChildfileID);
-						ChildAnimatorStateMachinefileID.AddRange(GetChildAnimatorStateMachine(TargetFile, ChildfileID));
+						ChildAnimatorStateMachinefileID.AddRange(GetChildAnimatorStateMachine(ChildfileID));
 					}
 				}
 			}
@@ -147,20 +148,20 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서 유효한 AnimatorStateMachine의 AnimatorState fileID들을 반환 합니다.</summary>
 		/// <returns>유효한 AnimatorState들의 fileID 리스트</returns>
-		private List<string> GetAnimatorStates(string[] TargetFile, string TargetfileID) {
+		private List<string> GetAnimatorStates(string TargetfileID) {
 			List<string> AnimatorStatesfileID = new List<string>();
 			bool isAnimatorStateMachine = false;
-			for (int Line = 0; Line < TargetFile.Length; Line++) {
-				if (TargetFile[Line].StartsWith(StructureStartPattern) && TargetFile[Line].Contains($"&{TargetfileID}")) {
+			for (int Line = 0; Line < AssetFile.Length; Line++) {
+				if (AssetFile[Line].StartsWith(StructureStartPattern) && AssetFile[Line].Contains($"&{TargetfileID}")) {
 					isAnimatorStateMachine = true;
 					continue;
 				}
-				if (isAnimatorStateMachine && TargetFile[Line].StartsWith(StructureStartPattern) && !TargetFile[Line].Contains($"&{TargetfileID}")) {
+				if (isAnimatorStateMachine && AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
 					isAnimatorStateMachine = false;
 					break;
 				}
-				if (isAnimatorStateMachine && TargetFile[Line].Contains("m_State")) {
-					string ChildfileID = ExtractFileIDFromLine(TargetFile[Line]);
+				if (isAnimatorStateMachine && AssetFile[Line].Contains("m_State")) {
+					string ChildfileID = ExtractFileIDFromLine(AssetFile[Line]);
 					if (!string.IsNullOrEmpty(ChildfileID)) {
 						AnimatorStatesfileID.Add(ChildfileID);
 					}
@@ -175,12 +176,12 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서AnimatorState fileID들을 반환 합니다.</summary>
 		/// <returns>AnimatorState들의 fileID 리스트</returns>
-		private List<string> GetAllAnimatorStates(string[] TargetFile) {
+		private List<string> GetAllAnimatorStates() {
 			List<string> AnimatorStatesfileID = new List<string>();
-			for (int Line = 0; Line < TargetFile.Length; Line++) {
-				if (TargetFile[Line].StartsWith(StructureStartPattern)) {
-					if (TargetFile[Line + 1].Contains("AnimatorState:")) {
-						AnimatorStatesfileID.Add(ExtractFileIDFromHeader(TargetFile[Line]));
+			for (int Line = 0; Line < AssetFile.Length; Line++) {
+				if (AssetFile[Line].StartsWith(StructureStartPattern)) {
+					if (AssetFile[Line + 1].Contains("AnimatorState:")) {
+						AnimatorStatesfileID.Add(ExtractFileIDFromHeader(AssetFile[Line]));
 					}
 				}
 			}
@@ -193,22 +194,22 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>파일에서 fileID에 해당되는 라인 인덱스들을 반환 합니다.</summary>
 		/// <returns>삭제해야 될 Int 형태의 Index 리스트</returns>
-		private List<int> GetRemoveLines(string[] TargetFile, string TargetfileID) {
+		private List<int> GetRemoveLines(string TargetfileID) {
 			List<int> RemoveLineIndex = new List<int>();
 			bool isDeleting = false;
-			for (int Line = 0; Line < TargetFile.Length; Line++) {
-				if (TargetFile[Line].StartsWith(StructureStartPattern) && TargetFile[Line].Contains($"&{TargetfileID}")) {
+			for (int Line = 0; Line < AssetFile.Length; Line++) {
+				if (AssetFile[Line].StartsWith(StructureStartPattern) && AssetFile[Line].Contains($"&{TargetfileID}")) {
 					isDeleting = true;
 					RemoveLineIndex.Add(Line);
 					continue;
 				}
-				if (isDeleting && TargetFile[Line].StartsWith(StructureStartPattern) && !TargetFile[Line].Contains($"&{TargetfileID}")) {
+				if (isDeleting && AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
 					isDeleting = false;
 					break;
 				}
-				if (isDeleting && !TargetFile[Line].Contains("guid:") && !string.IsNullOrEmpty(ExtractFileIDFromLine(TargetFile[Line]))) {
+				if (isDeleting && !AssetFile[Line].Contains("guid:") && !string.IsNullOrEmpty(ExtractFileIDFromLine(AssetFile[Line]))) {
 					RemoveLineIndex.Add(Line);
-					RemoveLineIndex.AddRange(GetRemoveLines(TargetFile, ExtractFileIDFromLine(TargetFile[Line])));
+					RemoveLineIndex.AddRange(GetRemoveLines(ExtractFileIDFromLine(AssetFile[Line])));
 				}
 				if (isDeleting) {
 					RemoveLineIndex.Add(Line);
