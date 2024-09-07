@@ -50,20 +50,24 @@ namespace com.vrsuya.animationcleaner {
 					if (!string.IsNullOrEmpty(AssetFilePath)) {
 						AssetFile = File.ReadAllLines(AssetFilePath);
 						GetNULLfileIDs(TargetAnimatorController);
-						TargetRemovefileIDs = TargetRemovefileIDs.Concat(TargetUserRemovefileIDs).ToArray();
+						TargetRemovefileIDs = TargetRemovefileIDs.Concat(TargetUserRemovefileIDs).Distinct().ToArray();
 						if (TargetRemovefileIDs.Length > 0) {
 							List<int> RemoveLineIndex = new List<int>();
 							foreach (string TargetfileID in TargetRemovefileIDs) {
 								RemoveLineIndex.AddRange(GetRemoveLineIndexs(TargetfileID));
 							}
-							for (int Try = 0; Try < 3; Try++) {
+							for (int Try = 0; Try < 2; Try++) {
 								List<int> TryRemoveLineIndex = RemoveLineIndex.ToList();
 								foreach (int TargetIndex in TryRemoveLineIndex) {
 									if (AssetFile[TargetIndex].Contains("fileID:")) {
 										if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
 											string newTargetfileID = ExtractfileIDFromLine(AssetFile[TargetIndex]);
 											if (!string.IsNullOrEmpty(newTargetfileID)) {
-												if (!VerifyfileID(newTargetfileID)) RemoveLineIndex.AddRange(GetRemoveLineIndexs(newTargetfileID));
+												if (!Array.Exists(TargetRemovefileIDs, fileID => newTargetfileID == fileID)) {
+													if (!VerifyfileID(newTargetfileID)) {
+														RemoveLineIndex.AddRange(GetRemoveLineIndexs(newTargetfileID));
+													}
+												}
 											}
 										}
 									}
