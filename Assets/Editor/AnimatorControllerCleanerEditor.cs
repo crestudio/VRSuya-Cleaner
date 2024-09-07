@@ -38,19 +38,17 @@ namespace com.vrsuya.animationcleaner {
 			SerializedAnimatorControllerCleaner.Update();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			GUILayout.Label("정리할 AnimatorController", EditorStyles.boldLabel);
-			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
-			EditorGUILayout.PropertyField(SerializedTargetAnimatorControllers, GUIContent.none);
-			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			GUILayout.Label("제거할 fileID 리스트", EditorStyles.boldLabel);
-			GUILayout.FlexibleSpace();
+			GUILayout.Space(15);
+			EditorGUILayout.PropertyField(SerializedTargetAnimatorControllers, new GUIContent("대상 AnimatorController"));
+			GUILayout.Space(15);
 			GUILayout.EndHorizontal();
-			EditorGUILayout.PropertyField(SerializedTargetUserRemovefileIDs, GUIContent.none);
-			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
+			GUILayout.BeginHorizontal();
+			GUILayout.Space(15);
+			EditorGUILayout.PropertyField(SerializedTargetUserRemovefileIDs, new GUIContent("정리할 fileID 리스트"));
+			GUILayout.Space(15);
+			GUILayout.EndHorizontal();
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("추가", GUILayout.Width(100))) {
