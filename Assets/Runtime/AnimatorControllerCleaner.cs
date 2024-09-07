@@ -20,6 +20,7 @@ namespace com.vrsuya.animationcleaner {
 	public class AnimatorControllerCleaner : ScriptableObject {
 
 		[SerializeField]
+		public string TargetFolderPath = string.Empty;
 		public AnimatorController[] TargetAnimatorControllers = new AnimatorController[0];
 		public string[] TargetUserRemovefileIDs = new string[0];
 
@@ -150,7 +151,7 @@ namespace com.vrsuya.animationcleaner {
 		/// <summary>에셋에서 AnimatorController들을 가져옵니다.</summary>
 		public void AddAnimatorControllers() {
 			List<AnimatorController> ListAnimatorController = new List<AnimatorController>();
-			string[] AnimatorControllerGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets" });
+			string[] AnimatorControllerGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets\\" + TargetFolderPath });
 			foreach (string TargetAnimatorControllerGUID in AnimatorControllerGUIDs) {
 				AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorControllerGUID));
 				if (TargetAnimatorController is AnimatorController) {
