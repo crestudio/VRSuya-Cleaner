@@ -140,7 +140,8 @@ namespace com.vrsuya.animationcleaner {
 			}
 			foreach (string TargetfileID in VaildAnimatorStateMachinefileIDs) {
 				VaildAnimatorTransitionfileIDs.AddRange(GetAnimatorTransitions(TargetfileID));
-				VaildAnimatorStateTransitionfileIDs.AddRange(GetStateMachineTransitions(TargetfileID));
+				VaildAnimatorTransitionfileIDs.AddRange(GetStateMachineTransitions(TargetfileID, "AnimatorTransition"));
+				VaildAnimatorStateTransitionfileIDs.AddRange(GetStateMachineTransitions(TargetfileID, "AnimatorStateTransition"));
 			}
 			foreach (string TargetfileID in VaildAnimatorStatefileIDs) {
 				VaildAnimatorStateTransitionfileIDs.AddRange(GetAnimatorStateTransitions(TargetfileID));
@@ -368,31 +369,38 @@ namespace com.vrsuya.animationcleaner {
 
 		/// <summary>fileID에서 StateMachine의 Transition fileID들을 반환합니다.</summary>
 		/// <returns>모든 Transition들의 fileID 리스트</returns>
-		private List<string> GetStateMachineTransitions(string TargetfileID) {
+		private List<string> GetStateMachineTransitions(string TargetfileID, string TargetType) {
 			List<string> StateMachineTransitionfileIDs = new List<string>();
 			bool isAnimatorStateTransition = false;
+			string SearchString = (TargetType == "AnimatorTransition") ? "m_EntryTransitions:" : "m_AnyStateTransitions:";
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
 			if (StartIndex != -1) {
 				for (int Line = StartIndex; Line < AssetFile.Length; Line++) {
-					if (AssetFile[Line].Contains("m_AnyStateTransitions:") || AssetFile[Line].Contains("m_EntryTransitions:")) {
+					if (AssetFile[Line].Contains(SearchString)) {
 						isAnimatorStateTransition = true;
 						continue;
 					}
 					if (AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
 						break;
 					}
-					if (AssetFile[Line].Contains("m_StateMachineTransitions:") ||
-						AssetFile[Line].Contains("m_StateMachineBehaviours:") ||
-						AssetFile[Line].Contains("m_DefaultState:")) {
+					if (isAnimatorStateTransition && !AssetFile[Line].Contains("fileID:")) {
 						break;
 					}
 					if (isAnimatorStateTransition && AssetFile[Line].Contains("fileID:")) {
 						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
 						if (!string.IsNullOrEmpty(ChildfileID)) {
-							if (VerifyAnimatorStateTransition(ChildfileID)) {
-								StateMachineTransitionfileIDs.Add(ChildfileID);
+							if (TargetType == "AnimatorTransition") {
+								if (VerifyAnimatorTransition(ChildfileID)) {
+									StateMachineTransitionfileIDs.Add(ChildfileID);
+								} else {
+									AdditionRemoveLineIndexs.Add(Line);
+								}
 							} else {
-								AdditionRemoveLineIndexs.Add(Line);
+								if (VerifyAnimatorStateTransition(ChildfileID)) {
+									StateMachineTransitionfileIDs.Add(ChildfileID);
+								} else {
+									AdditionRemoveLineIndexs.Add(Line);
+								}
 							}
 						}
 					}
