@@ -75,7 +75,7 @@ namespace com.vrsuya.animationcleaner {
 								RemoveLineIndexs.AddRange(GetRemoveLineIndexs(TargetfileID));
 							}
 							for (int Try = 0; Try < 2; Try++) {
-								foreach (int TargetIndex in RemoveLineIndexs) {
+								foreach (int TargetIndex in RemoveLineIndexs.ToList()) {
 									if (AssetFile[TargetIndex].Contains("fileID:")) {
 										if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
 											string newTargetfileID = ExtractfileIDFromLine(AssetFile[TargetIndex]);
