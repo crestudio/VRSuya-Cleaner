@@ -31,17 +31,20 @@ namespace com.vrsuya.animationcleaner {
 		private static List<string> AllAnimatorStateMachinefileIDs = new List<string>();
 		private static List<string> AllAnimatorStatefileIDs = new List<string>();
 		private static List<string> AllAnimatorStateTransitionfileIDs = new List<string>();
+		private static List<string> AllAnimatorTransitionfileIDs = new List<string>();
 		private static List<string> AllBlendTreefileIDs = new List<string>();
 		private static List<string> AllMonoBehaviourfileIDs = new List<string>();
 
 		private static List<string> VaildAnimatorStateMachinefileIDs = new List<string>();
 		private static List<string> VaildAnimatorStatefileIDs = new List<string>();
+		private static List<string> VaildAnimatorTransitionfileIDs = new List<string>();
 		private static List<string> VaildAnimatorStateTransitionfileIDs = new List<string>();
 		private static List<string> VaildBlendTreefileIDs = new List<string>();
 		private static List<string> VaildMonoBehaviourfileIDs = new List<string>();
 
 		private static List<string> InvaildAnimatorStateMachinefileIDs = new List<string>();
 		private static List<string> InvaildAnimatorStatefileIDs = new List<string>();
+		private static List<string> InvaildAnimatorTransitionfileIDs = new List<string>();
 		private static List<string> InvaildAnimatorStateTransitionfileIDs = new List<string>();
 		private static List<string> InvaildBlendTreefileIDs = new List<string>();
 		private static List<string> InvaildMonoBehaviourfileIDs = new List<string>();
@@ -117,18 +120,21 @@ namespace com.vrsuya.animationcleaner {
 			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 구성요소 통계\r\n" +
 				"StateMachine : " + AllAnimatorStateMachinefileIDs.Count + "\r\n" +
 				"State : " + AllAnimatorStatefileIDs.Count + "\r\n" +
+				"AnimatorTransition : " + AllAnimatorTransitionfileIDs.Count + "\r\n" +
 				"Transition : " + AllAnimatorStateTransitionfileIDs.Count + "\r\n" +
 				"BlendTree : " + AllBlendTreefileIDs.Count + "\r\n" +
 				"MonoBehaviour : " + AllMonoBehaviourfileIDs.Count);
 
 			VaildAnimatorStateMachinefileIDs = GetVaildAnimatorStateMachines();
 			VaildAnimatorStatefileIDs = new List<string>();
+			VaildAnimatorTransitionfileIDs = new List<string>();
 			VaildAnimatorStateTransitionfileIDs = new List<string>();
 			VaildBlendTreefileIDs = new List<string>();
 			VaildMonoBehaviourfileIDs = new List<string>();
 
 			InvaildAnimatorStateMachinefileIDs = GetVaildAnimatorStateMachines();
 			InvaildAnimatorStatefileIDs = new List<string>();
+			InvaildAnimatorTransitionfileIDs = new List<string>();
 			InvaildAnimatorStateTransitionfileIDs = new List<string>();
 			InvaildBlendTreefileIDs = new List<string>();
 			InvaildMonoBehaviourfileIDs = new List<string>();
@@ -138,6 +144,10 @@ namespace com.vrsuya.animationcleaner {
 			}
 			foreach (string TargetfileID in VaildAnimatorStateMachinefileIDs) {
 				VaildAnimatorStatefileIDs.AddRange(GetAnimatorStates(TargetfileID));
+			}
+			foreach (string TargetfileID in VaildAnimatorStateMachinefileIDs) {
+				VaildAnimatorTransitionfileIDs.AddRange(GetAnimatorTransitions(TargetfileID));
+				VaildAnimatorStateTransitionfileIDs.AddRange(GetStateMachineTransitions(TargetfileID));
 			}
 			foreach (string TargetfileID in VaildAnimatorStatefileIDs) {
 				VaildAnimatorStateTransitionfileIDs.AddRange(GetAnimatorStateTransitions(TargetfileID));
@@ -157,14 +167,14 @@ namespace com.vrsuya.animationcleaner {
 					.Exists(VaildItem => Item == VaildItem)).ToList();
 				if (InvaildAnimatorStatefileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildAnimatorStatefileIDs.ToArray()).Distinct().ToArray();
 			}
-			if (AllAnimatorStateTransitionfileIDs.Count > 0) {
-				List<string> UnknownTransitionfileIDs = AllAnimatorStateTransitionfileIDs
-					.Where(Item => !VaildAnimatorStateTransitionfileIDs
+			if (AllAnimatorTransitionfileIDs.Count > 0) {
+				InvaildAnimatorTransitionfileIDs = AllAnimatorTransitionfileIDs
+					.Where(Item => !VaildAnimatorTransitionfileIDs
 					.Exists(VaildItem => Item == VaildItem)).ToList();
-				foreach (string TargetfileID in UnknownTransitionfileIDs) {
-					if (VerifyAnimatorStateTransition(TargetfileID)) VaildAnimatorStateTransitionfileIDs.Add(TargetfileID);
-				}
-				InvaildAnimatorStateTransitionfileIDs = UnknownTransitionfileIDs
+				if (InvaildAnimatorTransitionfileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildAnimatorTransitionfileIDs.ToArray()).Distinct().ToArray();
+			}
+			if (AllAnimatorStateTransitionfileIDs.Count > 0) {
+				InvaildAnimatorStateTransitionfileIDs = AllAnimatorStateTransitionfileIDs
 					.Where(Item => !VaildAnimatorStateTransitionfileIDs
 					.Exists(VaildItem => Item == VaildItem)).ToList();
 				if (InvaildAnimatorStateTransitionfileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildAnimatorStateTransitionfileIDs.ToArray()).Distinct().ToArray();
@@ -185,12 +195,14 @@ namespace com.vrsuya.animationcleaner {
 			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 유효한 구성요소 통계\r\n" +
 				"StateMachine : " + VaildAnimatorStateMachinefileIDs.Count + "\r\n" +
 				"State : " + VaildAnimatorStatefileIDs.Count + "\r\n" +
+				"AnimatorTransition : " + VaildAnimatorTransitionfileIDs.Count + "\r\n" +
 				"Transition : " + VaildAnimatorStateTransitionfileIDs.Count + "\r\n" +
 				"BlendTree : " + VaildBlendTreefileIDs.Count + "\r\n" +
 				"MonoBehaviour : " + VaildMonoBehaviourfileIDs.Count);
 			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 불필요한 구성요소 통계\r\n" +
 				"StateMachine : " + InvaildAnimatorStateMachinefileIDs.Count + "\r\n" +
 				"State : " + InvaildAnimatorStatefileIDs.Count + "\r\n" +
+				"AnimatorTransition : " + InvaildAnimatorTransitionfileIDs.Count + "\r\n" +
 				"Transition : " + InvaildAnimatorStateTransitionfileIDs.Count + "\r\n" +
 				"BlendTree : " + InvaildBlendTreefileIDs.Count + "\r\n" +
 				"MonoBehaviour : " + InvaildMonoBehaviourfileIDs.Count);
@@ -223,17 +235,23 @@ namespace com.vrsuya.animationcleaner {
 		private void AnalyzeAnimatorController() {
 			AllAnimatorStateMachinefileIDs = new List<string>();
 			AllAnimatorStatefileIDs = new List<string>();
+			AllAnimatorTransitionfileIDs = new List<string>();
 			AllAnimatorStateTransitionfileIDs = new List<string>();
 			AllBlendTreefileIDs = new List<string>();
 			AllMonoBehaviourfileIDs = new List<string>();
 			for (int Line = 0; Line < AssetFile.Length; Line++) {
 				if (AssetFile[Line].StartsWith(StructureStartPattern)) {
 					switch (AssetFile[Line + 1]) {
+						case "AnimatorController:":
+							break;
 						case "AnimatorStateMachine:":
 							AllAnimatorStateMachinefileIDs.Add(ExtractfileIDFromHeader(AssetFile[Line]));
 							break;
 						case "AnimatorState:":
 							AllAnimatorStatefileIDs.Add(ExtractfileIDFromHeader(AssetFile[Line]));
+							break;
+						case "AnimatorTransition:":
+							AllAnimatorTransitionfileIDs.Add(ExtractfileIDFromHeader(AssetFile[Line]));
 							break;
 						case "AnimatorStateTransition:":
 							AllAnimatorStateTransitionfileIDs.Add(ExtractfileIDFromHeader(AssetFile[Line]));
@@ -324,6 +342,77 @@ namespace com.vrsuya.animationcleaner {
 				}
 			}
 			return AnimatorStatefileIDs;
+		}
+
+		/// <summary>fileID에서 StateMachine의 AnimatorTransition fileID들을 반환합니다.</summary>
+		/// <returns>모든 AnimatorTransition들의 fileID 리스트</returns>
+		private List<string> GetAnimatorTransitions(string TargetfileID) {
+			List<string> AnimatorTransitionfileIDs = new List<string>();
+			bool isAnimatorTransition = false;
+			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
+			if (StartIndex != -1) {
+				for (int Line = StartIndex; Line < AssetFile.Length; Line++) {
+					if (AssetFile[Line].Contains("m_StateMachineTransitions:")) {
+						isAnimatorTransition = true;
+						continue;
+					}
+					if (AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
+						break;
+					}
+					if (AssetFile[Line].Contains("m_StateMachineBehaviours:") || AssetFile[Line].Contains("m_DefaultState:")) {
+						break;
+					}
+					if (isAnimatorTransition && AssetFile[Line].Contains("fileID:")) {
+						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
+						if (!string.IsNullOrEmpty(ChildfileID)) {
+							int ChildStartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{ChildfileID}"));
+							if (ChildStartIndex != -1) {
+								if (AssetFile[ChildStartIndex + 1] == "AnimatorTransition:") {
+									if (VerifyAnimatorTransition(ChildfileID)) {
+										AnimatorTransitionfileIDs.Add(ChildfileID);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return AnimatorTransitionfileIDs;
+		}
+
+		/// <summary>fileID에서 StateMachine의 Transition fileID들을 반환합니다.</summary>
+		/// <returns>모든 Transition들의 fileID 리스트</returns>
+		private List<string> GetStateMachineTransitions(string TargetfileID) {
+			List<string> StateMachineTransitionfileIDs = new List<string>();
+			bool isAnimatorStateTransition = false;
+			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
+			if (StartIndex != -1) {
+				for (int Line = StartIndex; Line < AssetFile.Length; Line++) {
+					if (AssetFile[Line].Contains("m_AnyStateTransitions:") || AssetFile[Line].Contains("m_EntryTransitions:")) {
+						isAnimatorStateTransition = true;
+						continue;
+					}
+					if (AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
+						break;
+					}
+					if (AssetFile[Line].Contains("m_StateMachineTransitions:") ||
+						AssetFile[Line].Contains("m_StateMachineBehaviours:") ||
+						AssetFile[Line].Contains("m_DefaultState:")) {
+						break;
+					}
+					if (isAnimatorStateTransition && AssetFile[Line].Contains("fileID:")) {
+						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
+						if (!string.IsNullOrEmpty(ChildfileID)) {
+							if (VerifyAnimatorStateTransition(ChildfileID)) {
+								StateMachineTransitionfileIDs.Add(ChildfileID);
+							} else {
+								AdditionRemoveLineIndexs.Add(Line);
+							}
+						}
+					}
+				}
+			}
+			return StateMachineTransitionfileIDs;
 		}
 
 		/// <summary>fileID에서 State의 Transition fileID들을 반환합니다.</summary>
@@ -443,6 +532,39 @@ namespace com.vrsuya.animationcleaner {
 			return false;
 		}
 
+		/// <summary>유효한 AnimatorTransition fileID인지 여부를 반환 합니다.</summary>
+		/// <returns>AnimatorTransition fileID 유효 여부</returns>
+		private bool VerifyAnimatorTransition(string TargetfileID) {
+			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
+			if (StartIndex != -1) {
+				for (int Line = StartIndex; Line < AssetFile.Length; Line++) {
+					if (AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
+						break;
+					}
+					if (AssetFile[Line].Contains("m_DstStateMachine:")) {
+						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
+						if (!string.IsNullOrEmpty(ChildfileID)) {
+							if (VaildAnimatorStateMachinefileIDs.Exists(fileID => ChildfileID == fileID)) {
+								return true;
+							}
+						}
+					}
+					if (AssetFile[Line].Contains("m_DstState:")) {
+						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
+						if (!string.IsNullOrEmpty(ChildfileID)) {
+							if (VaildAnimatorStatefileIDs.Exists(fileID => ChildfileID == fileID)) {
+								return true;
+							}
+						}
+					}
+					if (AssetFile[Line].Contains("m_IsExit: 1")) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		/// <summary>유효한 AnimatorStateTransition fileID인지 여부를 반환 합니다.</summary>
 		/// <returns>AnimatorStateTransition fileID 유효 여부</returns>
 		private bool VerifyAnimatorStateTransition(string TargetfileID) {
@@ -451,6 +573,14 @@ namespace com.vrsuya.animationcleaner {
 				for (int Line = StartIndex; Line < AssetFile.Length; Line++) {
 					if (AssetFile[Line].StartsWith(StructureStartPattern) && !AssetFile[Line].Contains($"&{TargetfileID}")) {
 						break;
+					}
+					if (AssetFile[Line].Contains("m_DstStateMachine:")) {
+						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
+						if (!string.IsNullOrEmpty(ChildfileID)) {
+							if (VaildAnimatorStateMachinefileIDs.Exists(fileID => ChildfileID == fileID)) {
+								return true;
+							}
+						}
 					}
 					if (AssetFile[Line].Contains("m_DstState:")) {
 						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
