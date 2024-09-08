@@ -462,9 +462,11 @@ namespace com.vrsuya.animationcleaner {
 						string ChildfileID = ExtractfileIDFromLine(AssetFile[Line]);
 						if (!string.IsNullOrEmpty(ChildfileID)) {
 							int ChildStartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{ChildfileID}"));
-							if (AssetFile[ChildStartIndex + 1] == "BlendTree:") {
-								BlendTreefileIDs.Add(ChildfileID);
-								BlendTreefileIDs.AddRange(GetBlendTrees(ChildfileID));
+							if (ChildStartIndex != -1) {
+								if (AssetFile[ChildStartIndex + 1] == "BlendTree:") {
+									BlendTreefileIDs.Add(ChildfileID);
+									BlendTreefileIDs.AddRange(GetBlendTrees(ChildfileID));
+								}
 							}
 						}
 					}
