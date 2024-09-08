@@ -117,13 +117,6 @@ namespace com.vrsuya.animationcleaner {
 			AdditionRemoveLineIndexs = new List<int>();
 
 			AnalyzeAnimatorController();
-			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 구성요소 통계\r\n" +
-				"StateMachine : " + AllAnimatorStateMachinefileIDs.Count + "\r\n" +
-				"State : " + AllAnimatorStatefileIDs.Count + "\r\n" +
-				"AnimatorTransition : " + AllAnimatorTransitionfileIDs.Count + "\r\n" +
-				"Transition : " + AllAnimatorStateTransitionfileIDs.Count + "\r\n" +
-				"BlendTree : " + AllBlendTreefileIDs.Count + "\r\n" +
-				"MonoBehaviour : " + AllMonoBehaviourfileIDs.Count);
 
 			VaildAnimatorStateMachinefileIDs = GetVaildAnimatorStateMachines();
 			VaildAnimatorStatefileIDs = new List<string>();
@@ -191,21 +184,14 @@ namespace com.vrsuya.animationcleaner {
 					.Exists(VaildItem => Item == VaildItem)).ToList();
 				if (InvaildMonoBehaviourfileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildMonoBehaviourfileIDs.ToArray()).Distinct().ToArray();
 			}
-			
-			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 유효한 구성요소 통계\r\n" +
-				"StateMachine : " + VaildAnimatorStateMachinefileIDs.Count + "\r\n" +
-				"State : " + VaildAnimatorStatefileIDs.Count + "\r\n" +
-				"AnimatorTransition : " + VaildAnimatorTransitionfileIDs.Count + "\r\n" +
-				"Transition : " + VaildAnimatorStateTransitionfileIDs.Count + "\r\n" +
-				"BlendTree : " + VaildBlendTreefileIDs.Count + "\r\n" +
-				"MonoBehaviour : " + VaildMonoBehaviourfileIDs.Count);
-			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 불필요한 구성요소 통계\r\n" +
-				"StateMachine : " + InvaildAnimatorStateMachinefileIDs.Count + "\r\n" +
-				"State : " + InvaildAnimatorStatefileIDs.Count + "\r\n" +
-				"AnimatorTransition : " + InvaildAnimatorTransitionfileIDs.Count + "\r\n" +
-				"Transition : " + InvaildAnimatorStateTransitionfileIDs.Count + "\r\n" +
-				"BlendTree : " + InvaildBlendTreefileIDs.Count + "\r\n" +
-				"MonoBehaviour : " + InvaildMonoBehaviourfileIDs.Count);
+
+			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 구성요소 통계\r\n" +
+				"StateMachine : " + VaildAnimatorStateMachinefileIDs.Count + " - " + InvaildAnimatorStateMachinefileIDs.Count + " = " + AllAnimatorStateMachinefileIDs.Count + "\r\n" +
+				"State : " + VaildAnimatorStatefileIDs.Count + " - " + InvaildAnimatorStatefileIDs.Count + " = " + AllAnimatorStatefileIDs.Count + "\r\n" +
+				"AnimatorTransition : " + VaildAnimatorTransitionfileIDs.Count + " - " + InvaildAnimatorTransitionfileIDs.Count + " = " + AllAnimatorTransitionfileIDs.Count + "\r\n" +
+				"Transition : " + VaildAnimatorStateTransitionfileIDs.Count + " - " + InvaildAnimatorStateTransitionfileIDs.Count + " = " + AllAnimatorStateTransitionfileIDs.Count + "\r\n" +
+				"BlendTree : " + VaildBlendTreefileIDs.Count + " - " + InvaildBlendTreefileIDs.Count + " = " + AllBlendTreefileIDs.Count + "\r\n" +
+				"MonoBehaviour : " + VaildMonoBehaviourfileIDs.Count + " - " + InvaildMonoBehaviourfileIDs.Count + " = " + AllMonoBehaviourfileIDs.Count);
 			return;
 		}
 
