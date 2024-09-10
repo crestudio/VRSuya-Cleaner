@@ -108,6 +108,7 @@ namespace com.vrsuya.animationcleaner {
 					}
 				}
 			}
+			AssetDatabase.Refresh();
 			return;
 		}
 
