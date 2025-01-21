@@ -39,7 +39,7 @@ namespace com.vrsuya.animationcleaner {
 		[MenuItem("Tools/VRSuya/Unity Cleaner/Standardize IndirectSpecularColor", priority = 2000)]
 		static void StandardizeIndirectSpecularColor() {
 			string[] SceneGUIDs = GetAssetGUIDs(AssetType.Scene);
-			string NewValue = "m_IndirectSpecularColor: {r: 1, g: 1, b: 1, a: 1}";
+			string NewValue = "m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}";
 			int ChangedCount = 0;
 			foreach (string SceneGUID in SceneGUIDs) {
 				string RawScene = File.ReadAllText(AssetDatabase.GUIDToAssetPath(SceneGUID));
