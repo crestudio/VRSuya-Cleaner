@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 
-using static VRSuya.Core.Asset.AssetController;
+using static VRSuya.Core.AssetController;
 
 /*
  * VRSuya Unity Cleaner
