@@ -25,7 +25,7 @@ namespace com.vrsuya.cleaner {
 			SerializedTargetUserRemovefileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetUserRemovefileIDs");
 		}
 
-		[MenuItem("Tools/VRSuya/Unity Cleaner/AnimatorController Cleaner", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/AnimatorController Cleaner", priority = 1000)]
 		static void CreateWindow() {
 			AnimatorControllerCleanerEditor AppWindow = (AnimatorControllerCleanerEditor)GetWindow(typeof(AnimatorControllerCleanerEditor));
 			AppWindow.titleContent = new GUIContent("AnimatorController Cleaner");

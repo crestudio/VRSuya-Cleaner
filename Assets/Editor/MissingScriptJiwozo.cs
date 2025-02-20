@@ -15,7 +15,7 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
 	public class MissingScriptJiwozo : EditorWindow {
 
-        [MenuItem("Tools/VRSuya/Jiwozo/Select All GameObject of Missing Script")]
+        [MenuItem("Tools/VRSuya/Cleaner/Select All GameObject of Missing Script", priority = 3000)]
 		/// <summary>Scene에 존재하는 Missing 컴포넌트를 포함한 GameObject를 선택합니다</summary>
 		public static void SelectMissingGameObjects() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingComponent();
@@ -32,7 +32,7 @@ namespace com.vrsuya.cleaner {
             return;
         }
 
-		[MenuItem("Tools/VRSuya/Jiwozo/Remove All Missing Script Component")]
+		[MenuItem("Tools/VRSuya/Cleaner/Remove All Missing Script Component", priority = 3000)]
 		/// <summary>Scene에 존재하는 Missing 컴포넌트들을 삭제합니다</summary>
 		public static void RemoveMissingComponents() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingComponent();
