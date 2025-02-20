@@ -10,11 +10,11 @@ using UnityEditor.Animations;
 using UnityEngine;
 
 /*
- * VRSuya AnimatorControllerCleaner
+ * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
  */
 
-namespace com.vrsuya.animationcleaner {
+namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
 	public class AnimatorControllerCleaner : ScriptableObject {

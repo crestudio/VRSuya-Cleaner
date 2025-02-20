@@ -1,5 +1,5 @@
 {
-    "name": "com.vrsuya.animationcleaner.Editor",
+    "name": "com.vrsuya.cleaner.Editor",
     "rootNamespace": "",
     "references": [
         "GUID:526c5068e65857344a2a69ce8a56d5df",

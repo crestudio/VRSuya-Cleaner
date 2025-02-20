@@ -8,11 +8,11 @@ using UnityEditor.Animations;
 using static VRSuya.Core.AssetController;
 
 /*
- * VRSuya Unity Cleaner
+ * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
  */
 
-namespace com.vrsuya.animationcleaner {
+namespace com.vrsuya.cleaner {
 	
 	[ExecuteInEditMode]
     public class UnityCleanerEditor : EditorWindow {

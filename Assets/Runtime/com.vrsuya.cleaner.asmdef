@@ -1,5 +1,6 @@
 {
-    "name": "com.vrsuya.animationcleaner",
+    "name": "com.vrsuya.cleaner",
+    "rootNamespace": "",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

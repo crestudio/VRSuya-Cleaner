@@ -2,11 +2,11 @@
 using UnityEngine;
 
 /*
- * VRSuya AnimatorControllerCleaner Editor
+ * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
  */
 
-namespace com.vrsuya.animationcleaner {
+namespace com.vrsuya.cleaner {
 
 	[CustomEditor(typeof(AnimatorControllerCleaner))]
 	public class AnimatorControllerCleanerEditor : EditorWindow {

@@ -6,11 +6,11 @@ using UnityEditor;
 using UnityEngine;
 
 /*
- * VRSuya Animation Cleaner
+ * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
  */
 
-namespace com.vrsuya.animationcleaner {
+namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
 	[AddComponentMenu("VRSuya/VRSuya Animation Cleaner")]

@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEditor;
 
 /*
- * VRSuya AnimationMirrorer
+ * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
  */
 
-namespace com.vrsuya.animationcleaner {
+namespace com.vrsuya.cleaner {
 
 	public class AnimationMirrorer : Editor {
 
