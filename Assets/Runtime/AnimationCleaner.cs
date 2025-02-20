@@ -13,7 +13,7 @@ using UnityEngine;
 namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
-	[AddComponentMenu("VRSuya/VRSuya Animation Cleaner")]
+	[AddComponentMenu("VRSuya/VRSuya AnimationCleaner")]
 	public class AnimationCleaner : MonoBehaviour {
 
 		// 애니메이션 클립 변수
@@ -22,7 +22,7 @@ namespace com.vrsuya.cleaner {
 		public AnimationClip[] HandAnimationClips = new AnimationClip[0];
 
 		// 사전 데이터
-		private static readonly string[] dictArmMask = new string[] {
+		private static readonly string[] ArmMaskList = new string[] {
 			"Left Shoulder Front-Back", "Left Shoulder Down-Up", "Right Shoulder Front-Back", "Right Shoulder Down-Up",
 			"Left Forearm Twist In-Out", "Left Forearm Stretch", "Right Forearm Twist In-Out", "Right Forearm Stretch",
 			"Left Arm Twist In-Out", "Left Arm Front-Back", "Left Arm Down-Up", "Right Arm Twist In-Out", "Right Arm Front-Back", "Right Arm Down-Up",
@@ -40,7 +40,7 @@ namespace com.vrsuya.cleaner {
 			"RightHand.Ring.Spread", "RightHand.Ring.1 Stretched", "RightHand.Ring.2 Stretched", "RightHand.Ring.3 Stretched",
 			"RightHand.Little.Spread", "RightHand.Little.1 Stretched", "RightHand.Little.2 Stretched", "RightHand.Little.3 Stretched"
 		};
-		private static readonly string[] dictForearmMask = new string[] {
+		private static readonly string[] ForearmMaskList = new string[] {
 			"Left Shoulder Front-Back", "Left Shoulder Down-Up", "Right Shoulder Front-Back", "Right Shoulder Down-Up",
 			"Left Forearm Twist In-Out", "Left Forearm Stretch", "Right Forearm Twist In-Out", "Right Forearm Stretch",
 			"Left Arm Twist In-Out", "Left Arm Front-Back", "Left Arm Down-Up", "Right Arm Twist In-Out", "Right Arm Front-Back", "Right Arm Down-Up",
@@ -48,7 +48,7 @@ namespace com.vrsuya.cleaner {
 			"LeftHandQ.x", "LeftHandQ.y", "LeftHandQ.z", "LeftHandQ.w", "LeftHandT.x", "LeftHandT.y", "LeftHandT.z",
 			"RightHandQ.x", "RightHandQ.y", "RightHandQ.z", "RightHandQ.w", "RightHandT.x", "RightHandT.y", "RightHandT.z"
 		};
-		private static readonly string[] dictHandMask = new string[] {
+		private static readonly string[] HandMaskList = new string[] {
 			"LeftHand.Thumb.Spread", "LeftHand.Thumb.1 Stretched", "LeftHand.Thumb.2 Stretched", "LeftHand.Thumb.3 Stretched",
 			"LeftHand.Index.Spread", "LeftHand.Index.1 Stretched", "LeftHand.Index.2 Stretched",  "LeftHand.Index.3 Stretched",
 			"LeftHand.Middle.Spread", "LeftHand.Middle.1 Stretched", "LeftHand.Middle.2 Stretched",  "LeftHand.Middle.3 Stretched",
@@ -74,7 +74,7 @@ namespace com.vrsuya.cleaner {
 				string[] TargetPropertyNames = new string[0];
 				if (!CurrentAnimationClip) continue;
 				foreach (EditorCurveBinding Binding in AnimationUtility.GetCurveBindings(CurrentAnimationClip)) {
-					if (!Array.Exists(dictArmMask, MaskName => Binding.propertyName == MaskName)) {
+					if (!Array.Exists(ArmMaskList, MaskName => Binding.propertyName == MaskName)) {
 						TargetPropertyNames = TargetPropertyNames.Concat(new string[] { Binding.propertyName }).ToArray();
 					}
 				}
@@ -84,7 +84,7 @@ namespace com.vrsuya.cleaner {
 				string[] TargetPropertyNames = new string[0];
 				if (!CurrentAnimationClip) continue;
 				foreach (EditorCurveBinding Binding in AnimationUtility.GetCurveBindings(CurrentAnimationClip)) {
-					if (!Array.Exists(dictForearmMask, MaskName => Binding.propertyName == MaskName)) {
+					if (!Array.Exists(ForearmMaskList, MaskName => Binding.propertyName == MaskName)) {
 						TargetPropertyNames = TargetPropertyNames.Concat(new string[] { Binding.propertyName }).ToArray();
 					}
 				}
@@ -94,7 +94,7 @@ namespace com.vrsuya.cleaner {
 				string[] TargetPropertyNames = new string[0];
 				if (!CurrentAnimationClip) continue;
 				foreach (EditorCurveBinding Binding in AnimationUtility.GetCurveBindings(CurrentAnimationClip)) {
-					if (!Array.Exists(dictHandMask, MaskName => Binding.propertyName == MaskName)) {
+					if (!Array.Exists(HandMaskList, MaskName => Binding.propertyName == MaskName)) {
 						TargetPropertyNames = TargetPropertyNames.Concat(new string[] { Binding.propertyName }).ToArray();
 					}
 				}
@@ -111,7 +111,7 @@ namespace com.vrsuya.cleaner {
 			foreach (AnimationClip CurrentAnimationClip in ArmAnimationClips) {
 				if (!CurrentAnimationClip) continue;
 				foreach (EditorCurveBinding Binding in AnimationUtility.GetCurveBindings(CurrentAnimationClip)) {
-					if (!Array.Exists(dictArmMask, MaskName => Binding.propertyName == MaskName)) {
+					if (!Array.Exists(ArmMaskList, MaskName => Binding.propertyName == MaskName)) {
 						CurrentAnimationClip.SetCurve(Binding.path, Binding.type, Binding.propertyName, null);
 						StatusDeletedCount++;
 					}
@@ -120,7 +120,7 @@ namespace com.vrsuya.cleaner {
 			foreach (AnimationClip CurrentAnimationClip in ForearmAnimationClips) {
 				if (!CurrentAnimationClip) continue;
 				foreach (EditorCurveBinding Binding in AnimationUtility.GetCurveBindings(CurrentAnimationClip)) {
-					if (!Array.Exists(dictForearmMask, MaskName => Binding.propertyName == MaskName)) {
+					if (!Array.Exists(ForearmMaskList, MaskName => Binding.propertyName == MaskName)) {
 						CurrentAnimationClip.SetCurve(Binding.path, Binding.type, Binding.propertyName, null);
 						StatusDeletedCount++;
 					}
@@ -129,7 +129,7 @@ namespace com.vrsuya.cleaner {
 			foreach (AnimationClip CurrentAnimationClip in HandAnimationClips) {
 				if (!CurrentAnimationClip) continue;
 				foreach (EditorCurveBinding Binding in AnimationUtility.GetCurveBindings(CurrentAnimationClip)) {
-					if (!Array.Exists(dictHandMask, MaskName => Binding.propertyName == MaskName)) {
+					if (!Array.Exists(HandMaskList, MaskName => Binding.propertyName == MaskName)) {
 						CurrentAnimationClip.SetCurve(Binding.path, Binding.type, Binding.propertyName, null);
 						StatusDeletedCount++;
 					}

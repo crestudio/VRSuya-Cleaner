@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 
-using static VRSuya.Core.AssetController;
+using VRSuya.Core;
 
 /*
  * VRSuya Cleaner
@@ -17,9 +17,10 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
     public class UnityCleanerEditor : EditorWindow {
 
-		[MenuItem("Tools/VRSuya/Unity Cleaner/Standardize fileID", priority = 2000)]
-		static void StandardizefileID() {
-			string[] AnimatorControllerGUIDs = GetAssetGUIDs(AssetType.AnimatorController);
+		[MenuItem("Tools/VRSuya/Cleaner/Standardize fileID", priority = 2000)]
+		public static void StandardizefileID() {
+			Asset AssetInstance = new Asset();
+			string[] AnimatorControllerGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.AnimatorController);
 			int ChangedCount = 0;
 			foreach (string AnimatorControllerGUID in AnimatorControllerGUIDs) {
 				AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID));
@@ -32,13 +33,14 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 			}
-			Debug.Log("[UnityCleaner] Normalized the fileIDs of " + ChangedCount + " Animator Controllers");
+			Debug.Log("[Cleaner] Normalized the fileIDs of " + ChangedCount + " Animator Controllers");
 			return;
 		}
 
-		[MenuItem("Tools/VRSuya/Unity Cleaner/Standardize IndirectSpecularColor", priority = 2000)]
-		static void StandardizeIndirectSpecularColor() {
-			string[] SceneGUIDs = GetAssetGUIDs(AssetType.Scene);
+		[MenuItem("Tools/VRSuya/Cleaner/Standardize IndirectSpecularColor", priority = 2000)]
+		public static void StandardizeIndirectSpecularColor() {
+			Asset AssetInstance = new Asset();
+			string[] SceneGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.Scene);
 			string NewValue = "m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}";
 			int ChangedCount = 0;
 			foreach (string SceneGUID in SceneGUIDs) {
@@ -52,7 +54,7 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 			}
-			Debug.Log("[UnityCleaner] Normalized the IndirectSpecularColors of " + ChangedCount + " Unity Scenes");
+			Debug.Log("[Cleaner] Normalized the IndirectSpecularColors of " + ChangedCount + " Unity Scenes");
 			return;
 		}
 	}
