@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace com.vrsuya.cleaner {
 
-	public class AnimationMirrorer : Editor {
+	public class MirrorHumanoidAnimationClip : Editor {
 
 		[MenuItem("Assets/VRSuya/Mirror Humanoid AnimationClip")]
 		public static void MirrorSelectedAnimation() {

@@ -15,7 +15,7 @@ using VRSuya.Core;
 namespace com.vrsuya.cleaner {
 	
 	[ExecuteInEditMode]
-    public class UnityCleanerEditor : EditorWindow {
+    public class UnityCleaner : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Standardize fileID", priority = 2000)]
 		public static void StandardizefileID() {

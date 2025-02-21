@@ -13,7 +13,7 @@ using UnityEditor;
 namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
-	public class MissingScriptJiwozo : EditorWindow {
+	public class RemoveMissingScript : EditorWindow {
 
         [MenuItem("Tools/VRSuya/Cleaner/Select All GameObject of Missing Script", priority = 3000)]
 		/// <summary>Scene에 존재하는 Missing 컴포넌트를 포함한 GameObject를 선택합니다</summary>

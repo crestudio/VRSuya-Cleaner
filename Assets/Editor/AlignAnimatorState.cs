@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
-	public class AlignState : MonoBehaviour {
+	public class AlignAnimatorState : MonoBehaviour {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Align States in Current AnimatorController")]
 		public static void AlignStates() {
