@@ -19,16 +19,16 @@ namespace com.vrsuya.cleaner {
 	public class AlignAnimatorState : MonoBehaviour {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Align States in Current AnimatorController")]
-		public static void AlignStates() {
+		public static void AlignAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
-			if (CurrentAnimator != null) {
-				foreach (var AnimatorLayer in CurrentAnimator.layers) {
-					AlignStates(AnimatorLayer.stateMachine);
+			if (CurrentAnimator) {
+				foreach (AnimatorControllerLayer AnimatorLayer in CurrentAnimator.layers) {
+					AlignAnimationStates(AnimatorLayer.stateMachine);
 				}
 				EditorUtility.SetDirty(CurrentAnimator);
 				AssetDatabase.Refresh();
 				AssetDatabase.SaveAssets();
-				Debug.Log("[VRSuya AlignState] " + CurrentAnimator.name + " 애니메이터의 정렬이 완료되었습니다!");
+				Debug.Log("[AlignAnimatorState] " + CurrentAnimator.name + " Animator states have been sorted successfully.");
 			}
 			return;
 		}
@@ -49,7 +49,8 @@ namespace com.vrsuya.cleaner {
 		}
 
 		/// <summary>해당 StateMachine 내에 있는 State 위치를 정렬합니다.</summary>
-		private static void AlignStates(AnimatorStateMachine TargetStateMachine) {
+		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
+		private static void AlignAnimationStates(AnimatorStateMachine TargetStateMachine) {
 			TargetStateMachine.entryPosition = new Vector3(40.00f, 100.00f, 0.00f);
 			TargetStateMachine.anyStatePosition = new Vector3(40.00f, 200.00f, 0.00f);
 			TargetStateMachine.exitPosition = new Vector3(800.00f, 100.00f, 0.00f);
@@ -60,6 +61,7 @@ namespace com.vrsuya.cleaner {
 				TargetStates[Index].position = new Vector3(400.00f, 100.00f + (Space * Index), 0.00f);
 			}
 			TargetStateMachine.states = TargetStates;
+			return;
 		}
 	}
 }
