@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-using Object = UnityEngine.Object;
+using VRSuya.Core;
 
 /*
  * VRSuya Cleaner
@@ -33,25 +33,13 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		/// <summary>요청한 타입의 첫번째 윈도우 창 오브젝트를 반환합니다.</summary>
-		/// <returns>해당 타입의 첫번째 윈도우</returns>
-		private static EditorWindow FindFirstWindow(Type EditorWindowType) {
-			if (EditorWindowType == null)
-				throw new ArgumentNullException(nameof(EditorWindowType));
-			if (!typeof(EditorWindow).IsAssignableFrom(EditorWindowType))
-				throw new ArgumentException("The given type (" + EditorWindowType.Name + ") does not inherit from " + nameof(EditorWindow) + ".");
-			Object[] TypeOpenWindows = Resources.FindObjectsOfTypeAll(EditorWindowType);
-			if (TypeOpenWindows.Length <= 0) return null;
-			EditorWindow Window = (EditorWindow)TypeOpenWindows[0];
-			return Window;
-		}
-
 		/// <summary>Animator 윈도우에서 현재 열려있는 AnimatorController 오브젝트를 반환합니다.</summary>
 		/// <returns>현재 활성화 되어 있는 AnimatorController</returns>
 		private static AnimatorController GetCurrentAnimatorController() {
 			AnimatorController CurrentAnimatorController = null;
+			DuplicateGameObject DuplicatorInstance = new DuplicateGameObject();
 			Type AnimatorWindowType = Type.GetType("UnityEditor.Graphs.AnimatorControllerTool, UnityEditor.Graphs");
-			EditorWindow CurrentWindow = FindFirstWindow(AnimatorWindowType);
+			EditorWindow CurrentWindow = DuplicatorInstance.FindFirstWindow(AnimatorWindowType);
 			System.Type CurrentWindowType = CurrentWindow.GetType();
 			System.Reflection.PropertyInfo CurrentWindowProperty = CurrentWindowType.GetProperty("animatorController", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 			if (CurrentWindowProperty != null) {
