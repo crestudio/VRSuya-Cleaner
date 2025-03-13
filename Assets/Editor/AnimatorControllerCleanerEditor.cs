@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace com.vrsuya.cleaner {
 
-	[CustomEditor(typeof(AnimatorControllerCleaner))]
+	[ExecuteInEditMode]
 	public class AnimatorControllerCleanerEditor : EditorWindow {
 
 		AnimatorControllerCleaner AnimatorControllerCleanerInstance;
