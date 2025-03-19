@@ -37,11 +37,7 @@ namespace com.vrsuya.cleaner {
 						EditorCurveBinding newBinding = Binding;
 						newBinding.propertyName = Binding.propertyName.Replace("Right", "Left");
 						AnimationUtility.SetEditorCurve(MirroredAnimationClip, newBinding, Curve);
-					} else if (Binding.propertyName.Contains("RootT.x") || 
-						Binding.propertyName.Contains("RootQ.x") ||
-						Binding.propertyName.Contains("RootQ.y") ||
-						Binding.propertyName.Contains("RootQ.z") ||
-						Binding.propertyName.Contains("RootQ.w")) {
+					} else if (Binding.propertyName.Contains("RootT.x")) {
 						for (int Index = 0; Index < Curve.keys.Length; Index++) {
 							Curve.keys[Index].value = -Curve.keys[Index].value;
 						}
