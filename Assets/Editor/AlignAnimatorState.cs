@@ -18,7 +18,7 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
 	public class AlignAnimatorState : MonoBehaviour {
 
-		[MenuItem("Tools/VRSuya/Cleaner/Align States in Current AnimatorController")]
+		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator States", priority = 1000)]
 		public static void AlignAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
 			if (CurrentAnimator) {
