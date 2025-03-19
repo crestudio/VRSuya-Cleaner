@@ -100,10 +100,10 @@ namespace com.vrsuya.cleaner {
 									newAssetFile.RemoveAt(TargetIndex);
 								}
 								File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
-								Debug.LogWarning("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "에서 총 " + ArrayRemoveLineIndexs.Length + "줄의 데이터가 정리 되었습니다!");
+								Debug.LogWarning($"[VRSuya] {TargetAnimatorController.name} 에서 총 {ArrayRemoveLineIndexs.Length}줄의 데이터가 정리 되었습니다!");
 							}
 						} else {
-							Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + "에는 모든 fileID가 유효합니다!");
+							Debug.Log($"[VRSuya] {TargetAnimatorController.name} 에는 모든 fileID가 유효합니다");
 						}
 					}
 				}

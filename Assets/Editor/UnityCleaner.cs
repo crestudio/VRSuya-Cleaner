@@ -33,7 +33,7 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 			}
-			Debug.Log("[Cleaner] Normalized the fileIDs of " + ChangedCount + " Animator Controllers");
+			Debug.Log($"[VRSuya] Normalized the fileIDs of {ChangedCount} Animator Controllers");
 			return;
 		}
 
@@ -54,7 +54,7 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 			}
-			Debug.Log("[Cleaner] Normalized the IndirectSpecularColors of " + ChangedCount + " Unity Scenes");
+			Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ChangedCount} Unity Scenes");
 			return;
 		}
 	}

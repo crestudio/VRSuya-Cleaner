@@ -54,7 +54,7 @@ namespace com.vrsuya.cleaner {
 				string NewAssetPath = System.IO.Path.GetDirectoryName(OriginalAssetPath) + "/" + MirroredAnimationClip.name + "_Mirrored.anim";
 				AssetDatabase.CreateAsset(MirroredAnimationClip, NewAssetPath);
 				AssetDatabase.SaveAssets();
-				Debug.Log("[VRSuya] " + NewAssetPath + " 애니메이션 클립을 생성하였습니다.");
+				Debug.Log($"[VRSuya] {MirroredAnimationClip.name} 애니메이션 클립을 생성하였습니다");
 			}
 			return;
 		}

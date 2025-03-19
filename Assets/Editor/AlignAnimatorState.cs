@@ -28,7 +28,7 @@ namespace com.vrsuya.cleaner {
 				EditorUtility.SetDirty(CurrentAnimator);
 				AssetDatabase.Refresh();
 				AssetDatabase.SaveAssets();
-				Debug.Log("[AlignAnimatorState] " + CurrentAnimator.name + " Animator states have been sorted successfully.");
+				Debug.Log($"[VRSuya] {CurrentAnimator.name} Animator states have been sorted successfully");
 			}
 			return;
 		}
