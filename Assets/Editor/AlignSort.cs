@@ -16,7 +16,7 @@ using VRSuya.Core;
 namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
-	public class AlignAnimatorState : MonoBehaviour {
+	public class AlignSort : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator States", priority = 1000)]
 		public static void AlignAllAnimatorState() {
