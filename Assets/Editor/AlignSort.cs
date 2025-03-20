@@ -1,11 +1,16 @@
 ﻿#if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
+using VRC.SDK3.Avatars.ScriptableObjects;
+
 using VRSuya.Core;
+using Avatar = VRSuya.Core.Avatar;
 
 /*
  * VRSuya Cleaner
@@ -17,6 +22,43 @@ namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
 	public class AlignSort : EditorWindow {
+
+		[MenuItem("Tools/VRSuya/Cleaner/Sort Parameters", priority = 1000)]
+		public static void SortAllParameters() {
+			string[] ParameterGUIDs = AssetDatabase.FindAssets("Parameter", new[] { "Assets/" });
+			if (ParameterGUIDs.Length > 0) {
+				foreach (string TargetParameterGUID in ParameterGUIDs) {
+					VRCExpressionParameters TargetParameter = AssetDatabase.LoadAssetAtPath<VRCExpressionParameters>(AssetDatabase.GUIDToAssetPath(TargetParameterGUID));
+					if (TargetParameter) {
+						SortParameters(TargetParameter);
+						EditorUtility.SetDirty(TargetParameter);
+						AssetDatabase.SaveAssets();
+						AssetDatabase.Refresh();
+						Debug.Log($"[VRSuya] {TargetParameter.name} have been sorted successfully");
+					}
+				}
+			}
+			return;
+		}
+
+		private static void SortParameters(VRCExpressionParameters TargetParameter) {
+			Avatar AvatarInstance = new Avatar();
+			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			VRCExpressionParameters.Parameter[] NewParameterList = new VRCExpressionParameters.Parameter[TargetParameter.parameters.Length];
+			List<string> ParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
+			ParameterNameList = ParameterNameList.OrderBy(Parameter =>
+				Parameter.Contains("VRCEmote") ? 0 :
+				AvatarNames.Any(AvatarName => Parameter.StartsWith(AvatarName, StringComparison.Ordinal)) ? 1 :
+				2
+			)
+				.ThenBy(Parameter => Parameter, StringComparer.Ordinal)
+				.ToList();
+			for (int Index = 0; Index < TargetParameter.parameters.Length; Index++) {
+				NewParameterList[Index] = TargetParameter.parameters.First(Parameter => Parameter.name == ParameterNameList[Index]);
+			}
+			TargetParameter.parameters = NewParameterList;
+			return;
+		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator States", priority = 1000)]
 		public static void AlignAllAnimatorState() {
