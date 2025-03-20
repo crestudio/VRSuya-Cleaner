@@ -29,14 +29,9 @@ namespace com.vrsuya.cleaner {
 			if (ParameterGUIDs.Length > 0) {
 				foreach (string TargetParameterGUID in ParameterGUIDs) {
 					VRCExpressionParameters TargetParameter = AssetDatabase.LoadAssetAtPath<VRCExpressionParameters>(AssetDatabase.GUIDToAssetPath(TargetParameterGUID));
-					if (TargetParameter) {
-						SortParameters(TargetParameter);
-						EditorUtility.SetDirty(TargetParameter);
-						AssetDatabase.SaveAssets();
-						AssetDatabase.Refresh();
-						Debug.Log($"[VRSuya] {TargetParameter.name} have been sorted successfully");
-					}
+					if (TargetParameter) SortParameters(TargetParameter);
 				}
+				AssetDatabase.Refresh();
 			}
 			return;
 		}
@@ -44,19 +39,25 @@ namespace com.vrsuya.cleaner {
 		private static void SortParameters(VRCExpressionParameters TargetParameter) {
 			Avatar AvatarInstance = new Avatar();
 			string[] AvatarNames = AvatarInstance.GetAvatarNames();
-			VRCExpressionParameters.Parameter[] NewParameterList = new VRCExpressionParameters.Parameter[TargetParameter.parameters.Length];
-			List<string> ParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
-			ParameterNameList = ParameterNameList.OrderBy(Parameter =>
-				Parameter.Contains("VRCEmote") ? 0 :
-				AvatarNames.Any(AvatarName => Parameter.StartsWith(AvatarName, StringComparison.Ordinal)) ? 1 :
-				2
-			)
+			List<string> OldParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
+			List<string> NewParameterNameList = OldParameterNameList
+				.OrderBy(Parameter =>
+					Parameter.Contains("VRCEmote") ? 0 :
+					AvatarNames.Any(AvatarName => Parameter.StartsWith(AvatarName, StringComparison.Ordinal)) ? 1 :
+					2
+				)
 				.ThenBy(Parameter => Parameter, StringComparer.Ordinal)
 				.ToList();
-			for (int Index = 0; Index < TargetParameter.parameters.Length; Index++) {
-				NewParameterList[Index] = TargetParameter.parameters.First(Parameter => Parameter.name == ParameterNameList[Index]);
+			if (OldParameterNameList != NewParameterNameList) {
+				VRCExpressionParameters.Parameter[] NewParameters = new VRCExpressionParameters.Parameter[TargetParameter.parameters.Length];
+				for (int Index = 0; Index < TargetParameter.parameters.Length; Index++) {
+					NewParameters[Index] = TargetParameter.parameters.First(Parameter => Parameter.name == NewParameterNameList[Index]);
+				}
+				TargetParameter.parameters = NewParameters;
+				EditorUtility.SetDirty(TargetParameter);
+				AssetDatabase.SaveAssets();
+				Debug.Log($"[VRSuya] {TargetParameter.name} have been sorted successfully");
 			}
-			TargetParameter.parameters = NewParameterList;
 			return;
 		}
 
