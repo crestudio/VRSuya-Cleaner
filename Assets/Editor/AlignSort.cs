@@ -23,6 +23,8 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
 	public class AlignSort : EditorWindow {
 
+		private static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };
+
 		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Parameters", priority = 1000)]
 		public static void SortAllParameters() {
 			string[] ParameterGUIDs = AssetDatabase.FindAssets("Parameter", new[] { "Assets/" });
@@ -39,6 +41,7 @@ namespace com.vrsuya.cleaner {
 		private static void SortParameters(VRCExpressionParameters TargetParameter) {
 			Avatar AvatarInstance = new Avatar();
 			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
 			List<string> OldParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
 			List<string> NewParameterNameList = OldParameterNameList
 				.OrderBy(Parameter =>
@@ -77,6 +80,7 @@ namespace com.vrsuya.cleaner {
 		private static void SortAnimatorLayerParameter(AnimatorController TargetAnimator) {
 			Avatar AvatarInstance = new Avatar();
 			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
 			bool IsDirty = false;
 			List<string> OldLayerNameList = TargetAnimator.layers.Select(Layer => Layer.name).ToList();
 			List<string> NewLayerNameList = OldLayerNameList
