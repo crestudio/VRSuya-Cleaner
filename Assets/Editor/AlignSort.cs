@@ -134,7 +134,7 @@ namespace com.vrsuya.cleaner {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
 			if (CurrentAnimator) {
 				foreach (AnimatorControllerLayer AnimatorLayer in CurrentAnimator.layers) {
-					AlignAnimationStates(AnimatorLayer.stateMachine);
+					AlignAnimationStates(AnimatorLayer.stateMachine, AnimatorLayer.name);
 				}
 				EditorUtility.SetDirty(CurrentAnimator);
 				AssetDatabase.SaveAssets();
@@ -161,17 +161,32 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>해당 StateMachine 내에 있는 State 위치를 정렬합니다.</summary>
 		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
-		private static void AlignAnimationStates(AnimatorStateMachine TargetStateMachine) {
+		private static void AlignAnimationStates(AnimatorStateMachine TargetStateMachine, string TargetLayerName) {
 			TargetStateMachine.entryPosition = new Vector3(40.00f, 100.00f, 0.00f);
 			TargetStateMachine.anyStatePosition = new Vector3(40.00f, 200.00f, 0.00f);
 			TargetStateMachine.exitPosition = new Vector3(800.00f, 100.00f, 0.00f);
-			ChildAnimatorState[] TargetStates = TargetStateMachine.states;
-			float Space = 100.00f;
-			if (TargetStates.Length > 2) Space = 50.00f;
-			for (int Index = 0; Index < TargetStates.Length; Index++) {
-				TargetStates[Index].position = new Vector3(400.00f, 100.00f + (Space * Index), 0.00f);
+			ChildAnimatorState[] NewAnimationStates = TargetStateMachine.states;
+			if (TargetLayerName == "Left Hand" || TargetLayerName == "Right Hand") {
+				NewAnimationStates = NewAnimationStates
+				.OrderBy(State =>
+					State.state.name.Contains("Idle") ? 0 :
+					State.state.name.Contains("Fist") ? 1 :
+					State.state.name.Contains("Open") ? 2 :
+					State.state.name.Contains("Point") ? 3 :
+					State.state.name.Contains("Peace") ? 4 :
+					State.state.name.Contains("Rock") ? 5 :
+					State.state.name.Contains("Gun") ? 6 :
+					State.state.name.Contains("Thumbs") ? 7 :
+					8
+				)
+				.ToArray();
 			}
-			TargetStateMachine.states = TargetStates;
+			float Space = 100.00f;
+			if (NewAnimationStates.Length > 2) Space = 50.00f;
+			for (int Index = 0; Index < NewAnimationStates.Length; Index++) {
+				NewAnimationStates[Index].position = new Vector3(400.00f, 100.00f + (Space * Index), 0.00f);
+			}
+			TargetStateMachine.states = NewAnimationStates;
 			return;
 		}
 	}
