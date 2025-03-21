@@ -30,8 +30,7 @@ namespace com.vrsuya.cleaner {
 
 		[MenuItem("Tools/VRSuya/Cleaner/AnimatorController Cleaner", priority = 1000)]
 		static void CreateWindow() {
-			AnimatorControllerCleanerEditor AppWindow = (AnimatorControllerCleanerEditor)GetWindow(typeof(AnimatorControllerCleanerEditor));
-			AppWindow.titleContent = new GUIContent("AnimatorController Cleaner");
+			AnimatorControllerCleanerEditor AppWindow = (AnimatorControllerCleanerEditor)GetWindow(typeof(AnimatorControllerCleanerEditor), true, "AnimatorController Cleaner");
 			return;
 		}
 
