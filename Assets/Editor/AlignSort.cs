@@ -23,7 +23,7 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
 	public class AlignSort : EditorWindow {
 
-		[MenuItem("Tools/VRSuya/Cleaner/Sort Parameters", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Parameters", priority = 1000)]
 		public static void SortAllParameters() {
 			string[] ParameterGUIDs = AssetDatabase.FindAssets("Parameter", new[] { "Assets/" });
 			if (ParameterGUIDs.Length > 0) {
