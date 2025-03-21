@@ -72,7 +72,7 @@ namespace com.vrsuya.cleaner {
 		}
 	}
 
-	public class AnimatorControllerMaskCleaner : EditorWindow {
+	public class AnimatorControllerContentCleaner : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Clear FX Layer Mask", priority = 1000)]
 		public static void ClearAllFXLayerMask() {
@@ -100,6 +100,211 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 				TargetAnimator.layers = NewAnimatorLayers;
+				EditorUtility.SetDirty(TargetAnimator);
+				AssetDatabase.SaveAssets();
+				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
+			}
+			return;
+		}
+
+		[MenuItem("Tools/VRSuya/Cleaner/Clean up FX Layer Transition", priority = 1000)]
+		public static void CleanupAllFXLayerTransition() {
+			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
+			if (FXLayerGUIDs.Length > 0) {
+				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
+					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
+					if (TargetFXLayer) CleanupFXAnimationTransition(TargetFXLayer);
+				}
+				AssetDatabase.Refresh();
+			}
+			return;
+		}
+
+		[MenuItem("Tools/VRSuya/Cleaner/Clean up Gesture Layer Transition", priority = 1000)]
+		public static void CleanupAllGestureLayerTransition() {
+			string[] GestureLayerGUIDs = AssetDatabase.FindAssets("Gesture t:AnimatorController", new[] { "Assets/" });
+			if (GestureLayerGUIDs.Length > 0) {
+				foreach (string TargetGestureLayerGUID in GestureLayerGUIDs) {
+					AnimatorController TargetGestureLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetGestureLayerGUID));
+					if (TargetGestureLayer) CleanupGestureAnimationTransition(TargetGestureLayer);
+				}
+				AssetDatabase.Refresh();
+			}
+			return;
+		}
+
+		private static void CleanupFXAnimationTransition(AnimatorController TargetAnimator) {
+			bool IsDirty = false;
+			string[] NeedTimeTransitionLayerName = new string[] { "Left Hand", "Right Hand", "Mouth" };
+			foreach (AnimatorControllerLayer TargetLayer in TargetAnimator.layers) {
+				if (!NeedTimeTransitionLayerName.Any(LayerName => TargetLayer.name.Contains(LayerName))) {
+					AnimatorStateTransition[] NewAnyStateTransition = TargetLayer.stateMachine.anyStateTransitions;
+					foreach (AnimatorStateTransition TargetTransition in NewAnyStateTransition) {
+						if (TargetTransition.canTransitionToSelf) {
+							TargetTransition.canTransitionToSelf = false;
+							IsDirty = true;
+						}
+						if (TargetTransition.duration != 0f) {
+							TargetTransition.duration = 0f;
+							IsDirty = true;
+						}
+						if (TargetTransition.exitTime != 0f) {
+							TargetTransition.exitTime = 0f;
+							IsDirty = true;
+						}
+						if (TargetTransition.hasExitTime) {
+							TargetTransition.hasExitTime = false;
+							IsDirty = true;
+						}
+						if (!TargetTransition.hasFixedDuration) {
+							TargetTransition.hasFixedDuration = true;
+							IsDirty = true;
+						}
+					}
+					TargetLayer.stateMachine.anyStateTransitions = NewAnyStateTransition;
+					foreach (ChildAnimatorState TargetState in TargetLayer.stateMachine.states) {
+						AnimatorStateTransition[] NewStateTransition = TargetState.state.transitions;
+						foreach (AnimatorStateTransition TargetTransition in NewStateTransition) {
+							if (TargetTransition.canTransitionToSelf) {
+								TargetTransition.canTransitionToSelf = false;
+								IsDirty = true;
+							}
+							if (TargetTransition.duration != 0f) {
+								TargetTransition.duration = 0f;
+								IsDirty = true;
+							}
+							if (TargetTransition.exitTime != 0f) {
+								TargetTransition.exitTime = 0f;
+								IsDirty = true;
+							}
+							if (TargetTransition.hasExitTime) {
+								TargetTransition.hasExitTime = false;
+								IsDirty = true;
+							}
+							if (!TargetTransition.hasFixedDuration) {
+								TargetTransition.hasFixedDuration = true;
+								IsDirty = true;
+							}
+						}
+						TargetState.state.transitions = NewStateTransition;
+					}
+				} else {
+					AnimatorStateTransition[] NewAnyStateTransition = TargetLayer.stateMachine.anyStateTransitions;
+					foreach (AnimatorStateTransition TargetTransition in NewAnyStateTransition) {
+						if (TargetTransition.canTransitionToSelf) {
+							TargetTransition.canTransitionToSelf = false;
+							IsDirty = true;
+						}
+						if (TargetTransition.duration != 0.1f) {
+							TargetTransition.duration = 0.1f;
+							IsDirty = true;
+						}
+						if (TargetTransition.exitTime != 0f) {
+							TargetTransition.exitTime = 0f;
+							IsDirty = true;
+						}
+						if (TargetTransition.hasExitTime) {
+							TargetTransition.hasExitTime = false;
+							IsDirty = true;
+						}
+						if (!TargetTransition.hasFixedDuration) {
+							TargetTransition.hasFixedDuration = true;
+							IsDirty = true;
+						}
+					}
+					TargetLayer.stateMachine.anyStateTransitions = NewAnyStateTransition;
+					foreach (ChildAnimatorState TargetState in TargetLayer.stateMachine.states) {
+						AnimatorStateTransition[] NewStateTransition = TargetState.state.transitions;
+						foreach (AnimatorStateTransition TargetTransition in NewStateTransition) {
+							if (TargetTransition.canTransitionToSelf) {
+								TargetTransition.canTransitionToSelf = false;
+								IsDirty = true;
+							}
+							if (TargetTransition.duration != 0.1f) {
+								TargetTransition.duration = 0.1f;
+								IsDirty = true;
+							}
+							if (TargetTransition.exitTime != 0f) {
+								TargetTransition.exitTime = 0f;
+								IsDirty = true;
+							}
+							if (TargetTransition.hasExitTime) {
+								TargetTransition.hasExitTime = false;
+								IsDirty = true;
+							}
+							if (!TargetTransition.hasFixedDuration) {
+								TargetTransition.hasFixedDuration = true;
+								IsDirty = true;
+							}
+						}
+						TargetState.state.transitions = NewStateTransition;
+					}
+				}
+			}
+			if (IsDirty) {
+				EditorUtility.SetDirty(TargetAnimator);
+				AssetDatabase.SaveAssets();
+				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
+			}
+			return;
+		}
+
+		private static void CleanupGestureAnimationTransition(AnimatorController TargetAnimator) {
+			bool IsDirty = false;
+			foreach (AnimatorControllerLayer TargetLayer in TargetAnimator.layers) {
+				AnimatorStateTransition[] NewAnyStateTransition = TargetLayer.stateMachine.anyStateTransitions;
+				foreach (AnimatorStateTransition TargetTransition in NewAnyStateTransition) {
+					if (TargetTransition.canTransitionToSelf) {
+						TargetTransition.canTransitionToSelf = false;
+						IsDirty = true;
+					}
+					if (TargetTransition.duration != 0.1f) {
+						TargetTransition.duration = 0.1f;
+						IsDirty = true;
+					}
+					if (TargetTransition.exitTime != 0f) {
+						TargetTransition.exitTime = 0f;
+						IsDirty = true;
+					}
+					if (TargetTransition.hasExitTime) {
+						TargetTransition.hasExitTime = false;
+						IsDirty = true;
+					}
+					if (!TargetTransition.hasFixedDuration) {
+						TargetTransition.hasFixedDuration = true;
+						IsDirty = true;
+					}
+				}
+				TargetLayer.stateMachine.anyStateTransitions = NewAnyStateTransition;
+				foreach (ChildAnimatorState TargetState in TargetLayer.stateMachine.states) {
+					AnimatorStateTransition[] NewStateTransition = TargetState.state.transitions;
+					foreach (AnimatorStateTransition TargetTransition in NewStateTransition) {
+						if (TargetTransition.canTransitionToSelf) {
+							TargetTransition.canTransitionToSelf = false;
+							IsDirty = true;
+						}
+						if (TargetTransition.duration != 0.1f) {
+							TargetTransition.duration = 0.1f;
+							IsDirty = true;
+						}
+						if (TargetTransition.exitTime != 0f) {
+							TargetTransition.exitTime = 0f;
+							IsDirty = true;
+						}
+						if (TargetTransition.hasExitTime) {
+							TargetTransition.hasExitTime = false;
+							IsDirty = true;
+						}
+						if (!TargetTransition.hasFixedDuration) {
+							TargetTransition.hasFixedDuration = true;
+							IsDirty = true;
+						}
+					}
+					TargetState.state.transitions = NewStateTransition;
+				}
+				
+			}
+			if (IsDirty) {
 				EditorUtility.SetDirty(TargetAnimator);
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
