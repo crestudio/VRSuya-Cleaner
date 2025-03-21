@@ -48,7 +48,7 @@ namespace com.vrsuya.cleaner {
 				)
 				.ThenBy(Parameter => Parameter, StringComparer.Ordinal)
 				.ToList();
-			if (OldParameterNameList != NewParameterNameList) {
+			if (!OldParameterNameList.SequenceEqual(NewParameterNameList)) {
 				VRCExpressionParameters.Parameter[] NewParameters = new VRCExpressionParameters.Parameter[TargetParameter.parameters.Length];
 				for (int Index = 0; Index < TargetParameter.parameters.Length; Index++) {
 					NewParameters[Index] = TargetParameter.parameters.First(Parameter => Parameter.name == NewParameterNameList[Index]);
