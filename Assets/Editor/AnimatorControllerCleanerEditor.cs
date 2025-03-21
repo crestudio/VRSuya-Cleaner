@@ -1,5 +1,8 @@
-﻿using UnityEditor;
+﻿using System.Linq;
+
+using UnityEditor;
 using UnityEngine;
+using UnityEditor.Animations;
 
 /*
  * VRSuya Cleaner
@@ -66,6 +69,42 @@ namespace com.vrsuya.cleaner {
 			GUILayout.EndHorizontal();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			SerializedAnimatorControllerCleaner.ApplyModifiedProperties();
+			return;
+		}
+	}
+
+	public class AnimatorControllerMaskCleaner : EditorWindow {
+
+		[MenuItem("Tools/VRSuya/Cleaner/Clear FX Layer Mask", priority = 1000)]
+		public static void ClearAllFXLayerMask() {
+			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
+			if (FXLayerGUIDs.Length > 0) {
+				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
+					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
+					if (TargetFXLayer) ClearAnimatorMask(TargetFXLayer);
+				}
+				AssetDatabase.Refresh();
+			}
+			return;
+		}
+
+		private static void ClearAnimatorMask(AnimatorController TargetAnimator) {
+			if (TargetAnimator.layers.Any(Layer => Layer.avatarMask != null)) {
+				AnimatorControllerLayer[] NewAnimatorLayers = new AnimatorControllerLayer[TargetAnimator.layers.Length];
+				for (int Index = 0; Index < TargetAnimator.layers.Length; Index++) {
+					if (TargetAnimator.layers[Index].avatarMask != null) {
+						AnimatorControllerLayer NewAnimatorLayer = TargetAnimator.layers[Index];
+						NewAnimatorLayer.avatarMask = null;
+						NewAnimatorLayers[Index] = NewAnimatorLayer;
+					} else {
+						NewAnimatorLayers[Index] = TargetAnimator.layers[Index];
+					}
+				}
+				TargetAnimator.layers = NewAnimatorLayers;
+				EditorUtility.SetDirty(TargetAnimator);
+				AssetDatabase.SaveAssets();
+				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
+			}
 			return;
 		}
 	}
