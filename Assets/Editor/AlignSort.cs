@@ -61,6 +61,70 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
+		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator Layer Parameter", priority = 1000)]
+		public static void SortAllAnimator() {
+			string[] AnimatorGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
+			if (AnimatorGUIDs.Length > 0) {
+				foreach (string TargetAnimatorGUID in AnimatorGUIDs) {
+					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorGUID));
+					if (TargetAnimator) SortAnimatorLayerParameter(TargetAnimator);
+				}
+				AssetDatabase.Refresh();
+			}
+			return;
+		}
+
+		private static void SortAnimatorLayerParameter(AnimatorController TargetAnimator) {
+			Avatar AvatarInstance = new Avatar();
+			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			bool IsDirty = false;
+			List<string> OldLayerNameList = TargetAnimator.layers.Select(Layer => Layer.name).ToList();
+			List<string> NewLayerNameList = OldLayerNameList
+				.OrderBy(Layer =>
+					(Layer.Contains("Base Layer") || Layer.Contains("AllParts")) ? 0 :
+					Layer.Contains("Left Hand") ? 1 :
+					Layer.Contains("Right Hand") ? 2 :
+					AvatarNames.Any(AvatarName => Layer.StartsWith(AvatarName, StringComparison.Ordinal)) ? 3 :
+					4
+				)
+				.ThenBy(Layer => Layer, StringComparer.Ordinal)
+				.ToList();
+			if (!OldLayerNameList.SequenceEqual(NewLayerNameList)) {
+				AnimatorControllerLayer[] NewLayers = new AnimatorControllerLayer[TargetAnimator.layers.Length];
+				for (int Index = 0; Index < TargetAnimator.layers.Length; Index++) {
+					NewLayers[Index] = TargetAnimator.layers.First(Layer => Layer.name == NewLayerNameList[Index]);
+				}
+				TargetAnimator.layers = NewLayers;
+				IsDirty = true;
+			}
+			List<string> OldParameterNameList = TargetAnimator.parameters.Select(Parameter => Parameter.name).ToList();
+			List<string> NewParameterNameList = OldParameterNameList
+				.OrderBy(Parameter =>
+					Parameter.Contains("GestureLeft") ? 0 :
+					Parameter.Contains("GestureLeftWeight") ? 1 :
+					Parameter.Contains("GestureRight") ? 2 :
+					Parameter.Contains("GestureRightWeight") ? 3 :
+					AvatarNames.Any(AvatarName => Parameter.StartsWith(AvatarName, StringComparison.Ordinal)) ? 4 :
+					5
+				)
+				.ThenBy(Parameter => Parameter, StringComparer.Ordinal)
+				.ToList();
+			if (!OldParameterNameList.SequenceEqual(NewParameterNameList)) {
+				AnimatorControllerParameter[] NewParameters = new AnimatorControllerParameter[TargetAnimator.parameters.Length];
+				for (int Index = 0; Index < TargetAnimator.parameters.Length; Index++) {
+					NewParameters[Index] = TargetAnimator.parameters.First(Parameter => Parameter.name == NewParameterNameList[Index]);
+				}
+				TargetAnimator.parameters = NewParameters;
+				IsDirty = true;
+			}
+			if (IsDirty) {
+				EditorUtility.SetDirty(TargetAnimator);
+				AssetDatabase.SaveAssets();
+				Debug.Log($"[VRSuya] {TargetAnimator.name} have been sorted successfully");
+			}
+			return;
+		}
+
 		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator States", priority = 1000)]
 		public static void AlignAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
