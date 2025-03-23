@@ -64,6 +64,38 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
+		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Menus", priority = 1000)]
+		public static void SortAllMenus() {
+			string[] MenuGUIDs = AssetDatabase.FindAssets("Menu", new[] { "Assets/" });
+			if (MenuGUIDs.Length > 0) {
+				foreach (string TargetMenuGUID in MenuGUIDs) {
+					VRCExpressionsMenu TargetMenu = AssetDatabase.LoadAssetAtPath<VRCExpressionsMenu>(AssetDatabase.GUIDToAssetPath(TargetMenuGUID));
+					if (TargetMenu) SortMenus(TargetMenu);
+				}
+				AssetDatabase.Refresh();
+			}
+			return;
+		}
+
+		private static void SortMenus(VRCExpressionsMenu TargetMenu) {
+			List<string> OldMenuNameList = TargetMenu.controls.Select(Menu => Menu.name).ToList();
+			List<string> NewMenuNameList = OldMenuNameList
+				.OrderBy(Menu => Menu.Contains("VRSuya") ? 3 : Menu.Contains("Emote") ? 2 : Menu.Contains("Modular") ? 1 : 0)
+				.ThenBy(Menu => Menu, StringComparer.Ordinal)
+				.ToList();
+			if (!OldMenuNameList.SequenceEqual(NewMenuNameList)) {
+				List<VRCExpressionsMenu.Control> NewMenus = new List<VRCExpressionsMenu.Control>();
+				for (int Index = 0; Index < TargetMenu.controls.Count; Index++) {
+					NewMenus.Add(TargetMenu.controls.First(Menu => Menu.name == NewMenuNameList[Index]));
+				}
+				TargetMenu.controls = NewMenus;
+				EditorUtility.SetDirty(TargetMenu);
+				AssetDatabase.SaveAssets();
+				Debug.Log($"[VRSuya] {TargetMenu.name} have been sorted successfully");
+			}
+			return;
+		}
+
 		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator Layer Parameter", priority = 1000)]
 		public static void SortAllAnimator() {
 			string[] AnimatorGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
