@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "GUID:526c5068e65857344a2a69ce8a56d5df",
-        "GUID:0bae3e2f09a0c454da701a2e8b59d048"
+        "GUID:0bae3e2f09a0c454da701a2e8b59d048",
+        "GUID:a8a95dde350644584a64b7c14fc7222d"
     ],
     "includePlatforms": [
         "Editor"
@@ -14,6 +15,12 @@
     "precompiledReferences": [],
     "autoReferenced": false,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.anatawa12.continuous-avatar-uploader",
+            "expression": "",
+            "define": "CONTINUOUS_AVATAR_UPLOADER"
+        }
+    ],
     "noEngineReferences": false
 }
