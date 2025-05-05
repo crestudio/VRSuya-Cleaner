@@ -176,6 +176,21 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
+		[MenuItem("Tools/VRSuya/Cleaner/Rename Copied Animator States", priority = 1000)]
+		public static void RenameAllAnimatorState() {
+			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
+			if (CurrentAnimator) {
+				foreach (AnimatorControllerLayer AnimatorLayer in CurrentAnimator.layers) {
+					RenameAnimationStates(AnimatorLayer.stateMachine);
+				}
+				EditorUtility.SetDirty(CurrentAnimator);
+				AssetDatabase.SaveAssets();
+				AssetDatabase.Refresh();
+				Debug.Log($"[VRSuya] {CurrentAnimator.name} Animator states have been renamed successfully");
+			}
+			return;
+		}
+
 		/// <summary>Animator 윈도우에서 현재 열려있는 AnimatorController 오브젝트를 반환합니다.</summary>
 		/// <returns>현재 활성화 되어 있는 AnimatorController</returns>
 		private static AnimatorController GetCurrentAnimatorController() {
@@ -217,6 +232,19 @@ namespace com.vrsuya.cleaner {
 			if (NewAnimationStates.Length > 2) Space = 50.00f;
 			for (int Index = 0; Index < NewAnimationStates.Length; Index++) {
 				NewAnimationStates[Index].position = new Vector3(400.00f, 100.00f + (Space * Index), 0.00f);
+			}
+			TargetStateMachine.states = NewAnimationStates;
+			return;
+		}
+
+		/// <summary>해당 StateMachine 내에 있는 State들의 복사 되어서 생긴 번호를 삭제합니다.</summary>
+		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
+		private static void RenameAnimationStates(AnimatorStateMachine TargetStateMachine) {
+			ChildAnimatorState[] NewAnimationStates = TargetStateMachine.states;
+			for (int Index = 0; Index < NewAnimationStates.Length; Index++) {
+				if (NewAnimationStates[Index].state.name.Contains(" 1")) {
+					NewAnimationStates[Index].state.name = NewAnimationStates[Index].state.name.Replace(" 1", "");
+				}
 			}
 			TargetStateMachine.states = NewAnimationStates;
 			return;
