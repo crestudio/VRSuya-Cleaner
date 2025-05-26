@@ -4,9 +4,9 @@
   "displayName": "VRSuya - Cleaner",
   "description": "An add-on for organizing and sorting various properties and elements in Unity",
   "unity": "2019.4",
-  "documentationUrl": "https://github.com/crestudio/AnimationCleaner/blob/main/README.md",
-  "changelogUrl": "https://github.com/crestudio/AnimationCleaner/blob/main/README.md",
-  "licensesUrl": "https://github.com/crestudio/AnimationCleaner/blob/main/LICENSE",
+  "documentationUrl": "https://github.com/crestudio/VRSuya-Cleaner/blob/main/README.md",
+  "changelogUrl": "https://github.com/crestudio/VRSuya-Cleaner/blob/main/README.md",
+  "licensesUrl": "https://github.com/crestudio/VRSuya-Cleaner/blob/main/LICENSE",
   "keywords": [
     "VRSuya",
     "VRChat"
@@ -16,7 +16,7 @@
     "email": "crestudioplus@gmail.com",
     "url": "https://github.com/crestudio"
   },
-  "url": "https://github.com/crestudio/AnimationCleaner",
+  "url": "https://github.com/crestudio/VRSuya-Cleaner",
   "repo": "https://server.macchiato.kr/vpm/vpm.json",
   "vpmDependencies": {
     "com.vrchat.avatars": ">=3.0.9",
