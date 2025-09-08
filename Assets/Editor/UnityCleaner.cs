@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using System.IO;
 
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEngine;
 
 using VRSuya.Core;
 
