@@ -4,7 +4,9 @@ using System.Text.RegularExpressions;
 
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using VRSuya.Core;
 using Object = UnityEngine.Object;
@@ -65,7 +67,7 @@ namespace com.vrsuya.cleaner {
 
 		private static readonly float Tolerance = 0.001f;
 
-		[MenuItem("Assets/VRSuya/Clear Transform Overrides")]
+		[MenuItem("Assets/VRSuya/Clear Prefab Transform Overrides")]
 		private static void RequestClearPrefabTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
@@ -76,9 +78,31 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void ClearPrefabObject(GameObject TargetGameObject) {
-			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return;
+		[MenuItem("Assets/VRSuya/Clear Scene Transform Overrides")]
+		private static void RequestClearSceneTransform() {
+			foreach (Object TargetObject in Selection.objects) {
+				if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
+					string ScenePath = AssetDatabase.GetAssetPath(TargetObject);
+					Scene TargetScene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+					try {
+						bool IsDirty = false;
+						foreach (GameObject RootGameObject in TargetScene.GetRootGameObjects()) {
+							if (ClearPrefabObject(RootGameObject)) IsDirty = true;
+						}
+						if (IsDirty) {
+							EditorSceneManager.SaveScene(TargetScene);
+						}
+					} finally {
+						EditorSceneManager.CloseScene(TargetScene, true);
+					}
+				}
+			}
+			return;
+		}
+
+		private static bool ClearPrefabObject(GameObject TargetGameObject) {
 			bool IsChanged = false;
+			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
 				if (IsTransformProperty(TargetPropertyModification.propertyPath)) {
@@ -101,7 +125,7 @@ namespace com.vrsuya.cleaner {
 				EditorUtility.SetDirty(TargetGameObject);
 				AssetDatabase.SaveAssetIfDirty(TargetGameObject);
 			}
-			return;
+			return IsChanged;
 		}
 
 		private static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform) {
