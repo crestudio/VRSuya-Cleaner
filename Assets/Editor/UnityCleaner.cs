@@ -58,5 +58,48 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 	}
+
+	public static class PrefabTransformCleanerContextMenu {
+		private static readonly float Tolerance = 0.01f;
+		private static readonly string[] TransformProperties = { "m_LocalPosition", "m_LocalRotation", "m_LocalScale", "m_LocalEulerAnglesHint" };
+
+		[MenuItem("Assets/VRSuya/Clear Transform Overrides")]
+		private static void RequestClearPrefabTransform() {
+			foreach (Object TargetObject in Selection.objects) {
+				GameObject TargetGameObject = TargetObject as GameObject;
+				if (TargetGameObject && TargetGameObject.GetType() == typeof(GameObject)) {
+					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClearPrefabObject(TargetGameObject);
+				}
+			}
+			return;
+		}
+
+		private static void ClearPrefabObject(GameObject TargetGameObject) {
+			bool IsChanged = false;
+			Transform[] TargetTransforms = TargetGameObject.GetComponentsInChildren<Transform>(true);
+			foreach (Transform TargetTransform in TargetTransforms) {
+				Transform OriginalTransform = PrefabUtility.GetCorrespondingObjectFromSource(TargetTransform);
+				if (!OriginalTransform) continue;
+				if (NeedRevert(TargetTransform, OriginalTransform)) {
+					PrefabUtility.RevertObjectOverride(TargetTransform, InteractionMode.AutomatedAction);
+					Debug.Log($"[VRSuya] Reverted {TargetTransform.name} on {TargetGameObject.name}");
+					IsChanged = true;
+				}
+			}
+			if (IsChanged) {
+				EditorUtility.SetDirty(TargetGameObject);
+				AssetDatabase.SaveAssetIfDirty(TargetGameObject);
+			}
+			return;
+		}
+
+		private static bool NeedRevert(Transform TargetTransform, Transform OriginalTransform) {
+			bool NeedRevert = true;
+			if (Vector3.Distance(TargetTransform.localPosition, OriginalTransform.localPosition) >= Tolerance) NeedRevert = false;
+			if (Quaternion.Angle(TargetTransform.localRotation, OriginalTransform.localRotation) >= Tolerance) NeedRevert = false;
+			if (Vector3.Distance(TargetTransform.localScale, OriginalTransform.localScale) >= Tolerance) NeedRevert = false;
+			return NeedRevert;
+		}
+	}
 }
 
