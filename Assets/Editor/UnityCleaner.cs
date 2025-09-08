@@ -82,15 +82,16 @@ namespace com.vrsuya.cleaner {
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
 				if (IsTransformProperty(TargetPropertyModification.propertyPath)) {
-					Transform TargetTransform = (Transform)TargetPropertyModification.target;
+					Transform SourceTransform = (Transform)TargetPropertyModification.target;
+					Transform OverriddenTransform = GetOverridenTransform(TargetGameObject, SourceTransform);
 					string TargetPropertyPath = TargetPropertyModification.propertyPath;
 					float TargetValue = float.Parse(TargetPropertyModification.value);
-					if (TargetTransform) {
-						if (NeedRevert(TargetTransform, TargetPropertyPath, TargetValue)) {
-							SerializedObject SerializedTransform = new SerializedObject(TargetTransform);
-							SerializedProperty TransformProperty = SerializedTransform.FindProperty(TargetPropertyPath);
-							PrefabUtility.RevertPropertyOverride(TransformProperty, InteractionMode.AutomatedAction);
-							Debug.Log($"[VRSuya] Reverted {TargetTransform.name} transform on {TargetGameObject.name}");
+					if (SourceTransform && OverriddenTransform) {
+						if (NeedRevert(SourceTransform, TargetPropertyPath, TargetValue)) {
+							SerializedObject SerializedTransform = new SerializedObject(OverriddenTransform);
+							SerializedProperty TargetProperty = SerializedTransform.FindProperty(TargetPropertyPath);
+							PrefabUtility.RevertPropertyOverride(TargetProperty, InteractionMode.AutomatedAction);
+							Debug.Log($"[VRSuya] Reverted {TargetPropertyPath} of {OverriddenTransform.name} transform on {TargetGameObject.name}");
 							IsChanged = true;
 						}
 					}
@@ -101,6 +102,11 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssetIfDirty(TargetGameObject);
 			}
 			return;
+		}
+
+		private static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform) {
+			Transform[] ChildTransforms = TargetGameObject.GetComponentsInChildren<Transform>(true);
+			return Array.Find(ChildTransforms, Item => Item.name == SourceTransform.name);
 		}
 
 		private static bool NeedRevert(Transform TargetTransform, string TargetPropertyPath, float TargetValue) {
