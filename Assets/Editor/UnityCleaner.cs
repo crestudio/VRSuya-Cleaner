@@ -1,11 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
 using VRSuya.Core;
+using Object = UnityEngine.Object;
 
 /*
  * VRSuya Cleaner
@@ -59,9 +61,9 @@ namespace com.vrsuya.cleaner {
 		}
 	}
 
-	public static class PrefabTransformCleanerContextMenu {
+	public static class PrefabTransformCleaner {
+
 		private static readonly float Tolerance = 0.01f;
-		private static readonly string[] TransformProperties = { "m_LocalPosition", "m_LocalRotation", "m_LocalScale", "m_LocalEulerAnglesHint" };
 
 		[MenuItem("Assets/VRSuya/Clear Transform Overrides")]
 		private static void RequestClearPrefabTransform() {
@@ -75,15 +77,23 @@ namespace com.vrsuya.cleaner {
 		}
 
 		private static void ClearPrefabObject(GameObject TargetGameObject) {
+			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return;
 			bool IsChanged = false;
-			Transform[] TargetTransforms = TargetGameObject.GetComponentsInChildren<Transform>(true);
-			foreach (Transform TargetTransform in TargetTransforms) {
-				Transform OriginalTransform = PrefabUtility.GetCorrespondingObjectFromSource(TargetTransform);
-				if (!OriginalTransform) continue;
-				if (NeedRevert(TargetTransform, OriginalTransform)) {
-					PrefabUtility.RevertObjectOverride(TargetTransform, InteractionMode.AutomatedAction);
-					Debug.Log($"[VRSuya] Reverted {TargetTransform.name} on {TargetGameObject.name}");
-					IsChanged = true;
+			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
+			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
+				if (IsTransformProperty(TargetPropertyModification.propertyPath)) {
+					Transform TargetTransform = (Transform)TargetPropertyModification.target;
+					string TargetPropertyPath = TargetPropertyModification.propertyPath;
+					float TargetValue = float.Parse(TargetPropertyModification.value);
+					if (TargetTransform) {
+						if (NeedRevert(TargetTransform, TargetPropertyPath, TargetValue)) {
+							SerializedObject SerializedTransform = new SerializedObject(TargetTransform);
+							SerializedProperty TransformProperty = SerializedTransform.FindProperty(TargetPropertyPath);
+							PrefabUtility.RevertPropertyOverride(TransformProperty, InteractionMode.AutomatedAction);
+							Debug.Log($"[VRSuya] Reverted {TargetTransform.name} transform on {TargetGameObject.name}");
+							IsChanged = true;
+						}
+					}
 				}
 			}
 			if (IsChanged) {
@@ -93,12 +103,68 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static bool NeedRevert(Transform TargetTransform, Transform OriginalTransform) {
-			bool NeedRevert = true;
-			if (Vector3.Distance(TargetTransform.localPosition, OriginalTransform.localPosition) >= Tolerance) NeedRevert = false;
-			if (Quaternion.Angle(TargetTransform.localRotation, OriginalTransform.localRotation) >= Tolerance) NeedRevert = false;
-			if (Vector3.Distance(TargetTransform.localScale, OriginalTransform.localScale) >= Tolerance) NeedRevert = false;
-			return NeedRevert;
+		private static bool NeedRevert(Transform TargetTransform, string TargetPropertyPath, float TargetValue) {
+			float OriginalValue = float.NaN;
+			switch (TargetPropertyPath) {
+				case "m_LocalPosition.x":
+					OriginalValue = TargetTransform.localPosition.x;
+					break;
+				case "m_LocalPosition.y":
+					OriginalValue = TargetTransform.localPosition.y;
+					break;
+				case "m_LocalPosition.z":
+					OriginalValue = TargetTransform.localPosition.z;
+					break;
+				case "m_LocalRotation.w":
+					OriginalValue = TargetTransform.localRotation.w;
+					break;
+				case "m_LocalRotation.x":
+					OriginalValue = TargetTransform.localRotation.x;
+					break;
+				case "m_LocalRotation.y":
+					OriginalValue = TargetTransform.localRotation.y;
+					break;
+				case "m_LocalRotation.z":
+					OriginalValue = TargetTransform.localRotation.z;
+					break;
+				case "m_LocalEulerAnglesHint.x":
+					OriginalValue = TargetTransform.localEulerAngles.x;
+					break;
+				case "m_LocalEulerAnglesHint.y":
+					OriginalValue = TargetTransform.localEulerAngles.y;
+					break;
+				case "m_LocalEulerAnglesHint.z":
+					OriginalValue = TargetTransform.localEulerAngles.z;
+					break;
+				case "m_LocalScale.x":
+					OriginalValue = TargetTransform.localScale.x;
+					break;
+				case "m_LocalScale.y":
+					OriginalValue = TargetTransform.localScale.y;
+					break;
+				case "m_LocalScale.z":
+					OriginalValue = TargetTransform.localScale.z;
+					break;
+			}
+			if (OriginalValue != float.NaN) {
+				if (Math.Abs(OriginalValue - TargetValue) <= Tolerance) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return true;
+			}
+		}
+
+		/// <summary>PropertyPath가 Transform 관련 속성인지 확인합니다.</summary>
+		/// <param name="TargetPropertyPath">Property 경로</param>
+		/// <returns>Transform 속성 여부</returns>
+		private static bool IsTransformProperty(string TargetPropertyPath) {
+			return TargetPropertyPath.StartsWith("m_LocalPosition") ||
+				   TargetPropertyPath.StartsWith("m_LocalRotation") ||
+				   TargetPropertyPath.StartsWith("m_LocalScale") ||
+				   TargetPropertyPath.StartsWith("m_LocalEulerAnglesHint");
 		}
 	}
 }
