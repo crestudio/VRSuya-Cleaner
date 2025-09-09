@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using UnityEditor;
@@ -107,9 +109,9 @@ namespace com.vrsuya.cleaner {
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
 				if (IsTransformProperty(TargetPropertyModification.propertyPath)) {
 					Transform SourceTransform = (Transform)TargetPropertyModification.target;
-					Transform OverriddenTransform = GetOverridenTransform(TargetGameObject, SourceTransform);
 					string TargetPropertyPath = TargetPropertyModification.propertyPath;
 					float TargetValue = float.Parse(TargetPropertyModification.value);
+					Transform OverriddenTransform = GetOverridenTransform(TargetGameObject, SourceTransform, TargetPropertyPath, TargetValue);
 					if (SourceTransform && OverriddenTransform) {
 						if (NeedRevert(SourceTransform, TargetPropertyPath, TargetValue)) {
 							SerializedObject SerializedTransform = new SerializedObject(OverriddenTransform);
@@ -128,9 +130,25 @@ namespace com.vrsuya.cleaner {
 			return IsChanged;
 		}
 
-		private static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform) {
-			Transform[] ChildTransforms = TargetGameObject.GetComponentsInChildren<Transform>(true);
-			return Array.Find(ChildTransforms, Item => Item.name == SourceTransform.name);
+		private static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
+			List<ObjectOverride> PrefabOverrides = PrefabUtility.GetObjectOverrides(TargetGameObject, true);
+			List<Transform> OverridenTransform = PrefabOverrides
+				.Where(Item => Item.instanceObject.GetType() == typeof(Transform))
+				.Select(Item => (Transform)Item.instanceObject)
+				.ToList();
+			if (OverridenTransform.Count > 0) {
+				Transform ReturnTransform = null;
+				foreach (Transform TargetTransform in OverridenTransform) {
+					SerializedObject SerializedTransform = new SerializedObject(TargetTransform);
+					SerializedProperty TargetProperty = SerializedTransform.FindProperty(TargetPropertyPath);
+					if (TargetProperty.floatValue == TargetValue) {
+						ReturnTransform = TargetTransform;
+					}
+				}
+				return ReturnTransform;
+			} else {
+				return null;
+			}
 		}
 
 		private static bool NeedRevert(Transform TargetTransform, string TargetPropertyPath, float TargetValue) {
