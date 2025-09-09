@@ -69,7 +69,7 @@ namespace com.vrsuya.cleaner {
 
 		private static readonly float Tolerance = 0.001f;
 
-		[MenuItem("Assets/VRSuya/Clear Prefab Transform Overrides")]
+		[MenuItem("Assets/VRSuya/Clear Prefab Transform Overrides", priority = 1100)]
 		private static void RequestClearPrefabTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
@@ -80,7 +80,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		[MenuItem("Assets/VRSuya/Clear Scene Transform Overrides")]
+		[MenuItem("Assets/VRSuya/Clear Scene Transform Overrides", priority = 1100)]
 		private static void RequestClearSceneTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
