@@ -104,6 +104,7 @@ namespace com.vrsuya.cleaner {
 
 		private static bool ClearPrefabObject(GameObject TargetGameObject) {
 			bool IsChanged = false;
+			int Count = 0;
 			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
@@ -117,8 +118,8 @@ namespace com.vrsuya.cleaner {
 							SerializedObject SerializedTransform = new SerializedObject(OverriddenTransform);
 							SerializedProperty TargetProperty = SerializedTransform.FindProperty(TargetPropertyPath);
 							PrefabUtility.RevertPropertyOverride(TargetProperty, InteractionMode.AutomatedAction);
-							Debug.Log($"[VRSuya] Reverted {TargetPropertyPath} of {OverriddenTransform.name} transform on {TargetGameObject.name}");
 							IsChanged = true;
+							Count++;
 						}
 					}
 				}
@@ -127,6 +128,7 @@ namespace com.vrsuya.cleaner {
 				EditorUtility.SetDirty(TargetGameObject);
 				AssetDatabase.SaveAssetIfDirty(TargetGameObject);
 			}
+			Debug.Log($"[VRSuya] Reverted {Count} overridden transforms on {TargetGameObject.name}");
 			return IsChanged;
 		}
 
