@@ -32,8 +32,8 @@ namespace com.vrsuya.cleaner {
 				AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID));
 				if (TargetAnimatorController && TargetAnimatorController.GetType() == typeof(AnimatorController)) {
 					string RawAnimatorController = File.ReadAllText(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID));
-					if (RawAnimatorController.Contains("m_Controller: {fileID: 9100000}")) {
-						string newRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 9100000}", "m_Controller: {fileID: 0}");
+					if (RawAnimatorController.Contains("m_Controller: {fileID: 0}")) {
+						string newRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 0}", "m_Controller: {fileID: 9100000}");
 						File.WriteAllText(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID), newRawAnimatorController);
 						ChangedCount++;
 					}
