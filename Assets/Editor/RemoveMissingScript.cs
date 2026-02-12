@@ -24,9 +24,9 @@ namespace com.vrsuya.cleaner {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
             if (MissingGameObjects.Length > 0) {
 				Selection.objects = MissingGameObjects;
-                Debug.Log("[VRSuya] " + MissingGameObjects.Length + " of GameObjects have Missing Component Selected");
+                Debug.Log($"[VRSuya] {MissingGameObjects.Length} of GameObjects have Missing Component Selected");
 			} else {
-				Debug.Log("[VRSuya] Not found GameObject has Missing Component");
+				Debug.Log($"[VRSuya] Not found GameObject has Missing Component");
 			}
         }
 
@@ -44,9 +44,9 @@ namespace com.vrsuya.cleaner {
 					EditorUtility.SetDirty(TargetGameObject);
 					Undo.CollapseUndoOperations(UndoGroupIndex);
 				}
-				Debug.Log("[VRSuya] " + DeletedComponentCount + " of Missing Script Components Removed");
+				Debug.Log($"[VRSuya] {DeletedComponentCount} of Missing Script Components Removed");
 			} else {
-				Debug.Log("[VRSuya] Not found Missing Script Component");
+				Debug.Log($"[VRSuya] Not found Missing Script Component");
 			}
 		}
 

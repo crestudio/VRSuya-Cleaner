@@ -186,13 +186,13 @@ namespace com.vrsuya.cleaner {
 				if (InvaildMonoBehaviourfileIDs.Count > 0) TargetRemovefileIDs = TargetRemovefileIDs.Concat(InvaildMonoBehaviourfileIDs.ToArray()).Distinct().ToArray();
 			}
 
-			Debug.Log("[AnimatorControllerCleaner] " + TargetAnimatorController.name + " 에셋에 존재하는 구성요소 통계\r\n" +
-				"StateMachine : " + VaildAnimatorStateMachinefileIDs.Count + " - " + InvaildAnimatorStateMachinefileIDs.Count + " = " + AllAnimatorStateMachinefileIDs.Count + "\r\n" +
-				"State : " + VaildAnimatorStatefileIDs.Count + " - " + InvaildAnimatorStatefileIDs.Count + " = " + AllAnimatorStatefileIDs.Count + "\r\n" +
-				"AnimatorTransition : " + VaildAnimatorTransitionfileIDs.Count + " - " + InvaildAnimatorTransitionfileIDs.Count + " = " + AllAnimatorTransitionfileIDs.Count + "\r\n" +
-				"Transition : " + VaildAnimatorStateTransitionfileIDs.Count + " - " + InvaildAnimatorStateTransitionfileIDs.Count + " = " + AllAnimatorStateTransitionfileIDs.Count + "\r\n" +
-				"BlendTree : " + VaildBlendTreefileIDs.Count + " - " + InvaildBlendTreefileIDs.Count + " = " + AllBlendTreefileIDs.Count + "\r\n" +
-				"MonoBehaviour : " + VaildMonoBehaviourfileIDs.Count + " - " + InvaildMonoBehaviourfileIDs.Count + " = " + AllMonoBehaviourfileIDs.Count);
+			Debug.Log($"[VRSuya] {TargetAnimatorController.name} 에셋에 존재하는 구성요소 통계\n" +
+				$"StateMachine : {VaildAnimatorStateMachinefileIDs.Count} - {InvaildAnimatorStateMachinefileIDs.Count} = {AllAnimatorStateMachinefileIDs.Count}\n" +
+				$"State : {VaildAnimatorStatefileIDs.Count} - {InvaildAnimatorStatefileIDs.Count} = {AllAnimatorStatefileIDs.Count}\n" +
+				$"AnimatorTransition : {VaildAnimatorTransitionfileIDs.Count} - {InvaildAnimatorTransitionfileIDs.Count} = {AllAnimatorTransitionfileIDs.Count}\n" +
+				$"Transition : {VaildAnimatorStateTransitionfileIDs.Count} - {InvaildAnimatorStateTransitionfileIDs.Count} = {AllAnimatorStateTransitionfileIDs.Count}\n" +
+				$"BlendTree : {VaildBlendTreefileIDs.Count} - {InvaildBlendTreefileIDs.Count} = {AllBlendTreefileIDs.Count}\n" +
+				$"MonoBehaviour : {VaildMonoBehaviourfileIDs.Count} - {InvaildMonoBehaviourfileIDs.Count} = {AllMonoBehaviourfileIDs.Count}");
 		}
 
 		/// <summary>에셋 라이브러리에서 AnimatorController 에셋들을 가져와서 추가합니다.</summary>
@@ -248,7 +248,7 @@ namespace com.vrsuya.cleaner {
 							AllMonoBehaviourfileIDs.Add(ExtractfileIDFromHeader(AssetFile[Line]));
 							break;
 						default:
-							Debug.LogError("[AnimatorControllerCleaner] 알 수 없는 타입 : " + AssetFile[Line + 1]);
+							Debug.LogError($"[VRSuya] 알 수 없는 타입 : {AssetFile[Line + 1]}");
 							break;
 					}
 				}
