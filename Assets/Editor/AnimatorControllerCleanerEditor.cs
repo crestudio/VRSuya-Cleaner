@@ -31,7 +31,6 @@ namespace com.vrsuya.cleaner {
 		[MenuItem("Tools/VRSuya/Cleaner/AnimatorController Cleaner", priority = 1000)]
 		static void CreateWindow() {
 			AnimatorControllerCleanerEditor AppWindow = (AnimatorControllerCleanerEditor)GetWindow(typeof(AnimatorControllerCleanerEditor), true, "AnimatorController Cleaner");
-			return;
 		}
 
 		void OnGUI() {
@@ -68,7 +67,6 @@ namespace com.vrsuya.cleaner {
 			GUILayout.EndHorizontal();
 			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 			SerializedAnimatorControllerCleaner.ApplyModifiedProperties();
-			return;
 		}
 	}
 
@@ -84,7 +82,6 @@ namespace com.vrsuya.cleaner {
 				}
 				AssetDatabase.Refresh();
 			}
-			return;
 		}
 
 		static void ClearAnimatorMask(AnimatorController TargetAnimator) {
@@ -104,7 +101,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
 			}
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Clean up FX Layer Transition", priority = 1000)]
@@ -117,7 +113,6 @@ namespace com.vrsuya.cleaner {
 				}
 				AssetDatabase.Refresh();
 			}
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Clean up Gesture Layer Transition", priority = 1000)]
@@ -130,7 +125,6 @@ namespace com.vrsuya.cleaner {
 				}
 				AssetDatabase.Refresh();
 			}
-			return;
 		}
 
 		static void CleanupFXAnimationTransition(AnimatorController TargetAnimator) {
@@ -246,7 +240,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
 			}
-			return;
 		}
 
 		static void CleanupGestureAnimationTransition(AnimatorController TargetAnimator) {
@@ -309,7 +302,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetAnimator.name} have been cleared mask successfully");
 			}
-			return;
 		}
 	}
 }

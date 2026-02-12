@@ -109,7 +109,6 @@ namespace com.vrsuya.cleaner {
 				}
 			}
 			AssetDatabase.Refresh();
-			return;
 		}
 
 		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID를 찾습니다.</summary>
@@ -194,7 +193,6 @@ namespace com.vrsuya.cleaner {
 				"Transition : " + VaildAnimatorStateTransitionfileIDs.Count + " - " + InvaildAnimatorStateTransitionfileIDs.Count + " = " + AllAnimatorStateTransitionfileIDs.Count + "\r\n" +
 				"BlendTree : " + VaildBlendTreefileIDs.Count + " - " + InvaildBlendTreefileIDs.Count + " = " + AllBlendTreefileIDs.Count + "\r\n" +
 				"MonoBehaviour : " + VaildMonoBehaviourfileIDs.Count + " - " + InvaildMonoBehaviourfileIDs.Count + " = " + AllMonoBehaviourfileIDs.Count);
-			return;
 		}
 
 		/// <summary>에셋 라이브러리에서 AnimatorController 에셋들을 가져와서 추가합니다.</summary>
@@ -212,7 +210,6 @@ namespace com.vrsuya.cleaner {
 				Array.Sort(newAnimatorControllers, (a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
 				TargetAnimatorControllers = TargetAnimatorControllers.Concat(newAnimatorControllers).ToArray();
 			}
-			return;
 		}
 
 		/*
@@ -256,7 +253,6 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 			}
-			return;
 		}
 
 		/*

@@ -40,7 +40,6 @@ namespace com.vrsuya.cleaner {
 				}
 			}
 			Debug.Log($"[VRSuya] Normalized the fileIDs of {ChangedCount} Animator Controllers");
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Standardize IndirectSpecularColor", priority = 1100)]
@@ -61,7 +60,6 @@ namespace com.vrsuya.cleaner {
 				}
 			}
 			Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ChangedCount} Unity Scenes");
-			return;
 		}
 	}
 
@@ -77,7 +75,6 @@ namespace com.vrsuya.cleaner {
 					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClearPrefabObject(TargetGameObject);
 				}
 			}
-			return;
 		}
 
 		[MenuItem("Assets/VRSuya/Clear Scene Transform Overrides", priority = 1100)]
@@ -99,7 +96,6 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 			}
-			return;
 		}
 
 		static bool ClearPrefabObject(GameObject TargetGameObject) {

@@ -39,8 +39,7 @@ namespace com.vrsuya.cleaner {
 					}
 				}
 				AssetDatabase.Refresh();
-			}
-			return;
+			}	
 		}
 	}
 }

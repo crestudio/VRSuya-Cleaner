@@ -52,7 +52,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {MirroredAnimationClip.name} 애니메이션 클립을 생성하였습니다");
 			}
-			return;
 		}
 	}
 }

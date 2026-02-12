@@ -28,7 +28,6 @@ namespace com.vrsuya.cleaner {
 			} else {
 				Debug.Log("[VRSuya] Not found GameObject has Missing Component");
 			}
-            return;
         }
 
 		/// <summary>Scene에 존재하는 Missing Script 컴포넌트들을 삭제합니다.</summary>
@@ -49,7 +48,6 @@ namespace com.vrsuya.cleaner {
 			} else {
 				Debug.Log("[VRSuya] Not found Missing Script Component");
 			}
-			return;
 		}
 
 		/// <summary>Scene에 존재하는 Missing Script 컴포넌트를 가지고 있는 GameObject 배열을 반환합니다.</summary>

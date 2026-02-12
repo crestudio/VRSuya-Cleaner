@@ -35,7 +35,6 @@ namespace com.vrsuya.cleaner {
 				}
 				AssetDatabase.Refresh();
 			}
-			return;
 		}
 
 		static void SortParameters(VRCExpressionParameters TargetParameter) {
@@ -61,7 +60,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetParameter.name} have been sorted successfully");
 			}
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Menus", priority = 1000)]
@@ -74,7 +72,6 @@ namespace com.vrsuya.cleaner {
 				}
 				AssetDatabase.Refresh();
 			}
-			return;
 		}
 
 		static void SortMenus(VRCExpressionsMenu TargetMenu) {
@@ -93,7 +90,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetMenu.name} have been sorted successfully");
 			}
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator Layer Parameter", priority = 1000)]
@@ -106,7 +102,6 @@ namespace com.vrsuya.cleaner {
 				}
 				AssetDatabase.Refresh();
 			}
-			return;
 		}
 
 		static void SortAnimatorLayerParameter(AnimatorController TargetAnimator) {
@@ -158,7 +153,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.SaveAssets();
 				Debug.Log($"[VRSuya] {TargetAnimator.name} have been sorted successfully");
 			}
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator States", priority = 1000)]
@@ -173,7 +167,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.Refresh();
 				Debug.Log($"[VRSuya] {CurrentAnimator.name} Animator states have been sorted successfully");
 			}
-			return;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Rename Copied Animator States", priority = 1000)]
@@ -188,7 +181,6 @@ namespace com.vrsuya.cleaner {
 				AssetDatabase.Refresh();
 				Debug.Log($"[VRSuya] {CurrentAnimator.name} Animator states have been renamed successfully");
 			}
-			return;
 		}
 
 		/// <summary>Animator 윈도우에서 현재 열려있는 AnimatorController 오브젝트를 반환합니다.</summary>
@@ -234,7 +226,6 @@ namespace com.vrsuya.cleaner {
 				NewAnimationStates[Index].position = new Vector3(400.00f, 100.00f + (Space * Index), 0.00f);
 			}
 			TargetStateMachine.states = NewAnimationStates;
-			return;
 		}
 
 		/// <summary>해당 StateMachine 내에 있는 State들의 복사 되어서 생긴 번호를 삭제합니다.</summary>
@@ -247,7 +238,6 @@ namespace com.vrsuya.cleaner {
 				}
 			}
 			TargetStateMachine.states = NewAnimationStates;
-			return;
 		}
 	}
 }
