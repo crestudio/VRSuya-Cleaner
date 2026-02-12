@@ -54,7 +54,7 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>Scene에 존재하는 Missing Script 컴포넌트를 가지고 있는 GameObject 배열을 반환합니다.</summary>
 		/// <returns>Scene에 존재하는 모든 Missing Script 컴포넌트를 가지고 있는 GameObject 배열</returns>
-		private static GameObject[] GetAllGameObjectHasMissingScriptComponent() {
+		static GameObject[] GetAllGameObjectHasMissingScriptComponent() {
 			List<GameObject> MissingGameObjects = new List<GameObject>();
 			Transform[] AllTransforms = SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(gameObject => gameObject.GetComponentsInChildren<Transform>(true)).ToArray();
 			foreach (Transform TargetTransform in AllTransforms) {

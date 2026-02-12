@@ -23,7 +23,7 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
 	public class AlignSort : EditorWindow {
 
-		private static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };
+		static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Parameters", priority = 1000)]
 		public static void SortAllParameters() {
@@ -38,7 +38,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void SortParameters(VRCExpressionParameters TargetParameter) {
+		static void SortParameters(VRCExpressionParameters TargetParameter) {
 			Avatar AvatarInstance = new Avatar();
 			string[] AvatarNames = AvatarInstance.GetAvatarNames();
 			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
@@ -77,7 +77,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void SortMenus(VRCExpressionsMenu TargetMenu) {
+		static void SortMenus(VRCExpressionsMenu TargetMenu) {
 			List<string> OldMenuNameList = TargetMenu.controls.Select(Menu => Menu.name).ToList();
 			List<string> NewMenuNameList = OldMenuNameList
 				.OrderBy(Menu => Menu.Contains("VRSuya") ? 3 : Menu.Contains("Emote") ? 2 : Menu.Contains("Modular") ? 1 : 0)
@@ -109,7 +109,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void SortAnimatorLayerParameter(AnimatorController TargetAnimator) {
+		static void SortAnimatorLayerParameter(AnimatorController TargetAnimator) {
 			Avatar AvatarInstance = new Avatar();
 			string[] AvatarNames = AvatarInstance.GetAvatarNames();
 			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
@@ -193,7 +193,7 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>Animator 윈도우에서 현재 열려있는 AnimatorController 오브젝트를 반환합니다.</summary>
 		/// <returns>현재 활성화 되어 있는 AnimatorController</returns>
-		private static AnimatorController GetCurrentAnimatorController() {
+		static AnimatorController GetCurrentAnimatorController() {
 			AnimatorController CurrentAnimatorController = null;
 			DuplicateGameObject DuplicatorInstance = new DuplicateGameObject();
 			Type AnimatorWindowType = Type.GetType("UnityEditor.Graphs.AnimatorControllerTool, UnityEditor.Graphs");
@@ -208,7 +208,7 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>해당 StateMachine 내에 있는 State 위치를 정렬합니다.</summary>
 		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
-		private static void AlignAnimationStates(AnimatorStateMachine TargetStateMachine, string TargetLayerName) {
+		static void AlignAnimationStates(AnimatorStateMachine TargetStateMachine, string TargetLayerName) {
 			TargetStateMachine.entryPosition = new Vector3(40.00f, 100.00f, 0.00f);
 			TargetStateMachine.anyStatePosition = new Vector3(40.00f, 200.00f, 0.00f);
 			TargetStateMachine.exitPosition = new Vector3(800.00f, 100.00f, 0.00f);
@@ -239,7 +239,7 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>해당 StateMachine 내에 있는 State들의 복사 되어서 생긴 번호를 삭제합니다.</summary>
 		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
-		private static void RenameAnimationStates(AnimatorStateMachine TargetStateMachine) {
+		static void RenameAnimationStates(AnimatorStateMachine TargetStateMachine) {
 			ChildAnimatorState[] NewAnimationStates = TargetStateMachine.states;
 			for (int Index = 0; Index < NewAnimationStates.Length; Index++) {
 				if (NewAnimationStates[Index].state.name.Contains(" 1")) {

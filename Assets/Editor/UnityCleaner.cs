@@ -67,10 +67,10 @@ namespace com.vrsuya.cleaner {
 
 	public static class PrefabTransformCleaner {
 
-		private static readonly float Tolerance = 0.001f;
+		static readonly float Tolerance = 0.001f;
 
 		[MenuItem("Assets/VRSuya/Clear Prefab Transform Overrides", priority = 1100)]
-		private static void RequestClearPrefabTransform() {
+		static void RequestClearPrefabTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
 				if (TargetGameObject && TargetGameObject.GetType() == typeof(GameObject)) {
@@ -81,7 +81,7 @@ namespace com.vrsuya.cleaner {
 		}
 
 		[MenuItem("Assets/VRSuya/Clear Scene Transform Overrides", priority = 1100)]
-		private static void RequestClearSceneTransform() {
+		static void RequestClearSceneTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
 					string ScenePath = AssetDatabase.GetAssetPath(TargetObject);
@@ -102,7 +102,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static bool ClearPrefabObject(GameObject TargetGameObject) {
+		static bool ClearPrefabObject(GameObject TargetGameObject) {
 			bool IsChanged = false;
 			int Count = 0;
 			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
@@ -132,7 +132,7 @@ namespace com.vrsuya.cleaner {
 			return IsChanged;
 		}
 
-		private static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
+		static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
 			List<ObjectOverride> PrefabOverrides = PrefabUtility.GetObjectOverrides(TargetGameObject, true);
 			List<Transform> OverridenTransform = PrefabOverrides
 				.Where(Item => Item.instanceObject.GetType() == typeof(Transform))
@@ -153,7 +153,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		private static bool NeedRevert(Transform TargetTransform, string TargetPropertyPath, float TargetValue) {
+		static bool NeedRevert(Transform TargetTransform, string TargetPropertyPath, float TargetValue) {
 			float OriginalValue = float.NaN;
 			switch (TargetPropertyPath) {
 				case "m_LocalPosition.x":
@@ -210,7 +210,7 @@ namespace com.vrsuya.cleaner {
 		/// <summary>PropertyPath가 Transform 관련 속성인지 확인합니다.</summary>
 		/// <param name="TargetPropertyPath">Property 경로</param>
 		/// <returns>Transform 속성 여부</returns>
-		private static bool IsTransformProperty(string TargetPropertyPath) {
+		static bool IsTransformProperty(string TargetPropertyPath) {
 			return TargetPropertyPath.StartsWith("m_LocalPosition") ||
 				   TargetPropertyPath.StartsWith("m_LocalRotation") ||
 				   TargetPropertyPath.StartsWith("m_LocalScale") ||

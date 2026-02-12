@@ -87,7 +87,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void ClearAnimatorMask(AnimatorController TargetAnimator) {
+		static void ClearAnimatorMask(AnimatorController TargetAnimator) {
 			if (TargetAnimator.layers.Any(Layer => Layer.avatarMask != null)) {
 				AnimatorControllerLayer[] NewAnimatorLayers = new AnimatorControllerLayer[TargetAnimator.layers.Length];
 				for (int Index = 0; Index < TargetAnimator.layers.Length; Index++) {
@@ -133,7 +133,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void CleanupFXAnimationTransition(AnimatorController TargetAnimator) {
+		static void CleanupFXAnimationTransition(AnimatorController TargetAnimator) {
 			bool IsDirty = false;
 			string[] NeedTimeTransitionLayerName = new string[] { "Left Hand", "Right Hand", "Mouth" };
 			foreach (AnimatorControllerLayer TargetLayer in TargetAnimator.layers) {
@@ -249,7 +249,7 @@ namespace com.vrsuya.cleaner {
 			return;
 		}
 
-		private static void CleanupGestureAnimationTransition(AnimatorController TargetAnimator) {
+		static void CleanupGestureAnimationTransition(AnimatorController TargetAnimator) {
 			bool IsDirty = false;
 			foreach (AnimatorControllerLayer TargetLayer in TargetAnimator.layers) {
 				AnimatorStateTransition[] NewAnyStateTransition = TargetLayer.stateMachine.anyStateTransitions;
