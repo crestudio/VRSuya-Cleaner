@@ -43,7 +43,7 @@ namespace com.vrsuya.cleaner {
 					"$1: {fileID: $2, guid: $3,"
 				)
 			};
-			string[] TargetFileExtensions = { "*.unity", "*.prefab", "*.mat", "*.controller" };
+			string[] TargetFileExtensions = { "*.unity", "*.prefab" };
 			List<string> AllTargetFiles = new List<string>();
 			foreach (string Extension in TargetFileExtensions) {
 				AllTargetFiles.AddRange(Directory.GetFiles(ProjectAssetsDirectoryPath, Extension, SearchOption.AllDirectories));
