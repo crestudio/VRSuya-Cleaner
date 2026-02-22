@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -103,19 +104,22 @@ namespace com.vrsuya.cleaner {
 			int Count = 0;
 			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
+			if (PropertyModifications == null) return IsChanged;
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
 				if (IsTransformProperty(TargetPropertyModification.propertyPath)) {
-					Transform SourceTransform = (Transform)TargetPropertyModification.target;
+					Transform SourceTransform = TargetPropertyModification.target as Transform;
 					string TargetPropertyPath = TargetPropertyModification.propertyPath;
-					float TargetValue = float.Parse(TargetPropertyModification.value);
+					float TargetValue = float.Parse(TargetPropertyModification.value, CultureInfo.InvariantCulture);
 					Transform OverriddenTransform = GetOverridenTransform(TargetGameObject, SourceTransform, TargetPropertyPath, TargetValue);
 					if (SourceTransform && OverriddenTransform) {
 						if (NeedRevert(SourceTransform, TargetPropertyPath, TargetValue)) {
 							SerializedObject SerializedTransform = new SerializedObject(OverriddenTransform);
 							SerializedProperty TargetProperty = SerializedTransform.FindProperty(TargetPropertyPath);
-							PrefabUtility.RevertPropertyOverride(TargetProperty, InteractionMode.AutomatedAction);
-							IsChanged = true;
-							Count++;
+							if (TargetProperty != null) {
+								PrefabUtility.RevertPropertyOverride(TargetProperty, InteractionMode.AutomatedAction);
+								IsChanged = true;
+								Count++;
+							}
 						}
 					}
 				}
@@ -131,22 +135,21 @@ namespace com.vrsuya.cleaner {
 		static Transform GetOverridenTransform(GameObject TargetGameObject, Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
 			List<ObjectOverride> PrefabOverrides = PrefabUtility.GetObjectOverrides(TargetGameObject, true);
 			List<Transform> OverridenTransform = PrefabOverrides
-				.Where(Item => Item.instanceObject.GetType() == typeof(Transform))
+				.Where(Item => Item.instanceObject is Transform)
 				.Select(Item => (Transform)Item.instanceObject)
 				.ToList();
 			if (OverridenTransform.Count > 0) {
-				Transform ReturnTransform = null;
 				foreach (Transform TargetTransform in OverridenTransform) {
 					SerializedObject SerializedTransform = new SerializedObject(TargetTransform);
 					SerializedProperty TargetProperty = SerializedTransform.FindProperty(TargetPropertyPath);
-					if (TargetProperty.floatValue == TargetValue) {
-						ReturnTransform = TargetTransform;
+					if (TargetProperty != null) {
+						if (Math.Abs(TargetProperty.floatValue - TargetValue) <= Tolerance) {
+							return TargetTransform;
+						}
 					}
 				}
-				return ReturnTransform;
-			} else {
-				return null;
 			}
+			return null;
 		}
 
 		static bool NeedRevert(Transform TargetTransform, string TargetPropertyPath, float TargetValue) {
@@ -192,12 +195,8 @@ namespace com.vrsuya.cleaner {
 					OriginalValue = TargetTransform.localScale.z;
 					break;
 			}
-			if (OriginalValue != float.NaN) {
-				if (Math.Abs(OriginalValue - TargetValue) <= Tolerance) {
-					return true;
-				} else {
-					return false;
-				}
+			if (!float.IsNaN(OriginalValue)) {
+				return Math.Abs(OriginalValue - TargetValue) <= Tolerance;
 			} else {
 				return true;
 			}
