@@ -19,7 +19,7 @@ namespace com.vrsuya.cleaner {
 	public class SortCAU : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Sort CAU", priority = 1000)]
-		public static void SortCAUAssets() {
+		static void SortCAUAssets() {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("glob:\"*.asset\"", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {
 				foreach (string TargetAssetGUID in AssetGUIDs) {

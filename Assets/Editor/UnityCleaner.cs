@@ -25,7 +25,7 @@ namespace com.vrsuya.cleaner {
     public class UnityCleaner : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Standardize fileID", priority = 1100)]
-		public static void StandardizefileID() {
+		static void StandardizefileID() {
 			Asset AssetInstance = new Asset();
 			string[] AnimatorControllerGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.AnimatorController);
 			int ChangedCount = 0;
@@ -44,7 +44,7 @@ namespace com.vrsuya.cleaner {
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Standardize IndirectSpecularColor", priority = 1100)]
-		public static void StandardizeIndirectSpecularColor() {
+		static void StandardizeIndirectSpecularColor() {
 			Asset AssetInstance = new Asset();
 			string[] SceneGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.Scene);
 			string NewValue = "m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}";

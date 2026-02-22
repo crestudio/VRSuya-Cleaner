@@ -20,7 +20,7 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>Scene에 존재하는 Missing Script 컴포넌트를 포함한 GameObject를 선택합니다.</summary>
 		[MenuItem("Tools/VRSuya/Cleaner/Select All GameObject of Missing Script", priority = 1200)]
-		public static void SelectMissingScriptGameObjects() {
+		static void SelectMissingScriptGameObjects() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
             if (MissingGameObjects.Length > 0) {
 				Selection.objects = MissingGameObjects;
@@ -32,7 +32,7 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>Scene에 존재하는 Missing Script 컴포넌트들을 삭제합니다.</summary>
 		[MenuItem("Tools/VRSuya/Cleaner/Remove All Missing Script Component", priority = 1200)]
-		public static void RemoveMissingScriptComponents() {
+		static void RemoveMissingScriptComponents() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
 			if (MissingGameObjects.Length > 0) {
 				string UndoGroupName = "Remove All Missing Component";

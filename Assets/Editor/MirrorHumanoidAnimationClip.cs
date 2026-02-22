@@ -12,7 +12,7 @@ namespace com.vrsuya.cleaner {
 	public class MirrorHumanoidAnimationClip : Editor {
 
 		[MenuItem("Assets/VRSuya/Mirror Humanoid AnimationClip", priority = 1000)]
-		public static void MirrorSelectedAnimation() {
+		static void MirrorSelectedAnimation() {
 			foreach (var SelectedObject in Selection.objects) {
 				if (!SelectedObject || !(SelectedObject is AnimationClip)) {
 					return;
