@@ -62,55 +62,71 @@ namespace com.vrsuya.cleaner {
 		 * 프로그램의 메인 메소드
 		 */
 
-		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
+		/// <summary>AnimatorController 에셋 정리를 호출합니다.</summary>
 		public void RemoveStructureByFileID() {
-			foreach (AnimatorController TargetAnimatorController in TargetAnimatorControllers) {
-				if (TargetAnimatorController) {
-					AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
-					if (!string.IsNullOrEmpty(AssetFilePath)) {
-						AssetFile = File.ReadAllLines(AssetFilePath);
-						GetNULLfileIDs(TargetAnimatorController);
-						TargetRemovefileIDs = TargetRemovefileIDs.Concat(TargetUserRemovefileIDs).Distinct().ToArray();
-						if (TargetRemovefileIDs.Length > 0) {
-							RemoveLineIndexs = new List<int>();
-							foreach (string TargetfileID in TargetRemovefileIDs) {
-								RemoveLineIndexs.AddRange(GetRemoveLineIndexs(TargetfileID));
-							}
-							for (int Try = 0; Try < 2; Try++) {
-								foreach (int TargetIndex in RemoveLineIndexs.ToList()) {
-									if (AssetFile[TargetIndex].Contains("fileID:")) {
-										if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
-											string newTargetfileID = ExtractfileIDFromLine(AssetFile[TargetIndex]);
-											if (!string.IsNullOrEmpty(newTargetfileID)) {
-												if (!Array.Exists(TargetRemovefileIDs, fileID => newTargetfileID == fileID)) {
-													if (!VerifyfileID(newTargetfileID)) {
-														RemoveLineIndexs.AddRange(GetRemoveLineIndexs(newTargetfileID));
-													}
+			if (TargetAnimatorControllers.Length > 0) {
+				Asset AssetInstance = new Asset();
+				try {
+					for (int Index = 0; Index < TargetAnimatorControllers.Length; Index++) {
+						string TargetAnimatorControllerGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(TargetAnimatorControllers[Index]));
+						string TargetAnimatorControllerName = AssetInstance.GUIDToAssetName(TargetAnimatorControllerGUID, true);
+						EditorUtility.DisplayProgressBar("Cleaning Animator Controller",
+							$"Processing : {TargetAnimatorControllerName}",
+							(float)Index / TargetAnimatorControllers.Length);
+						if (TargetAnimatorControllerName.EndsWith("Original")) continue;
+						CleanupAnimatorController(TargetAnimatorControllers[Index]);
+					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					AssetDatabase.Refresh();
+				}
+			}
+		}
+
+		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
+		void CleanupAnimatorController(AnimatorController TargetAnimatorController) {
+			if (TargetAnimatorController) {
+				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
+				if (!string.IsNullOrEmpty(AssetFilePath)) {
+					AssetFile = File.ReadAllLines(AssetFilePath);
+					GetNULLfileIDs(TargetAnimatorController);
+					TargetRemovefileIDs = TargetRemovefileIDs.Concat(TargetUserRemovefileIDs).Distinct().ToArray();
+					if (TargetRemovefileIDs.Length > 0) {
+						RemoveLineIndexs = new List<int>();
+						foreach (string TargetfileID in TargetRemovefileIDs) {
+							RemoveLineIndexs.AddRange(GetRemoveLineIndexs(TargetfileID));
+						}
+						for (int Try = 0; Try < 2; Try++) {
+							foreach (int TargetIndex in RemoveLineIndexs.ToList()) {
+								if (AssetFile[TargetIndex].Contains("fileID:")) {
+									if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
+										string newTargetfileID = ExtractfileIDFromLine(AssetFile[TargetIndex]);
+										if (!string.IsNullOrEmpty(newTargetfileID)) {
+											if (!Array.Exists(TargetRemovefileIDs, fileID => newTargetfileID == fileID)) {
+												if (!VerifyfileID(newTargetfileID)) {
+													RemoveLineIndexs.AddRange(GetRemoveLineIndexs(newTargetfileID));
 												}
 											}
 										}
 									}
 								}
 							}
-							RemoveLineIndexs.AddRange(AdditionRemoveLineIndexs);
-							if (RemoveLineIndexs.Count > 0) {
-								List<string> newAssetFile = new List<string>(AssetFile);
-								int[] ArrayRemoveLineIndexs = RemoveLineIndexs.Distinct().ToArray();
-								Array.Sort(ArrayRemoveLineIndexs);
-								Array.Reverse(ArrayRemoveLineIndexs);
-								foreach (int TargetIndex in ArrayRemoveLineIndexs) {
-									newAssetFile.RemoveAt(TargetIndex);
-								}
-								File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
-								Debug.LogWarning($"[VRSuya] {TargetAnimatorController.name} 에서 총 {ArrayRemoveLineIndexs.Length}줄의 데이터가 정리 되었습니다!");
+						}
+						RemoveLineIndexs.AddRange(AdditionRemoveLineIndexs);
+						if (RemoveLineIndexs.Count > 0) {
+							List<string> newAssetFile = new List<string>(AssetFile);
+							int[] ArrayRemoveLineIndexs = RemoveLineIndexs.Distinct().ToArray();
+							Array.Sort(ArrayRemoveLineIndexs);
+							Array.Reverse(ArrayRemoveLineIndexs);
+							foreach (int TargetIndex in ArrayRemoveLineIndexs) {
+								newAssetFile.RemoveAt(TargetIndex);
 							}
-						} else {
-							Debug.Log($"[VRSuya] {TargetAnimatorController.name} 에는 모든 fileID가 유효합니다");
+							File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
+							Debug.LogWarning($"[VRSuya] Cleaned up {ArrayRemoveLineIndexs.Length} lines of unused data from {TargetAnimatorController.name}");
 						}
 					}
 				}
 			}
-			AssetDatabase.Refresh();
 		}
 
 		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID를 찾습니다.</summary>
