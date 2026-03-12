@@ -25,22 +25,42 @@ namespace com.vrsuya.cleaner {
     public class UnityCleaner : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Standardize fileID", priority = 1100)]
-		static void StandardizefileID() {
+		static void RequestStandardizefileID() {
 			Asset AssetInstance = new Asset();
 			string[] AnimatorControllerGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.AnimatorController);
-			int ChangedCount = 0;
-			foreach (string AnimatorControllerGUID in AnimatorControllerGUIDs) {
-				AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID));
-				if (TargetAnimatorController && TargetAnimatorController.GetType() == typeof(AnimatorController)) {
-					string RawAnimatorController = File.ReadAllText(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID));
-					if (RawAnimatorController.Contains("m_Controller: {fileID: 0}")) {
-						string newRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 0}", "m_Controller: {fileID: 9100000}");
-						File.WriteAllText(AssetDatabase.GUIDToAssetPath(AnimatorControllerGUID), newRawAnimatorController);
-						ChangedCount++;
+			if (AnimatorControllerGUIDs.Length > 0) {
+				int ChangedCount = 0;
+				try {
+					for (int Index = 0; Index < AnimatorControllerGUIDs.Length; Index++) {
+						string TargetAssetName = AssetInstance.GUIDToAssetName(AnimatorControllerGUIDs[Index], true);
+						EditorUtility.DisplayProgressBar("Standardizing fileID",
+							$"Processing : {TargetAssetName}",
+							(float)Index / AnimatorControllerGUIDs.Length);
+						if (TargetAssetName.EndsWith("Original")) continue;
+						if (StandardizefileID(AnimatorControllerGUIDs[Index])) {
+							ChangedCount++;
+						}
 					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					AssetDatabase.Refresh();
+				}
+				Debug.Log($"[VRSuya] Normalized the fileIDs of {ChangedCount} Animator Controllers");
+			}
+		}
+
+		static bool StandardizefileID(string TargetGUID) {
+			string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUID);
+			AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+			if (TargetAnimatorController && TargetAnimatorController is AnimatorController) {
+				string RawAnimatorController = File.ReadAllText(TargetAssetPath);
+				if (RawAnimatorController.Contains("m_Controller: {fileID: 0}")) {
+					string newRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 0}", "m_Controller: {fileID: 9100000}");
+					File.WriteAllText(TargetAssetPath, newRawAnimatorController);
+					return true;
 				}
 			}
-			Debug.Log($"[VRSuya] Normalized the fileIDs of {ChangedCount} Animator Controllers");
+			return false;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Standardize IndirectSpecularColor", priority = 1100)]
