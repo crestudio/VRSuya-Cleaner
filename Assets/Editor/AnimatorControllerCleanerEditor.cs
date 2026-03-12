@@ -4,6 +4,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Animations;
 
+using VRSuya.Core;
+
 /*
  * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
@@ -76,7 +78,9 @@ namespace com.vrsuya.cleaner {
 		static void ClearAllFXLayerMask() {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
 				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
 					if (TargetFXLayer) ClearAnimatorMask(TargetFXLayer);
 				}
@@ -107,7 +111,9 @@ namespace com.vrsuya.cleaner {
 		static void CleanupAllFXLayerTransition() {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
 				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
 					if (TargetFXLayer) CleanupFXAnimationTransition(TargetFXLayer);
 				}
@@ -119,7 +125,9 @@ namespace com.vrsuya.cleaner {
 		static void CleanupAllGestureLayerTransition() {
 			string[] GestureLayerGUIDs = AssetDatabase.FindAssets("Gesture t:AnimatorController", new[] { "Assets/" });
 			if (GestureLayerGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
 				foreach (string TargetGestureLayerGUID in GestureLayerGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetGestureLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetGestureLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetGestureLayerGUID));
 					if (TargetGestureLayer) CleanupGestureAnimationTransition(TargetGestureLayer);
 				}

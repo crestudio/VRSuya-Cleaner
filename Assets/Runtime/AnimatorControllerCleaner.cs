@@ -9,6 +9,8 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
+using VRSuya.Core;
+
 /*
  * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
@@ -197,18 +199,22 @@ namespace com.vrsuya.cleaner {
 
 		/// <summary>에셋 라이브러리에서 AnimatorController 에셋들을 가져와서 추가합니다.</summary>
 		public void AddAnimatorControllers() {
-			List<AnimatorController> ListAnimatorController = new List<AnimatorController>();
 			string[] AnimatorControllerGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets\\" + TargetFolderPath });
-			foreach (string TargetAnimatorControllerGUID in AnimatorControllerGUIDs) {
-				AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorControllerGUID));
-				if (TargetAnimatorController is AnimatorController) {
-					ListAnimatorController.Add(TargetAnimatorController);
+			if (AnimatorControllerGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
+				List<AnimatorController> ListAnimatorController = new List<AnimatorController>();
+				foreach (string TargetAnimatorControllerGUID in AnimatorControllerGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetAnimatorControllerGUID, true).EndsWith("Original")) continue;
+					AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorControllerGUID));
+					if (TargetAnimatorController is AnimatorController) {
+						ListAnimatorController.Add(TargetAnimatorController);
+					}
 				}
-			}
-			if (ListAnimatorController.Count > 0) {
-				AnimatorController[] newAnimatorControllers = ListAnimatorController.ToArray();
-				Array.Sort(newAnimatorControllers, (a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
-				TargetAnimatorControllers = TargetAnimatorControllers.Concat(newAnimatorControllers).ToArray();
+				if (ListAnimatorController.Count > 0) {
+					AnimatorController[] newAnimatorControllers = ListAnimatorController.ToArray();
+					Array.Sort(newAnimatorControllers, (a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
+					TargetAnimatorControllers = TargetAnimatorControllers.Concat(newAnimatorControllers).ToArray();
+				}
 			}
 		}
 

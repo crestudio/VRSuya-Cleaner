@@ -29,7 +29,9 @@ namespace com.vrsuya.cleaner {
 		static void SortAllParameters() {
 			string[] ParameterGUIDs = AssetDatabase.FindAssets("Parameter", new[] { "Assets/" });
 			if (ParameterGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
 				foreach (string TargetParameterGUID in ParameterGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetParameterGUID, true).EndsWith("Original")) continue;
 					VRCExpressionParameters TargetParameter = AssetDatabase.LoadAssetAtPath<VRCExpressionParameters>(AssetDatabase.GUIDToAssetPath(TargetParameterGUID));
 					if (TargetParameter) SortParameters(TargetParameter);
 				}
@@ -66,7 +68,9 @@ namespace com.vrsuya.cleaner {
 		static void SortAllMenus() {
 			string[] MenuGUIDs = AssetDatabase.FindAssets("Menu", new[] { "Assets/" });
 			if (MenuGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
 				foreach (string TargetMenuGUID in MenuGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetMenuGUID, true).EndsWith("Original")) continue;
 					VRCExpressionsMenu TargetMenu = AssetDatabase.LoadAssetAtPath<VRCExpressionsMenu>(AssetDatabase.GUIDToAssetPath(TargetMenuGUID));
 					if (TargetMenu) SortMenus(TargetMenu);
 				}
@@ -96,7 +100,9 @@ namespace com.vrsuya.cleaner {
 		static void SortAllAnimator() {
 			string[] AnimatorGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (AnimatorGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
 				foreach (string TargetAnimatorGUID in AnimatorGUIDs) {
+					if (AssetInstance.GUIDToAssetName(TargetAnimatorGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorGUID));
 					if (TargetAnimator) SortAnimatorLayerParameter(TargetAnimator);
 				}
