@@ -1,7 +1,8 @@
 ﻿#if UNITY_EDITOR
-using System.Text.RegularExpressions;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 using UnityEngine;
 using UnityEditor;
@@ -27,6 +28,51 @@ namespace com.vrsuya.cleaner {
 				RuleDescription = Description;
 				CompiledSearchRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Multiline);
 				ReplacementTemplate = Template;
+			}
+		}
+
+		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines", true)]
+		static bool ValidateAsset() {
+			return Selection.objects
+				.Select(Item => AssetDatabase.GetAssetPath(Item))
+				.Select(Item => Item.EndsWith(".prefab") || Item.EndsWith(".unity"))
+				.Contains(true);
+		}
+
+		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines")]
+		static void RequestClenaupAssets() {
+			List<YamlFormattingRule> FormattingRuleList = new List<YamlFormattingRule> {
+				new YamlFormattingRule(
+					"Merge Multi-line Object Reference",
+					@"(\w+):\s*\{fileID:\s*(-?\d+),\s*guid:\s*([a-f0-9]+),\s+type:\s*(\d+)\}",
+					"$1: {fileID: $2, guid: $3, type: $4}"
+				),
+				new YamlFormattingRule(
+					"Merge Multi-line Object Reference (Alternative)",
+					@"(\w+):\s*\{fileID:\s*(-?\d+),\s*\n?\s*guid:\s*([a-f0-9]+),",
+					"$1: {fileID: $2, guid: $3,"
+				)
+			};
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
+				int ModifiedCount = 0;
+				try {
+					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
+						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						EditorUtility.DisplayProgressBar("Cleaning Broken YAML Formatting",
+							$"Processing : {TargetAssetName}",
+							(float)Index / AssetGUIDs.Length);
+						if (TargetAssetName.EndsWith("Original")) continue;
+						if (ApplyFormattingRulesToSingleFile(AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]), FormattingRuleList)) {
+							ModifiedCount++;
+						}
+					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					AssetDatabase.Refresh();
+				}
+				Debug.Log($"[VRSuya] Cleaned up broken YAML lines in {ModifiedCount} files");
 			}
 		}
 
