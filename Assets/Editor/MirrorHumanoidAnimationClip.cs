@@ -1,4 +1,6 @@
 ﻿#if UNITY_EDITOR
+using System.Linq;
+
 using UnityEngine;
 using UnityEditor;
 
@@ -10,6 +12,14 @@ using UnityEditor;
 namespace com.vrsuya.cleaner {
 
 	public class MirrorHumanoidAnimationClip : Editor {
+
+		[MenuItem("Assets/VRSuya/Mirror Humanoid AnimationClip", true)]
+		static bool ValidateAnimationClip() {
+			return Selection.objects
+				.Select(Item => AssetDatabase.GetAssetPath(Item))
+				.Select(Item => Item.EndsWith(".anim"))
+				.Contains(true);
+		}
 
 		[MenuItem("Assets/VRSuya/Mirror Humanoid AnimationClip", priority = 1000)]
 		static void MirrorSelectedAnimation() {

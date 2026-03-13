@@ -89,7 +89,15 @@ namespace com.vrsuya.cleaner {
 		static readonly float Tolerance = 0.001f;
 		static readonly Regex AnimationArrayRegex = new Regex(@"^animationHashSet\.Array\.data\[\d+\]\.(hash|name)$");
 
-		[MenuItem("Assets/VRSuya/Clear Prefab Transform Overrides", priority = 1100)]
+		[MenuItem("Assets/VRSuya/Clear Prefab Overrides", true)]
+		static bool ValidatePrefab() {
+			return Selection.objects
+				.Select(Item => AssetDatabase.GetAssetPath(Item))
+				.Select(Item => Item.EndsWith(".prefab"))
+				.Contains(true);
+		}
+
+		[MenuItem("Assets/VRSuya/Clear Prefab Overrides", priority = 1100)]
 		static void RequestClearPrefabTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
@@ -99,7 +107,15 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Assets/VRSuya/Clear Scene Transform Overrides", priority = 1100)]
+		[MenuItem("Assets/VRSuya/Clear Scene Overrides", true)]
+		static bool ValidateScene() {
+			return Selection.objects
+				.Select(Item => AssetDatabase.GetAssetPath(Item))
+				.Select(Item => Item.EndsWith(".unity"))
+				.Contains(true);
+		}
+
+		[MenuItem("Assets/VRSuya/Clear Scene Overrides", priority = 1100)]
 		static void RequestClearSceneTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
