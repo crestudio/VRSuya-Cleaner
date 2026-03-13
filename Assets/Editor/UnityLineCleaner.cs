@@ -20,12 +20,12 @@ namespace com.vrsuya.cleaner {
 
 		class YamlFormattingRule {
 			public string RuleDescription;
-			public string SearchRegexPattern;
+			public Regex CompiledSearchRegex;
 			public string ReplacementTemplate;
 
 			public YamlFormattingRule(string Description, string Pattern, string Template) {
 				RuleDescription = Description;
-				SearchRegexPattern = Pattern;
+				CompiledSearchRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Multiline);
 				ReplacementTemplate = Template;
 			}
 		}
@@ -69,9 +69,12 @@ namespace com.vrsuya.cleaner {
 
 		static bool ApplyFormattingRulesToSingleFile(string FilePath, List<YamlFormattingRule> RuleList) {
 			string OriginalFileContent = File.ReadAllText(FilePath);
+			if (OriginalFileContent.IndexOf("{fileID:", System.StringComparison.Ordinal) == -1) {
+				return false;
+			}
 			string ModifiedFileContent = OriginalFileContent;
 			foreach (YamlFormattingRule Rule in RuleList) {
-				ModifiedFileContent = Regex.Replace(ModifiedFileContent, Rule.SearchRegexPattern, Rule.ReplacementTemplate);
+				ModifiedFileContent = Rule.CompiledSearchRegex.Replace(ModifiedFileContent, Rule.ReplacementTemplate);
 			}
 			if (OriginalFileContent != ModifiedFileContent) {
 				File.WriteAllText(FilePath, ModifiedFileContent);
