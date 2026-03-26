@@ -86,7 +86,7 @@ namespace com.vrsuya.cleaner {
 
 	public static class PrefabTransformCleaner {
 
-		static readonly float Tolerance = 0.001f;
+		const float Tolerance = 0.001f;
 
 		[MenuItem("Assets/VRSuya/Clear Prefab Overrides", true)]
 		static bool ValidatePrefab() {

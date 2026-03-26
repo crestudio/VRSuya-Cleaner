@@ -55,8 +55,8 @@ namespace com.vrsuya.cleaner {
 		static List<int> AdditionRemoveLineIndexs = new List<int>();
 
 		static readonly string StructureStartPattern = $"--- !u!";
-		static readonly string HeaderfileIdPattern = @"&(-?\d+)";
-		static readonly string LinefileIdPattern = @"fileID:\s*(-?\d+)";
+		const string HeaderfileIdPattern = @"&(-?\d+)";
+		const string LinefileIdPattern = @"fileID:\s*(-?\d+)";
 
 		/*
 		 * 프로그램의 메인 메소드
