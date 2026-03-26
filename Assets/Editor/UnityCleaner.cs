@@ -100,7 +100,7 @@ namespace com.vrsuya.cleaner {
 		static void RequestClearPrefabTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
-				if (TargetGameObject && TargetGameObject.GetType() == typeof(GameObject)) {
+				if (TargetGameObject && TargetGameObject is GameObject) {
 					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClearPrefabObject(TargetGameObject);
 				}
 			}
