@@ -135,7 +135,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		static bool ClearPrefabObject(GameObject TargetGameObject) {
+		public static bool ClearPrefabObject(GameObject TargetGameObject) {
 			bool IsChanged = false;
 			int Count = 0;
 			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;

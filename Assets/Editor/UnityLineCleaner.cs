@@ -31,6 +31,19 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
+		static readonly List<YamlFormattingRule> FormattingRuleList = new List<YamlFormattingRule> {
+			new YamlFormattingRule(
+				"Merge Multi-line Object Reference",
+				@"(\w+):\s*\{fileID:\s*(-?\d+),\s*guid:\s*([a-f0-9]+),\s+type:\s*(\d+)\}",
+				"$1: {fileID: $2, guid: $3, type: $4}"
+			),
+			new YamlFormattingRule(
+				"Merge Multi-line Object Reference (Alternative)",
+				@"(\w+):\s*\{fileID:\s*(-?\d+),\s*\n?\s*guid:\s*([a-f0-9]+),",
+				"$1: {fileID: $2, guid: $3,"
+			)
+		};
+
 		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines", true)]
 		static bool ValidateAsset() {
 			return Selection.objects
@@ -40,19 +53,7 @@ namespace com.vrsuya.cleaner {
 		}
 
 		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines")]
-		static void RequestClenaupAssets() {
-			List<YamlFormattingRule> FormattingRuleList = new List<YamlFormattingRule> {
-				new YamlFormattingRule(
-					"Merge Multi-line Object Reference",
-					@"(\w+):\s*\{fileID:\s*(-?\d+),\s*guid:\s*([a-f0-9]+),\s+type:\s*(\d+)\}",
-					"$1: {fileID: $2, guid: $3, type: $4}"
-				),
-				new YamlFormattingRule(
-					"Merge Multi-line Object Reference (Alternative)",
-					@"(\w+):\s*\{fileID:\s*(-?\d+),\s*\n?\s*guid:\s*([a-f0-9]+),",
-					"$1: {fileID: $2, guid: $3,"
-				)
-			};
+		static void RequestFixSelectedAssets() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
 				Asset AssetInstance = new Asset();
@@ -64,7 +65,7 @@ namespace com.vrsuya.cleaner {
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
 						if (TargetAssetName.EndsWith("Original")) continue;
-						if (ApplyFormattingRulesToSingleFile(AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]), FormattingRuleList)) {
+						if (FixYAMLBrokenLines(AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]))) {
 							ModifiedCount++;
 						}
 					}
@@ -77,19 +78,7 @@ namespace com.vrsuya.cleaner {
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Fix YAML Broken Lines", priority = 1100)]
-		static void ExecuteComprehensiveYamlCleanup() {
-			List<YamlFormattingRule> FormattingRuleList = new List<YamlFormattingRule> {
-				new YamlFormattingRule(
-					"Merge Multi-line Object Reference",
-					@"(\w+):\s*\{fileID:\s*(-?\d+),\s*guid:\s*([a-f0-9]+),\s+type:\s*(\d+)\}",
-					"$1: {fileID: $2, guid: $3, type: $4}"
-				),
-				new YamlFormattingRule(
-					"Merge Multi-line Object Reference (Alternative)",
-					@"(\w+):\s*\{fileID:\s*(-?\d+),\s*\n?\s*guid:\s*([a-f0-9]+),",
-					"$1: {fileID: $2, guid: $3,"
-				)
-			};
+		static void RequestFixAllAssets() {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("t:Scene t:Prefab", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {
 				Asset AssetInstance = new Asset();
@@ -101,7 +90,7 @@ namespace com.vrsuya.cleaner {
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
 						if (TargetAssetName.EndsWith("Original")) continue;
-						if (ApplyFormattingRulesToSingleFile(AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]), FormattingRuleList)) {
+						if (FixYAMLBrokenLines(AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]))) {
 							ModifiedCount++;
 						}
 					}
@@ -113,13 +102,13 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		static bool ApplyFormattingRulesToSingleFile(string FilePath, List<YamlFormattingRule> RuleList) {
+		public static bool FixYAMLBrokenLines(string FilePath) {
 			string OriginalFileContent = File.ReadAllText(FilePath);
 			if (OriginalFileContent.IndexOf("{fileID:", System.StringComparison.Ordinal) == -1) {
 				return false;
 			}
 			string ModifiedFileContent = OriginalFileContent;
-			foreach (YamlFormattingRule Rule in RuleList) {
+			foreach (YamlFormattingRule Rule in FormattingRuleList) {
 				ModifiedFileContent = Rule.CompiledSearchRegex.Replace(ModifiedFileContent, Rule.ReplacementTemplate);
 			}
 			if (OriginalFileContent != ModifiedFileContent) {
