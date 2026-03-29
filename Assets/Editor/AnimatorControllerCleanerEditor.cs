@@ -16,59 +16,63 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
 	public class AnimatorControllerCleanerEditor : EditorWindow {
 
-		AnimatorControllerCleaner AnimatorControllerCleanerInstance;
-		SerializedObject SerializedAnimatorControllerCleaner;
-		SerializedProperty SerializedTargetFolderPath;
-		SerializedProperty SerializedTargetAnimatorControllers;
-		SerializedProperty SerializedTargetUserRemovefileIDs;
-
-		void OnEnable() {
-			AnimatorControllerCleanerInstance = CreateInstance<AnimatorControllerCleaner>();
-			SerializedAnimatorControllerCleaner = new SerializedObject(AnimatorControllerCleanerInstance);
-			SerializedTargetFolderPath = SerializedAnimatorControllerCleaner.FindProperty("TargetFolderPath");
-			SerializedTargetAnimatorControllers = SerializedAnimatorControllerCleaner.FindProperty("TargetAnimatorControllers");
-			SerializedTargetUserRemovefileIDs = SerializedAnimatorControllerCleaner.FindProperty("TargetUserRemovefileIDs");
+		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", true)]
+		static bool ValidateAsset() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAnimatorController(Selection.objects);
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/AnimatorController Cleaner", priority = 1000)]
-		static void CreateWindow() {
-			AnimatorControllerCleanerEditor AppWindow = GetWindowWithRect<AnimatorControllerCleanerEditor>(new Rect(0, 0, 525, 170), true, "AnimatorController Cleaner");
+		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", priority = 1000)]
+		static void RequestCleanAnimatorController() {
+			AnimatorControllerCleaner CleanerInstance = new AnimatorControllerCleaner();
+			Asset AssetInstance = new Asset();
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < Selection.objects.Length; Index++) {
+					string TargetAssetPath = AssetDatabase.GetAssetPath(Selection.objects[Index]);
+					string TargetGUID = AssetDatabase.AssetPathToGUID(TargetAssetPath);
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUID, true);
+					EditorUtility.DisplayProgressBar("Cleaning AnimatorController",
+						$"Processing : {TargetAssetName}",
+						(float)Index / Selection.objects.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetName);
+					if (CleanerInstance.CleanupAnimatorController(TargetAnimator)) {
+						ModifiedCount++;
+					}
+				}
+			} finally {
+				EditorUtility.ClearProgressBar();
+				AssetDatabase.Refresh();
+			}
+			Debug.Log($"[VRSuya] Cleaned up AnimatorController in {ModifiedCount} files");
 		}
 
-		void OnGUI() {
-			if (SerializedAnimatorControllerCleaner == null) {
-				Close();
-				return;
+		[MenuItem("Tools/VRSuya/Cleaner/Clean up All AnimatorController", priority = 1000)]
+		static void RequestCleanAllAnimatorController() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				AnimatorControllerCleaner CleanerInstance = new AnimatorControllerCleaner();
+				Asset AssetInstance = new Asset();
+				int ModifiedCount = 0;
+				try {
+					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
+						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						EditorUtility.DisplayProgressBar("Cleaning AnimatorController",
+							$"Processing : {TargetAssetName}",
+							(float)Index / AssetGUIDs.Length);
+						if (TargetAssetName.EndsWith("Original")) continue;
+						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetName);
+						if (CleanerInstance.CleanupAnimatorController(TargetAnimator)) {
+							ModifiedCount++;
+						}
+					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					AssetDatabase.Refresh();
+				}
+				Debug.Log($"[VRSuya] Cleaned up AnimatorController in {ModifiedCount} files");
 			}
-			SerializedAnimatorControllerCleaner.Update();
-			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
-			GUILayout.BeginHorizontal();
-			GUILayout.Space(15);
-			EditorGUILayout.PropertyField(SerializedTargetFolderPath, new GUIContent("검색 경로"));
-			if (GUILayout.Button("추가", GUILayout.Width(100))) {
-				AnimatorControllerCleanerInstance.AddAnimatorControllers();
-			}
-			GUILayout.Space(15);
-			GUILayout.EndHorizontal();
-			GUILayout.BeginHorizontal();
-			GUILayout.Space(15);
-			EditorGUILayout.PropertyField(SerializedTargetAnimatorControllers, new GUIContent("대상 AnimatorController"));
-			GUILayout.Space(15);
-			GUILayout.EndHorizontal();
-			GUILayout.BeginHorizontal();
-			GUILayout.Space(15);
-			EditorGUILayout.PropertyField(SerializedTargetUserRemovefileIDs, new GUIContent("정리할 fileID 리스트"));
-			GUILayout.Space(15);
-			GUILayout.EndHorizontal();
-			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("정리", GUILayout.Width(100))) {
-				AnimatorControllerCleanerInstance.RemoveStructureByFileID();
-			}
-			GUILayout.FlexibleSpace();
-			GUILayout.EndHorizontal();
-			EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
-			SerializedAnimatorControllerCleaner.ApplyModifiedProperties();
 		}
 	}
 

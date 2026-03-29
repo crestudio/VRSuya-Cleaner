@@ -9,8 +9,6 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-using VRSuya.Core;
-
 /*
  * VRSuya Cleaner
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
@@ -20,11 +18,6 @@ namespace com.vrsuya.cleaner {
 
 	[ExecuteInEditMode]
 	public class AnimatorControllerCleaner : ScriptableObject {
-
-		[SerializeField]
-		public string TargetFolderPath = string.Empty;
-		public AnimatorController[] TargetAnimatorControllers = new AnimatorController[0];
-		public string[] TargetUserRemovefileIDs = new string[0];
 
 		static string[] TargetRemovefileIDs = new string[0];
 		static string AssetFilePath = string.Empty;
@@ -62,35 +55,13 @@ namespace com.vrsuya.cleaner {
 		 * 프로그램의 메인 메소드
 		 */
 
-		/// <summary>AnimatorController 에셋 정리를 호출합니다.</summary>
-		public void RemoveStructureByFileID() {
-			if (TargetAnimatorControllers.Length > 0) {
-				Asset AssetInstance = new Asset();
-				try {
-					for (int Index = 0; Index < TargetAnimatorControllers.Length; Index++) {
-						string TargetAnimatorControllerGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(TargetAnimatorControllers[Index]));
-						string TargetAnimatorControllerName = AssetInstance.GUIDToAssetName(TargetAnimatorControllerGUID, true);
-						EditorUtility.DisplayProgressBar("Cleaning Animator Controller",
-							$"Processing : {TargetAnimatorControllerName}",
-							(float)Index / TargetAnimatorControllers.Length);
-						if (TargetAnimatorControllerName.EndsWith("Original")) continue;
-						CleanupAnimatorController(TargetAnimatorControllers[Index]);
-					}
-				} finally {
-					EditorUtility.ClearProgressBar();
-					AssetDatabase.Refresh();
-				}
-			}
-		}
-
 		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
-		void CleanupAnimatorController(AnimatorController TargetAnimatorController) {
+		public bool CleanupAnimatorController(AnimatorController TargetAnimatorController) {
 			if (TargetAnimatorController) {
 				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
 				if (!string.IsNullOrEmpty(AssetFilePath)) {
 					AssetFile = File.ReadAllLines(AssetFilePath);
 					GetNULLfileIDs(TargetAnimatorController);
-					TargetRemovefileIDs = TargetRemovefileIDs.Concat(TargetUserRemovefileIDs).Distinct().ToArray();
 					if (TargetRemovefileIDs.Length > 0) {
 						RemoveLineIndexs = new List<int>();
 						foreach (string TargetfileID in TargetRemovefileIDs) {
@@ -123,10 +94,12 @@ namespace com.vrsuya.cleaner {
 							}
 							File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
 							Debug.LogWarning($"[VRSuya] Cleaned up {ArrayRemoveLineIndexs.Length} lines of unused data from {TargetAnimatorController.name}");
+							return true;
 						}
 					}
 				}
 			}
+			return false;
 		}
 
 		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID를 찾습니다.</summary>
@@ -211,27 +184,6 @@ namespace com.vrsuya.cleaner {
 				$"Transition : {VaildAnimatorStateTransitionfileIDs.Count} - {InvaildAnimatorStateTransitionfileIDs.Count} = {AllAnimatorStateTransitionfileIDs.Count}\n" +
 				$"BlendTree : {VaildBlendTreefileIDs.Count} - {InvaildBlendTreefileIDs.Count} = {AllBlendTreefileIDs.Count}\n" +
 				$"MonoBehaviour : {VaildMonoBehaviourfileIDs.Count} - {InvaildMonoBehaviourfileIDs.Count} = {AllMonoBehaviourfileIDs.Count}");
-		}
-
-		/// <summary>에셋 라이브러리에서 AnimatorController 에셋들을 가져와서 추가합니다.</summary>
-		public void AddAnimatorControllers() {
-			string[] AnimatorControllerGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets\\" + TargetFolderPath });
-			if (AnimatorControllerGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
-				List<AnimatorController> ListAnimatorController = new List<AnimatorController>();
-				foreach (string TargetAnimatorControllerGUID in AnimatorControllerGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetAnimatorControllerGUID, true).EndsWith("Original")) continue;
-					AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorControllerGUID));
-					if (TargetAnimatorController is AnimatorController) {
-						ListAnimatorController.Add(TargetAnimatorController);
-					}
-				}
-				if (ListAnimatorController.Count > 0) {
-					AnimatorController[] newAnimatorControllers = ListAnimatorController.ToArray();
-					Array.Sort(newAnimatorControllers, (a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
-					TargetAnimatorControllers = TargetAnimatorControllers.Concat(newAnimatorControllers).ToArray();
-				}
-			}
 		}
 
 		/*
