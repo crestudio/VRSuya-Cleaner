@@ -48,7 +48,7 @@ namespace com.vrsuya.cleaner {
 			Debug.Log($"[VRSuya] Cleaned up AnimatorController in {ModifiedCount} files");
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Clean up All AnimatorController", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Clean up All AnimatorController", priority = 1000)]
 		static void RequestCleanAllAnimatorController() {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {
@@ -78,7 +78,7 @@ namespace com.vrsuya.cleaner {
 
 	public class AnimatorControllerContentCleaner : EditorWindow {
 
-		[MenuItem("Tools/VRSuya/Cleaner/Clear FX Layer Mask", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Clear FX Layer Mask", priority = 1000)]
 		static void ClearAllFXLayerMask() {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
@@ -111,7 +111,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Clean up FX Layer Transition", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Clean up FX Layer Transition", priority = 1000)]
 		static void CleanupAllFXLayerTransition() {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
@@ -125,7 +125,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Clean up Gesture Layer Transition", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Clean up Gesture Layer Transition", priority = 1000)]
 		static void CleanupAllGestureLayerTransition() {
 			string[] GestureLayerGUIDs = AssetDatabase.FindAssets("Gesture t:AnimatorController", new[] { "Assets/" });
 			if (GestureLayerGUIDs.Length > 0) {

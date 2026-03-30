@@ -13,7 +13,7 @@ namespace com.vrsuya.cleaner {
 
 	public class MirrorHumanoidAnimationClip : Editor {
 
-		[MenuItem("Assets/VRSuya/Mirror Humanoid AnimationClip", true)]
+		[MenuItem("Assets/VRSuya/Animation/Mirror Humanoid AnimationClip", true)]
 		static bool ValidateAnimationClip() {
 			return Selection.objects
 				.Select(Item => AssetDatabase.GetAssetPath(Item))
@@ -21,7 +21,7 @@ namespace com.vrsuya.cleaner {
 				.Contains(true);
 		}
 
-		[MenuItem("Assets/VRSuya/Mirror Humanoid AnimationClip", priority = 1000)]
+		[MenuItem("Assets/VRSuya/Animation/Mirror Humanoid AnimationClip", priority = 1000)]
 		static void MirrorSelectedAnimation() {
 			foreach (var SelectedObject in Selection.objects) {
 				if (!SelectedObject || !(SelectedObject is AnimationClip)) {

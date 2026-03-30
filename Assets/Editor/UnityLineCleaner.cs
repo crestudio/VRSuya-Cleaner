@@ -75,7 +75,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Fix YAML Broken Lines", priority = 1100)]
+		[MenuItem("Tools/VRSuya/Cleaner/Asset/Fix YAML Broken Lines", priority = 1100)]
 		static void RequestFixAllAssets() {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("t:Scene t:Prefab", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {

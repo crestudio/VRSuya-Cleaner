@@ -25,7 +25,7 @@ namespace com.vrsuya.cleaner {
 
 		static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };
 
-		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Parameters", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/VRChat/Sort VRChat Parameters", priority = 1000)]
 		static void SortAllParameters() {
 			string[] ParameterGUIDs = AssetDatabase.FindAssets("Parameter", new[] { "Assets/" });
 			if (ParameterGUIDs.Length > 0) {
@@ -64,7 +64,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Sort VRChat Menus", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/VRChat/Sort VRChat Menus", priority = 1000)]
 		static void SortAllMenus() {
 			string[] MenuGUIDs = AssetDatabase.FindAssets("Menu", new[] { "Assets/" });
 			if (MenuGUIDs.Length > 0) {
@@ -96,7 +96,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator Layer Parameter", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Sort Animator Layer Parameter", priority = 1000)]
 		static void SortAllAnimator() {
 			string[] AnimatorGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (AnimatorGUIDs.Length > 0) {
@@ -161,7 +161,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Sort Animator States", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Sort Animator States", priority = 1000)]
 		static void AlignAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
 			if (CurrentAnimator) {
@@ -175,7 +175,7 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Rename Copied Animator States", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Rename Copied Animator States", priority = 1000)]
 		static void RenameAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
 			if (CurrentAnimator) {
