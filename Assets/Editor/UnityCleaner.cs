@@ -24,12 +24,45 @@ namespace com.vrsuya.cleaner {
 	[ExecuteInEditMode]
     public class UnityCleaner : EditorWindow {
 
-		[MenuItem("Tools/VRSuya/Cleaner/Standardize fileID", priority = 1100)]
+		[MenuItem("Assets/VRSuya/Animator/Standardize fileID", true)]
+		static bool ValidateAnimator() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAnimatorController(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Animator/Standardize fileID", priority = 1000)]
 		static void RequestStandardizefileID() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
+				int ModifiedCount = 0;
+				try {
+					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
+						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						EditorUtility.DisplayProgressBar("Standardizing fileID",
+							$"Processing : {TargetAssetName}",
+							(float)Index / AssetGUIDs.Length);
+						if (TargetAssetName.EndsWith("Original")) continue;
+						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
+						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+						if (StandardizefileID(TargetAnimator)) {
+							ModifiedCount++;
+						}
+					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					AssetDatabase.Refresh();
+				}
+				Debug.Log($"[VRSuya] Normalized the fileIDs of {ModifiedCount} Animator Controllers");
+			}
+		}
+
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Standardize fileID", priority = 1000)]
+		static void RequestAllStandardizefileID() {
 			Asset AssetInstance = new Asset();
 			string[] AnimatorControllerGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.AnimatorController);
 			if (AnimatorControllerGUIDs.Length > 0) {
-				int ChangedCount = 0;
+				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AnimatorControllerGUIDs.Length; Index++) {
 						string TargetAssetName = AssetInstance.GUIDToAssetName(AnimatorControllerGUIDs[Index], true);
@@ -37,22 +70,23 @@ namespace com.vrsuya.cleaner {
 							$"Processing : {TargetAssetName}",
 							(float)Index / AnimatorControllerGUIDs.Length);
 						if (TargetAssetName.EndsWith("Original")) continue;
-						if (StandardizefileID(AnimatorControllerGUIDs[Index])) {
-							ChangedCount++;
+						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AnimatorControllerGUIDs[Index]);
+						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+						if (StandardizefileID(TargetAnimator)) {
+							ModifiedCount++;
 						}
 					}
 				} finally {
 					EditorUtility.ClearProgressBar();
 					AssetDatabase.Refresh();
 				}
-				Debug.Log($"[VRSuya] Normalized the fileIDs of {ChangedCount} Animator Controllers");
+				Debug.Log($"[VRSuya] Normalized the fileIDs of {ModifiedCount} Animator Controllers");
 			}
 		}
 
-		static bool StandardizefileID(string TargetGUID) {
-			string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUID);
-			AnimatorController TargetAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
-			if (TargetAnimatorController && TargetAnimatorController is AnimatorController) {
+		public static bool StandardizefileID(AnimatorController TargetAnimator) {
+			if (TargetAnimator && TargetAnimator is AnimatorController) {
+				string TargetAssetPath = AssetDatabase.GetAssetPath(TargetAnimator);
 				string RawAnimatorController = File.ReadAllText(TargetAssetPath);
 				if (RawAnimatorController.Contains("m_Controller: {fileID: 0}")) {
 					string newRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 0}", "m_Controller: {fileID: 9100000}");
@@ -63,24 +97,65 @@ namespace com.vrsuya.cleaner {
 			return false;
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Standardize IndirectSpecularColor", priority = 1100)]
-		static void StandardizeIndirectSpecularColor() {
+		[MenuItem("Assets/VRSuya/Scene/Standardize IndirectSpecularColor", true)]
+		static bool ValidateScene() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainScene(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Scene/Standardize IndirectSpecularColor", priority = 1000)]
+		static void RequestStandardizeIndirectSpecularColor() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
+				int ModifiedCount = 0;
+				try {
+					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
+						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						EditorUtility.DisplayProgressBar("Standardizing fileID",
+							$"Processing : {TargetAssetName}",
+							(float)Index / AssetGUIDs.Length);
+						if (TargetAssetName.EndsWith("Original")) continue;
+						if (StandardizeIndirectSpecularColor(AssetGUIDs[Index])) {
+							ModifiedCount++;
+						}
+					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					AssetDatabase.Refresh();
+				}
+				Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ModifiedCount} Unity Scenes");
+			}
+		}
+
+
+		[MenuItem("Tools/VRSuya/Cleaner/Scene/Standardize IndirectSpecularColor", priority = 1000)]
+		static void RequestStandardizeAllIndirectSpecularColor() {
 			Asset AssetInstance = new Asset();
 			string[] SceneGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.Scene);
-			string NewValue = "m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}";
-			int ChangedCount = 0;
-			foreach (string SceneGUID in SceneGUIDs) {
-				string RawScene = File.ReadAllText(AssetDatabase.GUIDToAssetPath(SceneGUID));
-				string Pattern = $@"{"m_IndirectSpecularColor"}:\s*{{[^}}]*}}";
-				if (Regex.IsMatch(RawScene, Pattern)) {
-					string newRawScene = Regex.Replace(RawScene, Pattern, NewValue);
-					if (RawScene != newRawScene) {
-						File.WriteAllText(AssetDatabase.GUIDToAssetPath(SceneGUID), newRawScene);
-						ChangedCount++;
+			if (SceneGUIDs.Length > 0) {
+				int ModifiedCount = 0;
+				foreach (string SceneGUID in SceneGUIDs) {
+					if (StandardizeIndirectSpecularColor(SceneGUID)) {
+						ModifiedCount++;
 					}
 				}
+				Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ModifiedCount} Unity Scenes");
 			}
-			Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ChangedCount} Unity Scenes");
+		}
+
+		public static bool StandardizeIndirectSpecularColor(string TargetSceneGUID) {
+			string RawScene = File.ReadAllText(AssetDatabase.GUIDToAssetPath(TargetSceneGUID));
+			string Pattern = $@"{"m_IndirectSpecularColor"}:\s*{{[^}}]*}}";
+			string NewValue = "m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}";
+			if (Regex.IsMatch(RawScene, Pattern)) {
+				string newRawScene = Regex.Replace(RawScene, Pattern, NewValue);
+				if (RawScene != newRawScene) {
+					File.WriteAllText(AssetDatabase.GUIDToAssetPath(TargetSceneGUID), newRawScene);
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
@@ -88,15 +163,13 @@ namespace com.vrsuya.cleaner {
 
 		const float Tolerance = 0.001f;
 
-		[MenuItem("Assets/VRSuya/Clear Prefab Overrides", true)]
+		[MenuItem("Assets/VRSuya/Prefab/Clear Prefab Overrides", true)]
 		static bool ValidatePrefab() {
-			return Selection.objects
-				.Select(Item => AssetDatabase.GetAssetPath(Item))
-				.Select(Item => Item.EndsWith(".prefab"))
-				.Contains(true);
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainPrefab(Selection.objects);
 		}
 
-		[MenuItem("Assets/VRSuya/Clear Prefab Overrides", priority = 1100)]
+		[MenuItem("Assets/VRSuya/Prefab/Clear Prefab Overrides", priority = 1000)]
 		static void RequestClearPrefabTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
@@ -106,15 +179,13 @@ namespace com.vrsuya.cleaner {
 			}
 		}
 
-		[MenuItem("Assets/VRSuya/Clear Scene Overrides", true)]
+		[MenuItem("Assets/VRSuya/Scene/Clear Scene Overrides", true)]
 		static bool ValidateScene() {
-			return Selection.objects
-				.Select(Item => AssetDatabase.GetAssetPath(Item))
-				.Select(Item => Item.EndsWith(".unity"))
-				.Contains(true);
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainScene(Selection.objects);
 		}
 
-		[MenuItem("Assets/VRSuya/Clear Scene Overrides", priority = 1100)]
+		[MenuItem("Assets/VRSuya/Scene/Clear Scene Overrides", priority = 1000)]
 		static void RequestClearSceneTransform() {
 			foreach (Object TargetObject in Selection.objects) {
 				if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
@@ -146,7 +217,7 @@ namespace com.vrsuya.cleaner {
 				string TargetPropertyPath = TargetPropertyModification.propertyPath;
 				Object SourcePrefabObject = TargetPropertyModification.target;
 				bool ShouldRemoveModification = false;
-				Object OverriddenInstanceObject = GetInstanceObjectFromPrefabObject(TargetGameObject, SourcePrefabObject);
+				Object OverriddenInstanceObject = GetOriginalObject(TargetGameObject, SourcePrefabObject);
 				if (SourcePrefabObject == null || OverriddenInstanceObject == null) {
 					ShouldRemoveModification = true;
 				} else {
@@ -155,13 +226,13 @@ namespace com.vrsuya.cleaner {
 					if (TargetProperty == null) {
 						ShouldRemoveModification = true;
 					} else {
-						bool IsTransformOverride = CheckIsTransformProperty(TargetPropertyPath);
-						bool IsCacheOverride = CheckIsAutoGeneratedCacheProperty(TargetPropertyPath);
+						bool IsTransformOverride = IsTransformProperty(TargetPropertyPath);
+						bool IsCacheOverride = IsCacheProperty(TargetPropertyPath);
 						if (IsCacheOverride) {
 							ShouldRemoveModification = true;
 						} else if (IsTransformOverride && SourcePrefabObject is Transform SourceTransform) {
 							float TargetValue = float.Parse(TargetPropertyModification.value, CultureInfo.InvariantCulture);
-							if (CheckNeedRevertTransform(SourceTransform, TargetPropertyPath, TargetValue)) {
+							if (NeedRevertTransform(SourceTransform, TargetPropertyPath, TargetValue)) {
 								ShouldRemoveModification = true;
 							}
 						}
@@ -183,8 +254,8 @@ namespace com.vrsuya.cleaner {
 			return IsChanged;
 		}
 
-		/// <summary>Prefab Asset의 원본 Object와 매핑되는 Scene(또는 Prefab Instance) 내의 Object를 찾습니다.</summary>
-		static Object GetInstanceObjectFromPrefabObject(GameObject TargetPrefabInstanceRoot, Object TargetPrefabObject) {
+		/// <summary>Prefab 프로퍼티의 원본 Object를 찾습니다.</summary>
+		static Object GetOriginalObject(GameObject TargetPrefabInstanceRoot, Object TargetPrefabObject) {
 			if (TargetPrefabObject is Component TargetPrefabComponent) {
 				Component[] InstanceComponents = TargetPrefabInstanceRoot.GetComponentsInChildren(TargetPrefabComponent.GetType(), true);
 				foreach (Component InstanceComponent in InstanceComponents) {
@@ -203,7 +274,7 @@ namespace com.vrsuya.cleaner {
 			return null;
 		}
 
-		static bool CheckNeedRevertTransform(Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
+		static bool NeedRevertTransform(Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
 			float OriginalValue = float.NaN;
 			switch (TargetPropertyPath) {
 				case "m_LocalPosition.x":
@@ -256,15 +327,15 @@ namespace com.vrsuya.cleaner {
 		/// <summary>PropertyPath가 Transform 관련 속성인지 확인합니다.</summary>
 		/// <param name="TargetPropertyPath">Property 경로</param>
 		/// <returns>Transform 속성 여부</returns>
-		static bool CheckIsTransformProperty(string TargetPropertyPath) {
+		static bool IsTransformProperty(string TargetPropertyPath) {
 			return TargetPropertyPath.StartsWith("m_LocalPosition") ||
 				   TargetPropertyPath.StartsWith("m_LocalRotation") ||
 				   TargetPropertyPath.StartsWith("m_LocalScale") ||
 				   TargetPropertyPath.StartsWith("m_LocalEulerAnglesHint");
 		}
 
-		/// <summary>자동 생성되는 내부 캐시 및 애니메이션 관련 속성인지 확인합니다.</summary>
-		static bool CheckIsAutoGeneratedCacheProperty(string TargetPropertyPath) {
+		/// <summary>자동으로 생성되는 캐시 속성인지 반환합니다.</summary>
+		static bool IsCacheProperty(string TargetPropertyPath) {
 			if (TargetPropertyPath == "cachedExecutionGroupIndex" ||
 				TargetPropertyPath == "latestValidExecutionGroupIndex" ||
 				TargetPropertyPath == "unityVersion" ||
