@@ -46,10 +46,8 @@ namespace com.vrsuya.cleaner {
 
 		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines", true)]
 		static bool ValidateAsset() {
-			return Selection.objects
-				.Select(Item => AssetDatabase.GetAssetPath(Item))
-				.Select(Item => Item.EndsWith(".prefab") || Item.EndsWith(".unity"))
-				.Contains(true);
+			Asset AssetInstance = new Asset();
+			return (AssetInstance.ContainScene(Selection.objects) || AssetInstance.ContainPrefab(Selection.objects));
 		}
 
 		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines")]
