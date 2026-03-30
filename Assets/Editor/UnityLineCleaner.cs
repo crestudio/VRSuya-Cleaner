@@ -44,13 +44,13 @@ namespace com.vrsuya.cleaner {
 			)
 		};
 
-		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines", true)]
+		[MenuItem("Assets/VRSuya/Asset/Fix YAML Broken Lines", true)]
 		static bool ValidateAsset() {
 			Asset AssetInstance = new Asset();
 			return (AssetInstance.ContainScene(Selection.objects) || AssetInstance.ContainPrefab(Selection.objects));
 		}
 
-		[MenuItem("Assets/VRSuya/Fix YAML Broken Lines")]
+		[MenuItem("Assets/VRSuya/Asset/Fix YAML Broken Lines")]
 		static void RequestFixSelectedAssets() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
