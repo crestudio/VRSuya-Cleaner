@@ -13,7 +13,7 @@ using Anatawa12.ContinuousAvatarUploader.Editor;
  * Forked from https://forum.unity.com/threads/get-animator-in-editor-mode.461838/
  */
 
-namespace com.vrsuya.cleaner {
+namespace VRSuya.Cleaner {
 
 	[ExecuteInEditMode]
 	public class SortCAU : EditorWindow {

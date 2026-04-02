@@ -14,7 +14,7 @@ using UnityEngine;
  * Contact : vrsuya@gmail.com // Twitter : https://twitter.com/VRSuya
  */
 
-namespace com.vrsuya.cleaner {
+namespace VRSuya.Cleaner {
 
 	[ExecuteInEditMode]
 	public class AnimatorControllerCleaner : ScriptableObject {
