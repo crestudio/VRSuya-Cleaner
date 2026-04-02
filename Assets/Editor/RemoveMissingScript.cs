@@ -19,7 +19,7 @@ namespace VRSuya.Cleaner {
 	public class RemoveMissingScript : EditorWindow {
 
 		/// <summary>Scene에 존재하는 Missing Script 컴포넌트를 포함한 GameObject를 선택합니다.</summary>
-		[MenuItem("Tools/VRSuya/Cleaner/Scene/Select All GameObject of Missing Script", priority = 100)]
+		[MenuItem("Tools/VRSuya/Cleaner/Scene/Select All GameObject of Missing Script", priority = 1000)]
 		static void SelectMissingScriptGameObjects() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
             if (MissingGameObjects.Length > 0) {
