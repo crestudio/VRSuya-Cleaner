@@ -11,6 +11,7 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 
 using VRSuya.Core;
 using Avatar = VRSuya.Core.Avatar;
+using Animator = VRSuya.Core.Animator;
 
 /*
  * VRSuya Cleaner
@@ -165,8 +166,14 @@ namespace VRSuya.Cleaner {
 		static void AlignAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
 			if (CurrentAnimator) {
-				foreach (AnimatorControllerLayer AnimatorLayer in CurrentAnimator.layers) {
-					AlignAnimationStates(AnimatorLayer.stateMachine, AnimatorLayer.name);
+				Animator AnimatorInstance = new Animator();
+				AnimatorStateMachine[] AllAnimatorStateMachines = CurrentAnimator.layers
+					.SelectMany(Item => AnimatorInstance.GetAllStateMachines(Item.stateMachine).ToArray())
+					.ToArray();
+				foreach (AnimatorStateMachine TargetStateMachine in AllAnimatorStateMachines) {
+					string LayerName = CurrentAnimator.layers
+					.First(Item => AnimatorInstance.GetAllStateMachines(Item.stateMachine).Contains(TargetStateMachine)).name;
+					AlignAnimationStates(TargetStateMachine, LayerName);
 				}
 				EditorUtility.SetDirty(CurrentAnimator);
 				AssetDatabase.SaveAssets();
