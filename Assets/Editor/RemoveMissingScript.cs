@@ -18,7 +18,6 @@ namespace VRSuya.Cleaner {
 	[ExecuteInEditMode]
 	public class RemoveMissingScript : EditorWindow {
 
-		/// <summary>Scene에 존재하는 Missing Script 컴포넌트를 포함한 GameObject를 선택합니다.</summary>
 		[MenuItem("Tools/VRSuya/Cleaner/Scene/Select All GameObject of Missing Script", priority = 1000)]
 		static void SelectMissingScriptGameObjects() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
@@ -30,7 +29,6 @@ namespace VRSuya.Cleaner {
 			}
         }
 
-		/// <summary>Scene에 존재하는 Missing Script 컴포넌트들을 삭제합니다.</summary>
 		[MenuItem("Tools/VRSuya/Cleaner/Scene/Remove All Missing Script Component", priority = 1000)]
 		static void RemoveMissingScriptComponents() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
@@ -50,8 +48,6 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		/// <summary>Scene에 존재하는 Missing Script 컴포넌트를 가지고 있는 GameObject 배열을 반환합니다.</summary>
-		/// <returns>Scene에 존재하는 모든 Missing Script 컴포넌트를 가지고 있는 GameObject 배열</returns>
 		static GameObject[] GetAllGameObjectHasMissingScriptComponent() {
 			List<GameObject> MissingGameObjects = new List<GameObject>();
 			Transform[] AllTransforms = SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(gameObject => gameObject.GetComponentsInChildren<Transform>(true)).ToArray();

@@ -196,8 +196,6 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		/// <summary>Animator 윈도우에서 현재 열려있는 AnimatorController 오브젝트를 반환합니다.</summary>
-		/// <returns>현재 활성화 되어 있는 AnimatorController</returns>
 		static AnimatorController GetCurrentAnimatorController() {
 			AnimatorController CurrentAnimatorController = null;
 			DuplicateGameObject DuplicatorInstance = new DuplicateGameObject();
@@ -211,8 +209,6 @@ namespace VRSuya.Cleaner {
 			return CurrentAnimatorController;
 		}
 
-		/// <summary>해당 StateMachine 내에 있는 State 위치를 정렬합니다.</summary>
-		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
 		static void AlignAnimationStates(AnimatorStateMachine TargetStateMachine, string TargetLayerName) {
 			TargetStateMachine.entryPosition = new Vector3(40.00f, 100.00f, 0.00f);
 			TargetStateMachine.anyStatePosition = new Vector3(40.00f, 200.00f, 0.00f);
@@ -241,8 +237,6 @@ namespace VRSuya.Cleaner {
 			TargetStateMachine.states = NewAnimationStates;
 		}
 
-		/// <summary>해당 StateMachine 내에 있는 State들의 복사 되어서 생긴 번호를 삭제합니다.</summary>
-		/// <param name="TargetStateMachine">정렬을 원하는 StateMachine</param>
 		static void RenameAnimationStates(AnimatorStateMachine TargetStateMachine) {
 			ChildAnimatorState[] NewAnimationStates = TargetStateMachine.states;
 			for (int Index = 0; Index < NewAnimationStates.Length; Index++) {

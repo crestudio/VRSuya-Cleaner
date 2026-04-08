@@ -51,11 +51,6 @@ namespace VRSuya.Cleaner {
 		const string HeaderfileIdPattern = @"&(-?\d+)";
 		const string LinefileIdPattern = @"fileID:\s*(-?\d+)";
 
-		/*
-		 * 프로그램의 메인 메소드
-		 */
-
-		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID과 연계된 라인들을 모두 지웁니다.</summary>
 		public bool CleanupAnimatorController(AnimatorController TargetAnimatorController) {
 			if (TargetAnimatorController) {
 				AssetFilePath = AssetDatabase.GetAssetPath(TargetAnimatorController);
@@ -102,7 +97,6 @@ namespace VRSuya.Cleaner {
 			return false;
 		}
 
-		/// <summary>AnimatorController 에셋을 분석하여 의미 없는 fileID를 찾습니다.</summary>
 		void GetNULLfileIDs(AnimatorController TargetAnimatorController) {
 			TargetRemovefileIDs = new string[0];
 			AdditionRemoveLineIndexs = new List<int>();
@@ -186,11 +180,6 @@ namespace VRSuya.Cleaner {
 				$"MonoBehaviour : {VaildMonoBehaviourfileIDs.Count} - {InvaildMonoBehaviourfileIDs.Count} = {AllMonoBehaviourfileIDs.Count}");
 		}
 
-		/*
-		 * 파일에 존재하는 모든 Type을 반환 받는 메소드
-		 */
-
-		/// <summary>파일에 존재하는 모든 fileID들을 분석하여 Type에 맞게 변수에 추가합니다.</summary>
 		void AnalyzeAnimatorController() {
 			AllAnimatorStateMachinefileIDs = new List<string>();
 			AllAnimatorStatefileIDs = new List<string>();
@@ -229,12 +218,6 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		/*
-		 * 유효한 모든 Type을 반환 받는 메소드
-		 */
-
-		/// <summary>파일에서 유효한 루트 StateMachine들의 fileID들을 반환합니다.</summary>
-		/// <returns>유효한 루트 StateMachine들의 fileID 리스트</returns>
 		List<string> GetVaildAnimatorStateMachines() {
 			List<string> RootAnimatorStateMachinefileIDs = new List<string>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith("AnimatorController:"));
@@ -255,8 +238,6 @@ namespace VRSuya.Cleaner {
 			return RootAnimatorStateMachinefileIDs;
 		}
 
-		/// <summary>fileID에서 자식 StateMachine들의 fileID들을 재귀적으로 반환합니다.</summary>
-		/// <returns>모든 자식 StateMachine들의 fileID 리스트</returns>
 		List<string> GetChildAnimatorStateMachines(string TargetfileID) {
 			List<string> ChildAnimatorStateMachinefileIDs = new List<string>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
@@ -280,8 +261,6 @@ namespace VRSuya.Cleaner {
 			return ChildAnimatorStateMachinefileIDs;
 		}
 
-		/// <summary>fileID에서 StateMachine의 State fileID들을 반환합니다.</summary>
-		/// <returns>모든 State들의 fileID 리스트</returns>
 		List<string> GetAnimatorStates(string TargetfileID) {
 			List<string> AnimatorStatefileIDs = new List<string>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
@@ -302,8 +281,6 @@ namespace VRSuya.Cleaner {
 			return AnimatorStatefileIDs;
 		}
 
-		/// <summary>fileID에서 StateMachine의 AnimatorTransition fileID들을 반환합니다.</summary>
-		/// <returns>모든 AnimatorTransition들의 fileID 리스트</returns>
 		List<string> GetAnimatorTransitions(string TargetfileID) {
 			List<string> AnimatorTransitionfileIDs = new List<string>();
 			bool isAnimatorTransition = false;
@@ -338,8 +315,6 @@ namespace VRSuya.Cleaner {
 			return AnimatorTransitionfileIDs;
 		}
 
-		/// <summary>fileID에서 StateMachine의 Transition fileID들을 반환합니다.</summary>
-		/// <returns>모든 Transition들의 fileID 리스트</returns>
 		List<string> GetStateMachineTransitions(string TargetfileID, string TargetType) {
 			List<string> StateMachineTransitionfileIDs = new List<string>();
 			bool isAnimatorStateTransition = false;
@@ -380,8 +355,6 @@ namespace VRSuya.Cleaner {
 			return StateMachineTransitionfileIDs;
 		}
 
-		/// <summary>fileID에서 State의 Transition fileID들을 반환합니다.</summary>
-		/// <returns>모든 Transition들의 fileID 리스트</returns>
 		List<string> GetAnimatorStateTransitions(string TargetfileID) {
 			List<string> AnimatorStateTransitionfileIDs = new List<string>();
 			bool isAnimatorStateTransition = false;
@@ -413,8 +386,6 @@ namespace VRSuya.Cleaner {
 			return AnimatorStateTransitionfileIDs;
 		}
 
-		/// <summary>fileID에서 State의 BlendTree fileID들을 재귀적으로 반환합니다.</summary>
-		/// <returns>모든 BlendTree들의 fileID 리스트</returns>
 		List<string> GetBlendTrees(string TargetfileID) {
 			List<string> BlendTreefileIDs = new List<string>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
@@ -440,8 +411,6 @@ namespace VRSuya.Cleaner {
 			return BlendTreefileIDs;
 		}
 
-		/// <summary>fileID에서 State의 MonoBehaviour fileID들을 반환합니다.</summary>
-		/// <returns>모든 MonoBehaviour들의 fileID 리스트</returns>
 		List<string> GetMonoBehaviours(string TargetfileID) {
 			List<string> MonoBehaviourfileIDs = new List<string>();
 			bool isMonoBehaviour = false;
@@ -470,12 +439,6 @@ namespace VRSuya.Cleaner {
 			return MonoBehaviourfileIDs;
 		}
 
-		/*
-		 * fileID가 유효한지 판단하는 메소드
-		 */
-
-		/// <summary>유효한 fileID인지 여부를 반환 합니다.</summary>
-		/// <returns>fileID 유효 여부</returns>
 		bool VerifyfileID(string TargetfileID) {
 			int Index = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
 			if (Index != -1) {
@@ -499,8 +462,6 @@ namespace VRSuya.Cleaner {
 			return false;
 		}
 
-		/// <summary>유효한 AnimatorTransition fileID인지 여부를 반환 합니다.</summary>
-		/// <returns>AnimatorTransition fileID 유효 여부</returns>
 		bool VerifyAnimatorTransition(string TargetfileID) {
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
 			if (StartIndex != -1) {
@@ -532,8 +493,6 @@ namespace VRSuya.Cleaner {
 			return false;
 		}
 
-		/// <summary>유효한 AnimatorStateTransition fileID인지 여부를 반환 합니다.</summary>
-		/// <returns>AnimatorStateTransition fileID 유효 여부</returns>
 		bool VerifyAnimatorStateTransition(string TargetfileID) {
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
 			if (StartIndex != -1) {
@@ -565,12 +524,6 @@ namespace VRSuya.Cleaner {
 			return false;
 		}
 
-		/*
-		 * 클래스가 작동하는데 필요한 메소드
-		 */
-
-		/// <summary>파일에서 fileID에 해당되는 라인 인덱스들을 반환 합니다.</summary>
-		/// <returns>삭제해야 될 Int 형태의 Index 리스트</returns>
 		List<int> GetRemoveLineIndexs(string TargetfileID) {
 			List<int> RemoveLineIndexs = new List<int>();
 			int StartIndex = Array.FindIndex(AssetFile, Line => Line.StartsWith(StructureStartPattern) && Line.Contains($"&{TargetfileID}"));
@@ -588,8 +541,6 @@ namespace VRSuya.Cleaner {
 			return RemoveLineIndexs;
 		}
 
-		/// <summary>해당 헤더에 유효한 fileID가 있다면 해당 값을 반환합니다.</summary>
-		/// <returns>String 형태의 fileID</returns>
 		string ExtractfileIDFromHeader(string Line) {
 			Match fileIDMatch = Regex.Match(Line, HeaderfileIdPattern);
 			if (fileIDMatch.Success) {
@@ -599,8 +550,6 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		/// <summary>해당 라인에 유효한 fileID가 있다면 해당 값을 반환합니다.</summary>
-		/// <returns>String 형태의 fileID</returns>
 		string ExtractfileIDFromLine(string Line) {
 			Match fileIDMatch = Regex.Match(Line, LinefileIdPattern);
 			if (fileIDMatch.Success) {

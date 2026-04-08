@@ -254,7 +254,6 @@ namespace VRSuya.Cleaner {
 			return IsChanged;
 		}
 
-		/// <summary>Prefab 프로퍼티의 원본 Object를 찾습니다.</summary>
 		static Object GetOriginalObject(GameObject TargetPrefabInstanceRoot, Object TargetPrefabObject) {
 			if (TargetPrefabObject is Component TargetPrefabComponent) {
 				Component[] InstanceComponents = TargetPrefabInstanceRoot.GetComponentsInChildren(TargetPrefabComponent.GetType(), true);
@@ -324,9 +323,6 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		/// <summary>PropertyPath가 Transform 관련 속성인지 확인합니다.</summary>
-		/// <param name="TargetPropertyPath">Property 경로</param>
-		/// <returns>Transform 속성 여부</returns>
 		static bool IsTransformProperty(string TargetPropertyPath) {
 			return TargetPropertyPath.StartsWith("m_LocalPosition") ||
 				   TargetPropertyPath.StartsWith("m_LocalRotation") ||
@@ -334,7 +330,6 @@ namespace VRSuya.Cleaner {
 				   TargetPropertyPath.StartsWith("m_LocalEulerAnglesHint");
 		}
 
-		/// <summary>자동으로 생성되는 캐시 속성인지 반환합니다.</summary>
 		static bool IsCacheProperty(string TargetPropertyPath) {
 			if (TargetPropertyPath == "cachedExecutionGroupIndex" ||
 				TargetPropertyPath == "latestValidExecutionGroupIndex" ||
