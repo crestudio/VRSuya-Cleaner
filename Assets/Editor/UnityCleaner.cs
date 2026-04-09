@@ -11,7 +11,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using VRC.SDK3.Dynamics.PhysBone.Components;
+
 using VRSuya.Core;
+
 using Object = UnityEngine.Object;
 
 /*
@@ -159,7 +162,55 @@ namespace VRSuya.Cleaner {
 		}
 	}
 
-	public static class PrefabTransformCleaner {
+	public class PrefabPhysBoneCleaner {
+
+		[MenuItem("Assets/VRSuya/Prefab/Close Prefab PhysBone", true)]
+		static bool ValidatePrefab() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainPrefab(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Prefab/Close Prefab PhysBone", priority = 1000)]
+		static void RequestClearPrefabTransform() {
+			foreach (Object TargetObject in Selection.objects) {
+				GameObject TargetGameObject = TargetObject as GameObject;
+				if (TargetGameObject && TargetGameObject is GameObject) {
+					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClosePhysBoneComponent(TargetGameObject);
+				}
+			}
+		}
+
+		static void ClosePhysBoneComponent(GameObject TargetGameObject) {
+			VRCPhysBone[] PhysBoneComponents = TargetGameObject.GetComponentsInChildren<VRCPhysBone>(true);
+			if (PhysBoneComponents.Length > 0) {
+				bool IsPrefabModified = false;
+				foreach (VRCPhysBone TargetPhysBone in PhysBoneComponents) {
+					if (!PrefabUtility.GetCorrespondingObjectFromSource(TargetPhysBone)) {
+						bool IsModified = false;
+						if (TargetPhysBone.foldout_transforms) { TargetPhysBone.foldout_transforms = false; IsModified = true; }
+						if (TargetPhysBone.foldout_forces) { TargetPhysBone.foldout_forces = false; IsModified = true; }
+						if (TargetPhysBone.foldout_collision) { TargetPhysBone.foldout_collision = false; IsModified = true; }
+						if (TargetPhysBone.foldout_stretchsquish) { TargetPhysBone.foldout_stretchsquish = false; IsModified = true; }
+						if (TargetPhysBone.foldout_limits) { TargetPhysBone.foldout_limits = false; IsModified = true; }
+						if (TargetPhysBone.foldout_grabpose) { TargetPhysBone.foldout_grabpose = false; IsModified = true; }
+						if (TargetPhysBone.foldout_options) { TargetPhysBone.foldout_options = false; IsModified = true; }
+						if (TargetPhysBone.foldout_gizmos) { TargetPhysBone.foldout_gizmos = false; IsModified = true; }
+						if (IsModified) {
+							IsPrefabModified = true;
+							EditorUtility.SetDirty(TargetPhysBone);
+						}
+					}
+				}
+				if (IsPrefabModified) {
+					AssetDatabase.SaveAssetIfDirty(TargetGameObject);
+					Debug.Log($"[VRSuya] {TargetGameObject.name} 프리팹의 PhysBone이 모두 닫혔습니다");
+				}
+			}
+		}
+
+	}
+
+	public class PrefabTransformCleaner {
 
 		const float Tolerance = 0.001f;
 
@@ -345,7 +396,8 @@ namespace VRSuya.Cleaner {
 				TargetPropertyPath.StartsWith("PositionOffset") ||
 				TargetPropertyPath.StartsWith("PositionOffset") ||
 				TargetPropertyPath.StartsWith("RotationOffset") ||
-				TargetPropertyPath.StartsWith("RotationAtRest")) {
+				TargetPropertyPath.StartsWith("RotationAtRest") ||
+				TargetPropertyPath.StartsWith("foldout_")) {
 				return true;
 			}
 			return false;
