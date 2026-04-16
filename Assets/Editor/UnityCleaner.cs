@@ -389,6 +389,7 @@ namespace VRSuya.Cleaner {
 				TargetPropertyPath == "completedSDKPipeline" ||
 				TargetPropertyPath.StartsWith("animationHashSet") ||
 				(TargetPropertyPath.StartsWith("baseAnimationLayers") && TargetPropertyPath.EndsWith("mask")) ||
+				TargetPropertyPath.StartsWith("m_TranslationOffsets") ||
 				TargetPropertyPath.StartsWith("m_PositionOffset") ||
 				TargetPropertyPath.StartsWith("m_PositionAtRest") ||
 				TargetPropertyPath.StartsWith("m_RotationOffset") ||
