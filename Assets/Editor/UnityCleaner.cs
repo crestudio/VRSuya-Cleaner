@@ -259,39 +259,33 @@ namespace VRSuya.Cleaner {
 
 		public static bool ClearPrefabObject(GameObject TargetGameObject) {
 			bool IsChanged = false;
-			int Count = 0;
 			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
 			if (PropertyModifications == null || PropertyModifications.Length == 0) return IsChanged;
 			List<PropertyModification> ValidModifications = new List<PropertyModification>();
+			int RemovedCount = 0;
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
 				string TargetPropertyPath = TargetPropertyModification.propertyPath;
 				Object SourcePrefabObject = TargetPropertyModification.target;
-				bool ShouldRemoveModification = false;
-				Object OverriddenInstanceObject = GetOriginalObject(TargetGameObject, SourcePrefabObject);
-				if (SourcePrefabObject == null || OverriddenInstanceObject == null) {
-					ShouldRemoveModification = true;
+				bool NeedRemoved = false;
+				if (SourcePrefabObject == null) {
+					NeedRemoved = true;
 				} else {
-					SerializedObject SerializedInstance = new SerializedObject(OverriddenInstanceObject);
-					SerializedProperty TargetProperty = SerializedInstance.FindProperty(TargetPropertyPath);
-					if (TargetProperty == null) {
-						ShouldRemoveModification = true;
-					} else {
-						bool IsTransformOverride = IsTransformProperty(TargetPropertyPath);
-						bool IsCacheOverride = IsCacheProperty(TargetPropertyPath);
-						if (IsCacheOverride) {
-							ShouldRemoveModification = true;
-						} else if (IsTransformOverride && SourcePrefabObject is Transform SourceTransform) {
-							float TargetValue = float.Parse(TargetPropertyModification.value, CultureInfo.InvariantCulture);
-							if (NeedRevertTransform(SourceTransform, TargetPropertyPath, TargetValue)) {
-								ShouldRemoveModification = true;
+					bool IsCacheOverride = IsCacheProperty(TargetPropertyPath);
+					bool IsTransformOverride = IsTransformProperty(TargetPropertyPath);
+					if (IsCacheOverride) {
+						NeedRemoved = true;
+					} else if (IsTransformOverride && SourcePrefabObject is Transform SourcePrefabTransform) {
+						if (float.TryParse(TargetPropertyModification.value, NumberStyles.Float, CultureInfo.InvariantCulture, out float TargetValue)) {
+							if (NeedRevertTransform(SourcePrefabTransform, TargetPropertyPath, TargetValue)) {
+								NeedRemoved = true;
 							}
 						}
 					}
 				}
-				if (ShouldRemoveModification) {
+				if (NeedRemoved) {
 					IsChanged = true;
-					Count++;
+					RemovedCount++;
 				} else {
 					ValidModifications.Add(TargetPropertyModification);
 				}
@@ -300,78 +294,22 @@ namespace VRSuya.Cleaner {
 				PrefabUtility.SetPropertyModifications(TargetGameObject, ValidModifications.ToArray());
 				EditorUtility.SetDirty(TargetGameObject);
 				AssetDatabase.SaveAssetIfDirty(TargetGameObject);
-				Debug.Log($"[VRSuya] Reverted/Removed {Count} overridden or orphaned properties on {TargetGameObject.name}");
+				Debug.Log($"[VRSuya] Reverted/Removed {RemovedCount} overridden or orphaned properties on {TargetGameObject.name}");
 			}
 			return IsChanged;
 		}
 
-		static Object GetOriginalObject(GameObject TargetPrefabInstanceRoot, Object TargetPrefabObject) {
-			if (TargetPrefabObject is Component TargetPrefabComponent) {
-				Component[] InstanceComponents = TargetPrefabInstanceRoot.GetComponentsInChildren(TargetPrefabComponent.GetType(), true);
-				foreach (Component InstanceComponent in InstanceComponents) {
-					if (PrefabUtility.GetCorrespondingObjectFromSource(InstanceComponent) == TargetPrefabObject) {
-						return InstanceComponent;
-					}
-				}
-			} else if (TargetPrefabObject is GameObject TargetPrefabGameObject) {
-				Transform[] InstanceTransforms = TargetPrefabInstanceRoot.GetComponentsInChildren<Transform>(true);
-				foreach (Transform InstanceTransform in InstanceTransforms) {
-					if (PrefabUtility.GetCorrespondingObjectFromSource(InstanceTransform.gameObject) == TargetPrefabObject) {
-						return InstanceTransform.gameObject;
-					}
-				}
-			}
-			return null;
-		}
-
-		static bool NeedRevertTransform(Transform SourceTransform, string TargetPropertyPath, float TargetValue) {
-			float OriginalValue = float.NaN;
-			switch (TargetPropertyPath) {
-				case "m_LocalPosition.x":
-					OriginalValue = SourceTransform.localPosition.x;
-					break;
-				case "m_LocalPosition.y":
-					OriginalValue = SourceTransform.localPosition.y;
-					break;
-				case "m_LocalPosition.z":
-					OriginalValue = SourceTransform.localPosition.z;
-					break;
-				case "m_LocalRotation.w":
-					OriginalValue = SourceTransform.localRotation.w;
-					break;
-				case "m_LocalRotation.x":
-					OriginalValue = SourceTransform.localRotation.x;
-					break;
-				case "m_LocalRotation.y":
-					OriginalValue = SourceTransform.localRotation.y;
-					break;
-				case "m_LocalRotation.z":
-					OriginalValue = SourceTransform.localRotation.z;
-					break;
-				case "m_LocalEulerAnglesHint.x":
-					OriginalValue = SourceTransform.localEulerAngles.x;
-					break;
-				case "m_LocalEulerAnglesHint.y":
-					OriginalValue = SourceTransform.localEulerAngles.y;
-					break;
-				case "m_LocalEulerAnglesHint.z":
-					OriginalValue = SourceTransform.localEulerAngles.z;
-					break;
-				case "m_LocalScale.x":
-					OriginalValue = SourceTransform.localScale.x;
-					break;
-				case "m_LocalScale.y":
-					OriginalValue = SourceTransform.localScale.y;
-					break;
-				case "m_LocalScale.z":
-					OriginalValue = SourceTransform.localScale.z;
-					break;
-			}
-			if (!float.IsNaN(OriginalValue)) {
-				return Math.Abs(OriginalValue - TargetValue) <= Tolerance;
-			} else {
+		static bool NeedRevertTransform(Transform SourcePrefabTransform, string TargetPropertyPath, float TargetValue) {
+			SerializedObject SerializedPrefabTransform = new SerializedObject(SourcePrefabTransform);
+			SerializedProperty SourceProperty = SerializedPrefabTransform.FindProperty(TargetPropertyPath);
+			if (SourceProperty == null) {
 				return true;
 			}
+			if (SourceProperty.propertyType != SerializedPropertyType.Float) {
+				return false;
+			}
+			float OriginalValue = SourceProperty.floatValue;
+			return Math.Abs(OriginalValue - TargetValue) <= Tolerance;
 		}
 
 		static bool IsTransformProperty(string TargetPropertyPath) {
@@ -382,11 +320,11 @@ namespace VRSuya.Cleaner {
 		}
 
 		static bool IsCacheProperty(string TargetPropertyPath) {
-			if (TargetPropertyPath == "cachedExecutionGroupIndex" ||
-				TargetPropertyPath == "latestValidExecutionGroupIndex" ||
-				TargetPropertyPath == "unityVersion" ||
-				TargetPropertyPath == "fallbackStatus" ||
-				TargetPropertyPath == "completedSDKPipeline" ||
+			if (TargetPropertyPath.StartsWith("cachedExecutionGroupIndex") ||
+				TargetPropertyPath.StartsWith("latestValidExecutionGroupIndex") ||
+				TargetPropertyPath.StartsWith("unityVersion.") ||
+				TargetPropertyPath.StartsWith("fallbackStatus") ||
+				TargetPropertyPath.StartsWith("completedSDKPipeline") ||
 				TargetPropertyPath.StartsWith("animationHashSet") ||
 				(TargetPropertyPath.StartsWith("baseAnimationLayers") && TargetPropertyPath.EndsWith("mask")) ||
 				TargetPropertyPath.StartsWith("m_TranslationOffsets") ||
@@ -395,7 +333,7 @@ namespace VRSuya.Cleaner {
 				TargetPropertyPath.StartsWith("m_RotationOffset") ||
 				TargetPropertyPath.StartsWith("m_RotationAtRest") ||
 				TargetPropertyPath.StartsWith("PositionOffset") ||
-				TargetPropertyPath.StartsWith("PositionOffset") ||
+				TargetPropertyPath.StartsWith("PositionAtRest") ||
 				TargetPropertyPath.StartsWith("RotationOffset") ||
 				TargetPropertyPath.StartsWith("RotationAtRest") ||
 				TargetPropertyPath.StartsWith("foldout_")) {
