@@ -210,7 +210,7 @@ namespace VRSuya.Cleaner {
 
 	}
 
-	public class PrefabTransformCleaner {
+	public class PrefabCleaner {
 
 		const float Tolerance = 0.001f;
 
