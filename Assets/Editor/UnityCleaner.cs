@@ -180,7 +180,7 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		static void ClosePhysBoneComponent(GameObject TargetGameObject) {
+		public static bool ClosePhysBoneComponent(GameObject TargetGameObject) {
 			VRCPhysBone[] PhysBoneComponents = TargetGameObject.GetComponentsInChildren<VRCPhysBone>(true);
 			if (PhysBoneComponents.Length > 0) {
 				bool IsPrefabModified = false;
@@ -204,8 +204,10 @@ namespace VRSuya.Cleaner {
 				if (IsPrefabModified) {
 					AssetDatabase.SaveAssetIfDirty(TargetGameObject);
 					Debug.Log($"[VRSuya] {TargetGameObject.name} 프리팹의 PhysBone이 모두 닫혔습니다");
+					return true;
 				}
 			}
+			return false;
 		}
 
 	}
@@ -239,22 +241,29 @@ namespace VRSuya.Cleaner {
 		[MenuItem("Assets/VRSuya/Scene/Clear Scene Overrides", priority = 1000)]
 		static void RequestClearSceneTransform() {
 			foreach (Object TargetObject in Selection.objects) {
-				if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
-					string ScenePath = AssetDatabase.GetAssetPath(TargetObject);
-					Scene TargetScene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
-					try {
-						bool IsDirty = false;
-						foreach (GameObject RootGameObject in TargetScene.GetRootGameObjects()) {
-							if (ClearPrefabObject(RootGameObject)) IsDirty = true;
-						}
-						if (IsDirty) {
-							EditorSceneManager.SaveScene(TargetScene);
-						}
-					} finally {
-						EditorSceneManager.CloseScene(TargetScene, true);
+				ClearSceneObject(TargetObject);
+			}
+		}
+
+		public static bool ClearSceneObject(Object TargetObject) {
+			bool IsModified = false;
+			if (TargetObject && AssetDatabase.GetAssetPath(TargetObject).EndsWith(".unity")) {
+				string ScenePath = AssetDatabase.GetAssetPath(TargetObject);
+				Scene TargetScene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+				try {
+					bool IsDirty = false;
+					foreach (GameObject RootGameObject in TargetScene.GetRootGameObjects()) {
+						if (ClearPrefabObject(RootGameObject)) IsDirty = true;
 					}
+					if (IsDirty) {
+						EditorSceneManager.SaveScene(TargetScene);
+						IsModified = true;
+					}
+				} finally {
+					EditorSceneManager.CloseScene(TargetScene, true);
 				}
 			}
+			return IsModified;
 		}
 
 		public static bool ClearPrefabObject(GameObject TargetGameObject) {
