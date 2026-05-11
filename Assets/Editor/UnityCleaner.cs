@@ -227,7 +227,7 @@ namespace VRSuya.Cleaner {
 			foreach (Object TargetObject in Selection.objects) {
 				GameObject TargetGameObject = TargetObject as GameObject;
 				if (TargetGameObject && TargetGameObject is GameObject) {
-					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClearPrefabObject(TargetGameObject);
+					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClearPrefabObjectRecursively(TargetGameObject);
 				}
 			}
 		}
@@ -253,7 +253,7 @@ namespace VRSuya.Cleaner {
 				try {
 					bool IsDirty = false;
 					foreach (GameObject RootGameObject in TargetScene.GetRootGameObjects()) {
-						if (ClearPrefabObject(RootGameObject)) IsDirty = true;
+						if (ClearPrefabObjectRecursively(RootGameObject)) IsDirty = true;
 					}
 					if (IsDirty) {
 						EditorSceneManager.SaveScene(TargetScene);
@@ -266,7 +266,19 @@ namespace VRSuya.Cleaner {
 			return IsModified;
 		}
 
-		public static bool ClearPrefabObject(GameObject TargetGameObject) {
+		public static bool ClearPrefabObjectRecursively(GameObject TargetGameObject) {
+			bool IsModified = false;
+			foreach (Transform ChildTransform in TargetGameObject.GetComponentsInChildren<Transform>(true)) {
+				if (ChildTransform.gameObject == TargetGameObject) continue;
+				if (PrefabUtility.IsAnyPrefabInstanceRoot(ChildTransform.gameObject)) {
+					if (ClearPrefabObjectRecursively(ChildTransform.gameObject)) IsModified = true;
+				}
+			}
+			if (ClearPrefabObject(TargetGameObject)) IsModified = true;
+			return IsModified;
+		}
+
+		static bool ClearPrefabObject(GameObject TargetGameObject) {
 			bool IsChanged = false;
 			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);

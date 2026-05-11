@@ -39,7 +39,7 @@ namespace VRSuya.Cleaner {
 						GameObject TargetGameObject = AssetDatabase.LoadAssetAtPath<GameObject>(TargetAssetPath);
 						List<bool> Results = new List<bool>();
 						Results.Add(PrefabPhysBoneCleaner.ClosePhysBoneComponent(TargetGameObject));
-						Results.Add(PrefabCleaner.ClearPrefabObject(TargetGameObject));
+						Results.Add(PrefabCleaner.ClearPrefabObjectRecursively(TargetGameObject));
 						Results.Add(UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath));
 						if (Results.Contains(true)) {
 							ModifiedCount++;
