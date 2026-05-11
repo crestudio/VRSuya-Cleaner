@@ -131,7 +131,6 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-
 		[MenuItem("Tools/VRSuya/Cleaner/Scene/Standardize IndirectSpecularColor", priority = 1000)]
 		static void RequestStandardizeAllIndirectSpecularColor() {
 			Asset AssetInstance = new Asset();
@@ -209,7 +208,6 @@ namespace VRSuya.Cleaner {
 			}
 			return false;
 		}
-
 	}
 
 	public class PrefabCleaner {
@@ -365,4 +363,3 @@ namespace VRSuya.Cleaner {
 		}
 	}
 }
-
