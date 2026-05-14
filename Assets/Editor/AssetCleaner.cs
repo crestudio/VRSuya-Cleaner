@@ -45,8 +45,8 @@ namespace VRSuya.Cleaner {
 							(float)Index / AssetGUIDs.Length);
 						if (TargetAssetName.EndsWith("Original")) continue;
 						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
-						Texture2D TargetAnimator = AssetDatabase.LoadAssetAtPath<Texture2D>(TargetAssetPath);
-						if (StandardizeTexture(TargetAnimator)) {
+						Texture2D TargetTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(TargetAssetPath);
+						if (StandardizeTexture(TargetTexture)) {
 							ModifiedCount++;
 						}
 					}
@@ -72,8 +72,8 @@ namespace VRSuya.Cleaner {
 							(float)Index / Texture2DGUIDs.Length);
 						if (TargetAssetName.EndsWith("Original")) continue;
 						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(Texture2DGUIDs[Index]);
-						Texture2D TargetAnimator = AssetDatabase.LoadAssetAtPath<Texture2D>(TargetAssetPath);
-						if (StandardizeTexture(TargetAnimator)) {
+						Texture2D TargetTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(TargetAssetPath);
+						if (StandardizeTexture(TargetTexture)) {
 							ModifiedCount++;
 						}
 					}
