@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+using VRSuya.Core;
+
 using Anatawa12.ContinuousAvatarUploader.Editor;
 
 /*
@@ -18,28 +20,68 @@ namespace VRSuya.Cleaner {
 	[ExecuteInEditMode]
 	public class SortCAU : EditorWindow {
 
-		[MenuItem("Tools/VRSuya/Cleaner/Asset/Sort CAU", priority = 1000)]
-		static void SortCAUAssets() {
-			string[] AssetGUIDs = AssetDatabase.FindAssets("glob:\"*.asset\"", new[] { "Assets/" });
+		[MenuItem("Assets/VRSuya/Asset/Sort CAU", true)]
+		static bool ValidateCAU() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAsset(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Asset/Sort CAU", priority = 1000)]
+		static void RequestSortCAU() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				foreach (string TargetAssetGUID in AssetGUIDs) {
-					AvatarUploadSettingGroup TargetCAU = AssetDatabase.LoadAssetAtPath<AvatarUploadSettingGroup>(AssetDatabase.GUIDToAssetPath(TargetAssetGUID));
-					if (TargetCAU) {
-						if (TargetCAU.avatars.Length > 1) {
-							AvatarUploadSetting[] NewAvatarUploadSetting = TargetCAU.avatars
-								.OrderBy(Item => Item.avatarName)
-								.ToArray();
-							if (!TargetCAU.avatars.SequenceEqual(NewAvatarUploadSetting)) {
-								TargetCAU.avatars = NewAvatarUploadSetting;
-								EditorUtility.SetDirty(TargetCAU);
-								AssetDatabase.SaveAssets();
-								Debug.Log($"[VRSuya] {TargetCAU.name} have been sorted successfully");
-							}
-						}
+				SortCAUAssets(AssetGUIDs);
+			}
+		}
+
+		[MenuItem("Tools/VRSuya/Cleaner/Asset/Sort CAU", priority = 1000)]
+		static void RequestAllSortCAU() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AvatarUploadSettingGroup", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				SortCAUAssets(AssetGUIDs);
+			}
+		}
+
+		static void SortCAUAssets(string[] TargetGUIDs) {
+			Asset AssetInstance = new Asset();
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Sorting Continuous Avatar Uploader",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					AvatarUploadSettingGroup TargetCAU = AssetDatabase.LoadAssetAtPath<AvatarUploadSettingGroup>(TargetAssetPath);
+					if (SortAvatar(TargetCAU)) {
+						ModifiedCount++;
 					}
 				}
-				AssetDatabase.Refresh();
-			}	
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+			}
+			Debug.Log($"[VRSuya] Sorted {ModifiedCount} Continuous Avatar Uploaders");
+		}
+
+		static bool SortAvatar(AvatarUploadSettingGroup TargetCAU) {
+			if (TargetCAU && TargetCAU is AvatarUploadSettingGroup) {
+				if (TargetCAU.avatars.Length > 1) {
+					AvatarUploadSetting[] NewAvatarUploadSetting = TargetCAU.avatars
+						.OrderBy(Item => Item.avatarName)
+						.ToArray();
+					if (!TargetCAU.avatars.SequenceEqual(NewAvatarUploadSetting)) {
+						TargetCAU.avatars = NewAvatarUploadSetting;
+						EditorUtility.SetDirty(TargetCAU);
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }

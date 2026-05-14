@@ -2,6 +2,7 @@
 using System.Linq;
 
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 using VRSuya.Core;
@@ -47,7 +48,10 @@ namespace VRSuya.Cleaner {
 					}
 				} finally {
 					EditorUtility.ClearProgressBar();
-					AssetDatabase.Refresh();
+					if (ModifiedCount > 0) {
+						AssetDatabase.SaveAssets();
+						AssetDatabase.Refresh();
+					}
 				}
 				Debug.Log($"[VRSuya] Cleaned up of {ModifiedCount} Prefab");
 			}
@@ -84,9 +88,51 @@ namespace VRSuya.Cleaner {
 					}
 				} finally {
 					EditorUtility.ClearProgressBar();
-					AssetDatabase.Refresh();
+					if (ModifiedCount > 0) {
+						AssetDatabase.SaveAssets();
+						AssetDatabase.Refresh();
+					}
 				}
 				Debug.Log($"[VRSuya] Cleaned up of {ModifiedCount} Scene");
+			}
+		}
+
+		[MenuItem("Assets/VRSuya/Clean up Animator", true)]
+		static bool ValidateAnimator() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAnimatorController(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Clean up Animator", priority = 1100)]
+		static void RequestCleanupAnimator() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				Asset AssetInstance = new Asset();
+				AnimatorControllerCleaner CleanerInstance = new AnimatorControllerCleaner();
+				int ModifiedCount = 0;
+				try {
+					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
+						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						EditorUtility.DisplayProgressBar("Clean up Animator",
+							$"Processing : {TargetAssetName}",
+							(float)Index / AssetGUIDs.Length);
+						if (TargetAssetName.EndsWith("Original")) continue;
+						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
+						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+						List<bool> Results = new List<bool>();
+						Results.Add(UnityCleaner.StandardizefileID(TargetAnimator));
+						Results.Add(CleanerInstance.CleanupAnimatorController(TargetAnimator));
+						if (Results.Contains(true)) {
+							ModifiedCount++;
+						}
+					}
+				} finally {
+					EditorUtility.ClearProgressBar();
+					if (ModifiedCount > 0) {
+						AssetDatabase.Refresh();
+					}
+				}
+				Debug.Log($"[VRSuya] Cleaned up of {ModifiedCount} Animator Controller");
 			}
 		}
 	}

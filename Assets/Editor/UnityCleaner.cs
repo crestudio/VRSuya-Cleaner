@@ -37,54 +37,41 @@ namespace VRSuya.Cleaner {
 		static void RequestStandardizefileID() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
-				int ModifiedCount = 0;
-				try {
-					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
-						EditorUtility.DisplayProgressBar("Standardizing fileID",
-							$"Processing : {TargetAssetName}",
-							(float)Index / AssetGUIDs.Length);
-						if (TargetAssetName.EndsWith("Original")) continue;
-						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
-						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
-						if (StandardizefileID(TargetAnimator)) {
-							ModifiedCount++;
-						}
-					}
-				} finally {
-					EditorUtility.ClearProgressBar();
-					AssetDatabase.Refresh();
-				}
-				Debug.Log($"[VRSuya] Normalized the fileIDs of {ModifiedCount} Animator Controllers");
+				StandardizeAnimators(AssetGUIDs);
 			}
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Animator/Standardize fileID", priority = 1000)]
 		static void RequestAllStandardizefileID() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				StandardizeAnimators(AssetGUIDs);
+			}
+		}
+
+		static void StandardizeAnimators(string[] TargetGUIDs) {
 			Asset AssetInstance = new Asset();
-			string[] AnimatorControllerGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.AnimatorController);
-			if (AnimatorControllerGUIDs.Length > 0) {
-				int ModifiedCount = 0;
-				try {
-					for (int Index = 0; Index < AnimatorControllerGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AnimatorControllerGUIDs[Index], true);
-						EditorUtility.DisplayProgressBar("Standardizing fileID",
-							$"Processing : {TargetAssetName}",
-							(float)Index / AnimatorControllerGUIDs.Length);
-						if (TargetAssetName.EndsWith("Original")) continue;
-						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AnimatorControllerGUIDs[Index]);
-						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
-						if (StandardizefileID(TargetAnimator)) {
-							ModifiedCount++;
-						}
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Standardizing AnimatorController",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+					if (StandardizefileID(TargetAnimator)) {
+						ModifiedCount++;
 					}
-				} finally {
-					EditorUtility.ClearProgressBar();
+				}
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
 					AssetDatabase.Refresh();
 				}
-				Debug.Log($"[VRSuya] Normalized the fileIDs of {ModifiedCount} Animator Controllers");
 			}
+			Debug.Log($"[VRSuya] Normalized the fileIDs of {ModifiedCount} Animator Controllers");
 		}
 
 		public static bool StandardizefileID(AnimatorController TargetAnimator) {
@@ -110,40 +97,39 @@ namespace VRSuya.Cleaner {
 		static void RequestStandardizeIndirectSpecularColor() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
-				int ModifiedCount = 0;
-				try {
-					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
-						EditorUtility.DisplayProgressBar("Standardizing fileID",
-							$"Processing : {TargetAssetName}",
-							(float)Index / AssetGUIDs.Length);
-						if (TargetAssetName.EndsWith("Original")) continue;
-						if (StandardizeIndirectSpecularColor(AssetGUIDs[Index])) {
-							ModifiedCount++;
-						}
-					}
-				} finally {
-					EditorUtility.ClearProgressBar();
-					AssetDatabase.Refresh();
-				}
-				Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ModifiedCount} Unity Scenes");
+				StandardizeScenes(AssetGUIDs);
 			}
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Scene/Standardize IndirectSpecularColor", priority = 1000)]
 		static void RequestStandardizeAllIndirectSpecularColor() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:Scene", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				StandardizeScenes(AssetGUIDs);
+			}
+		}
+
+		static void StandardizeScenes(string[] TargetGUIDs) {
 			Asset AssetInstance = new Asset();
-			string[] SceneGUIDs = AssetInstance.GetAssetGUIDs(Asset.AssetType.Scene);
-			if (SceneGUIDs.Length > 0) {
-				int ModifiedCount = 0;
-				foreach (string SceneGUID in SceneGUIDs) {
-					if (StandardizeIndirectSpecularColor(SceneGUID)) {
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Standardizing Scene",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					if (StandardizeIndirectSpecularColor(TargetGUIDs[Index])) {
 						ModifiedCount++;
 					}
 				}
-				Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ModifiedCount} Unity Scenes");
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.Refresh();
+				}
 			}
+			Debug.Log($"[VRSuya] Normalized the IndirectSpecularColors of {ModifiedCount} Unity Scenes");
 		}
 
 		public static bool StandardizeIndirectSpecularColor(string TargetSceneGUID) {
@@ -171,39 +157,63 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Prefab/Close Prefab PhysBone", priority = 1000)]
 		static void RequestClearPrefabTransform() {
-			foreach (Object TargetObject in Selection.objects) {
-				GameObject TargetGameObject = TargetObject as GameObject;
-				if (TargetGameObject && TargetGameObject is GameObject) {
-					if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) ClosePhysBoneComponent(TargetGameObject);
-				}
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				StandardizePrefabs(AssetGUIDs);
 			}
 		}
 
-		public static bool ClosePhysBoneComponent(GameObject TargetGameObject) {
-			VRCPhysBone[] PhysBoneComponents = TargetGameObject.GetComponentsInChildren<VRCPhysBone>(true);
-			if (PhysBoneComponents.Length > 0) {
-				bool IsPrefabModified = false;
-				foreach (VRCPhysBone TargetPhysBone in PhysBoneComponents) {
-					if (!PrefabUtility.GetCorrespondingObjectFromSource(TargetPhysBone)) {
-						bool IsModified = false;
-						if (TargetPhysBone.foldout_transforms) { TargetPhysBone.foldout_transforms = false; IsModified = true; }
-						if (TargetPhysBone.foldout_forces) { TargetPhysBone.foldout_forces = false; IsModified = true; }
-						if (TargetPhysBone.foldout_collision) { TargetPhysBone.foldout_collision = false; IsModified = true; }
-						if (TargetPhysBone.foldout_stretchsquish) { TargetPhysBone.foldout_stretchsquish = false; IsModified = true; }
-						if (TargetPhysBone.foldout_limits) { TargetPhysBone.foldout_limits = false; IsModified = true; }
-						if (TargetPhysBone.foldout_grabpose) { TargetPhysBone.foldout_grabpose = false; IsModified = true; }
-						if (TargetPhysBone.foldout_options) { TargetPhysBone.foldout_options = false; IsModified = true; }
-						if (TargetPhysBone.foldout_gizmos) { TargetPhysBone.foldout_gizmos = false; IsModified = true; }
-						if (IsModified) {
-							IsPrefabModified = true;
-							EditorUtility.SetDirty(TargetPhysBone);
-						}
+		static void StandardizePrefabs(string[] TargetGUIDs) {
+			Asset AssetInstance = new Asset();
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Closing PhysBones in Prefab",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					GameObject TargetGameObject = AssetDatabase.LoadAssetAtPath<GameObject>(TargetAssetPath);
+					if (ClosePhysBoneComponent(TargetGameObject)) {
+						ModifiedCount++;
 					}
 				}
-				if (IsPrefabModified) {
-					AssetDatabase.SaveAssetIfDirty(TargetGameObject);
-					Debug.Log($"[VRSuya] {TargetGameObject.name} 프리팹의 PhysBone이 모두 닫혔습니다");
-					return true;
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+			}
+			Debug.Log($"[VRSuya] Closed the PhysBone components of {ModifiedCount} Prefabs");
+		}
+
+		public static bool ClosePhysBoneComponent(GameObject TargetGameObject) {
+			if (PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) {
+				VRCPhysBone[] PhysBoneComponents = TargetGameObject.GetComponentsInChildren<VRCPhysBone>(true);
+				if (PhysBoneComponents.Length > 0) {
+					bool IsPrefabModified = false;
+					foreach (VRCPhysBone TargetPhysBone in PhysBoneComponents) {
+						if (!PrefabUtility.GetCorrespondingObjectFromSource(TargetPhysBone)) {
+							bool IsModified = false;
+							if (TargetPhysBone.foldout_transforms) { TargetPhysBone.foldout_transforms = false; IsModified = true; }
+							if (TargetPhysBone.foldout_forces) { TargetPhysBone.foldout_forces = false; IsModified = true; }
+							if (TargetPhysBone.foldout_collision) { TargetPhysBone.foldout_collision = false; IsModified = true; }
+							if (TargetPhysBone.foldout_stretchsquish) { TargetPhysBone.foldout_stretchsquish = false; IsModified = true; }
+							if (TargetPhysBone.foldout_limits) { TargetPhysBone.foldout_limits = false; IsModified = true; }
+							if (TargetPhysBone.foldout_grabpose) { TargetPhysBone.foldout_grabpose = false; IsModified = true; }
+							if (TargetPhysBone.foldout_options) { TargetPhysBone.foldout_options = false; IsModified = true; }
+							if (TargetPhysBone.foldout_gizmos) { TargetPhysBone.foldout_gizmos = false; IsModified = true; }
+							if (IsModified) {
+								IsPrefabModified = true;
+								EditorUtility.SetDirty(TargetPhysBone);
+							}
+						}
+					}
+					if (IsPrefabModified) {
+						return true;
+					}
 				}
 			}
 			return false;

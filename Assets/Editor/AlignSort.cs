@@ -22,100 +22,220 @@ using Animator = VRSuya.Core.Animator;
 namespace VRSuya.Cleaner {
 
 	[ExecuteInEditMode]
-	public class AlignSort : EditorWindow {
+	public class AlignSortVRChat : EditorWindow {
 
 		static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };
 
-		[MenuItem("Tools/VRSuya/Cleaner/VRChat/Sort VRChat Parameters", priority = 1000)]
-		static void SortAllParameters() {
-			string[] ParameterGUIDs = AssetDatabase.FindAssets("Parameter", new[] { "Assets/" });
-			if (ParameterGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
-				foreach (string TargetParameterGUID in ParameterGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetParameterGUID, true).EndsWith("Original")) continue;
-					VRCExpressionParameters TargetParameter = AssetDatabase.LoadAssetAtPath<VRCExpressionParameters>(AssetDatabase.GUIDToAssetPath(TargetParameterGUID));
-					if (TargetParameter) SortParameters(TargetParameter);
-				}
-				AssetDatabase.Refresh();
+		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Parameter", true)]
+		static bool ValidateVRChatParameter() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAsset(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Parameter", priority = 1000)]
+		static void RequestSortVRChatParameters() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				SortVRChatParameters(AssetGUIDs);
 			}
 		}
 
-		static void SortParameters(VRCExpressionParameters TargetParameter) {
-			Avatar AvatarInstance = new Avatar();
-			string[] AvatarNames = AvatarInstance.GetAvatarNames();
-			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
-			List<string> OldParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
-			List<string> NewParameterNameList = OldParameterNameList
-				.OrderBy(Parameter =>
-					Parameter.Contains("VRCEmote") ? 0 :
-					AvatarNames.Any(AvatarName => Parameter.StartsWith(AvatarName, StringComparison.Ordinal)) ? 1 :
-					2
-				)
-				.ThenBy(Parameter => Parameter, StringComparer.Ordinal)
-				.ToList();
-			if (!OldParameterNameList.SequenceEqual(NewParameterNameList)) {
-				VRCExpressionParameters.Parameter[] NewParameters = new VRCExpressionParameters.Parameter[TargetParameter.parameters.Length];
-				for (int Index = 0; Index < TargetParameter.parameters.Length; Index++) {
-					NewParameters[Index] = TargetParameter.parameters.First(Parameter => Parameter.name == NewParameterNameList[Index]);
+		[MenuItem("Tools/VRSuya/Asset/VRChat/Sort VRChat Parameters", priority = 1000)]
+		static void RequestSortAllVRChatParameters() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:VRCExpressionParameters", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				SortVRChatParameters(AssetGUIDs);
+			}
+		}
+
+		static void SortVRChatParameters(string[] TargetGUIDs) {
+			Asset AssetInstance = new Asset();
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Sorting VRChat Parameter",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					VRCExpressionParameters TargetParameter = AssetDatabase.LoadAssetAtPath<VRCExpressionParameters>(TargetAssetPath);
+					if (SortParameter(TargetParameter)) {
+						ModifiedCount++;
+					}
 				}
-				TargetParameter.parameters = NewParameters;
-				EditorUtility.SetDirty(TargetParameter);
-				AssetDatabase.SaveAssets();
-				Debug.Log($"[VRSuya] {TargetParameter.name} have been sorted successfully");
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+			}
+			Debug.Log($"[VRSuya] Sorted parameters of {ModifiedCount} VRChat Parameters");
+		}
+
+		static bool SortParameter(VRCExpressionParameters TargetParameter) {
+			if (TargetParameter && TargetParameter is VRCExpressionParameters) {
+				Avatar AvatarInstance = new Avatar();
+				string[] AvatarNames = AvatarInstance.GetAvatarNames();
+				AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
+				List<string> OldParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
+				List<string> NewParameterNameList = OldParameterNameList
+					.OrderBy(Parameter =>
+						Parameter.Contains("VRCEmote") ? 0 :
+						AvatarNames.Any(AvatarName => Parameter.StartsWith(AvatarName, StringComparison.Ordinal)) ? 1 :
+						2
+					)
+					.ThenBy(Parameter => Parameter, StringComparer.Ordinal)
+					.ToList();
+				if (!OldParameterNameList.SequenceEqual(NewParameterNameList)) {
+					VRCExpressionParameters.Parameter[] NewParameters = new VRCExpressionParameters.Parameter[TargetParameter.parameters.Length];
+					for (int Index = 0; Index < TargetParameter.parameters.Length; Index++) {
+						NewParameters[Index] = TargetParameter.parameters.First(Parameter => Parameter.name == NewParameterNameList[Index]);
+					}
+					TargetParameter.parameters = NewParameters;
+					EditorUtility.SetDirty(TargetParameter);
+					return true;
+				}
+			}
+			return false;
+		}
+
+		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Menu", true)]
+		static bool ValidateVRChatMenu() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAsset(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Menu", priority = 1000)]
+		static void RequestSortVRChatMenus() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				SortVRChatMenus(AssetGUIDs);
 			}
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/VRChat/Sort VRChat Menus", priority = 1000)]
-		static void SortAllMenus() {
-			string[] MenuGUIDs = AssetDatabase.FindAssets("Menu", new[] { "Assets/" });
-			if (MenuGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
-				foreach (string TargetMenuGUID in MenuGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetMenuGUID, true).EndsWith("Original")) continue;
-					VRCExpressionsMenu TargetMenu = AssetDatabase.LoadAssetAtPath<VRCExpressionsMenu>(AssetDatabase.GUIDToAssetPath(TargetMenuGUID));
-					if (TargetMenu) SortMenus(TargetMenu);
-				}
-				AssetDatabase.Refresh();
+		static void RequestSortAllVRChatMenus() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:VRCExpressionsMenu", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				SortVRChatMenus(AssetGUIDs);
 			}
 		}
 
-		static void SortMenus(VRCExpressionsMenu TargetMenu) {
-			List<string> OldMenuNameList = TargetMenu.controls.Select(Menu => Menu.name).ToList();
-			List<string> NewMenuNameList = OldMenuNameList
-				.OrderBy(Menu => Menu.Contains("VRSuya") ? 3 : Menu.Contains("Emote") ? 2 : Menu.Contains("Modular") ? 1 : 0)
-				.ThenBy(Menu => Menu, StringComparer.Ordinal)
-				.ToList();
-			if (!OldMenuNameList.SequenceEqual(NewMenuNameList)) {
-				List<VRCExpressionsMenu.Control> NewMenus = new List<VRCExpressionsMenu.Control>();
-				for (int Index = 0; Index < TargetMenu.controls.Count; Index++) {
-					NewMenus.Add(TargetMenu.controls.First(Menu => Menu.name == NewMenuNameList[Index]));
+		static void SortVRChatMenus(string[] TargetGUIDs) {
+			Asset AssetInstance = new Asset();
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Sorting VRChat Menu",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					VRCExpressionsMenu TargetMenu = AssetDatabase.LoadAssetAtPath<VRCExpressionsMenu>(TargetAssetPath);
+					if (SortMenu(TargetMenu)) {
+						ModifiedCount++;
+					}
 				}
-				TargetMenu.controls = NewMenus;
-				EditorUtility.SetDirty(TargetMenu);
-				AssetDatabase.SaveAssets();
-				Debug.Log($"[VRSuya] {TargetMenu.name} have been sorted successfully");
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+			}
+			Debug.Log($"[VRSuya] Sorted menus of {ModifiedCount} VRChat Menus");
+		}
+
+		static bool SortMenu(VRCExpressionsMenu TargetMenu) {
+			if (TargetMenu && TargetMenu is VRCExpressionsMenu) {
+				List<string> OldMenuNameList = TargetMenu.controls.Select(Menu => Menu.name).ToList();
+				List<string> NewMenuNameList = OldMenuNameList
+					.OrderBy(Menu => Menu.Contains("VRSuya") ? 3 : Menu.Contains("Emote") ? 2 : Menu.Contains("Modular") ? 1 : 0)
+					.ThenBy(Menu => Menu, StringComparer.Ordinal)
+					.ToList();
+				if (!OldMenuNameList.SequenceEqual(NewMenuNameList)) {
+					List<VRCExpressionsMenu.Control> NewMenus = new List<VRCExpressionsMenu.Control>();
+					for (int Index = 0; Index < TargetMenu.controls.Count; Index++) {
+						NewMenus.Add(TargetMenu.controls.First(Menu => Menu.name == NewMenuNameList[Index]));
+					}
+					TargetMenu.controls = NewMenus;
+					EditorUtility.SetDirty(TargetMenu);
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	public class AlignSortAnimator : EditorWindow {
+
+		static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };
+
+		[MenuItem("Assets/VRSuya/Animator/Sort Animator", true)]
+		static bool ValidateAnimator() {
+			Asset AssetInstance = new Asset();
+			return AssetInstance.ContainAnimatorController(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Animator/Sort Animator", priority = 1000)]
+		static void RequestSortAnimator() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				SortAnimators(AssetGUIDs);
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Cleaner/Animator/Sort Animator Layer Parameter", priority = 1000)]
-		static void SortAllAnimator() {
-			string[] AnimatorGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
-			if (AnimatorGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
-				foreach (string TargetAnimatorGUID in AnimatorGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetAnimatorGUID, true).EndsWith("Original")) continue;
-					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetAnimatorGUID));
-					if (TargetAnimator) SortAnimatorLayerParameter(TargetAnimator);
-				}
-				AssetDatabase.Refresh();
+		[MenuItem("Tools/VRSuya/Cleaner/Animator/Sort Animator", priority = 1000)]
+		static void RequestAllSortAnimator() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets/" });
+			if (AssetGUIDs.Length > 0) {
+				SortAnimators(AssetGUIDs);
 			}
 		}
 
-		static void SortAnimatorLayerParameter(AnimatorController TargetAnimator) {
+		static void SortAnimators(string[] TargetGUIDs) {
+			Asset AssetInstance = new Asset();
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Sorting AnimatorController",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+					if (SortAnimator(TargetAnimator)) {
+						ModifiedCount++;
+					}
+				}
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+			}
+			Debug.Log($"[VRSuya] Sorted layers and parameters of {ModifiedCount} Animator Controllers");
+		}
+
+		static bool SortAnimator(AnimatorController TargetAnimator) {
+			bool IsDirty = false;
+			if (TargetAnimator && TargetAnimator is AnimatorController) {
+				if (SortLayers(TargetAnimator)) IsDirty = true;
+				if (SortParameters(TargetAnimator)) IsDirty = true;
+				if (IsDirty) EditorUtility.SetDirty(TargetAnimator);
+			}
+			return IsDirty;
+		}
+
+		static bool SortLayers(AnimatorController TargetAnimator) {
 			Avatar AvatarInstance = new Avatar();
 			string[] AvatarNames = AvatarInstance.GetAvatarNames();
 			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
-			bool IsDirty = false;
 			List<string> OldLayerNameList = TargetAnimator.layers.Select(Layer => Layer.name).ToList();
 			List<string> NewLayerNameList = OldLayerNameList
 				.OrderBy(Layer =>
@@ -133,8 +253,15 @@ namespace VRSuya.Cleaner {
 					NewLayers[Index] = TargetAnimator.layers.First(Layer => Layer.name == NewLayerNameList[Index]);
 				}
 				TargetAnimator.layers = NewLayers;
-				IsDirty = true;
+				return true;
 			}
+			return false;
+		}
+
+		static bool SortParameters(AnimatorController TargetAnimator) {
+			Avatar AvatarInstance = new Avatar();
+			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
 			List<string> OldParameterNameList = TargetAnimator.parameters.Select(Parameter => Parameter.name).ToList();
 			List<string> NewParameterNameList = OldParameterNameList
 				.OrderBy(Parameter =>
@@ -153,13 +280,9 @@ namespace VRSuya.Cleaner {
 					NewParameters[Index] = TargetAnimator.parameters.First(Parameter => Parameter.name == NewParameterNameList[Index]);
 				}
 				TargetAnimator.parameters = NewParameters;
-				IsDirty = true;
+				return true;
 			}
-			if (IsDirty) {
-				EditorUtility.SetDirty(TargetAnimator);
-				AssetDatabase.SaveAssets();
-				Debug.Log($"[VRSuya] {TargetAnimator.name} have been sorted successfully");
-			}
+			return false;
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Animator/Sort Animator States", priority = 1000)]
