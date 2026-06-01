@@ -13,7 +13,6 @@ using VRSuya.Core;
 
 namespace VRSuya.Cleaner {
 	
-	[ExecuteInEditMode]
     public class AssetCleaner : EditorWindow {
 
 		const bool TargetStreamingMipmaps = true;

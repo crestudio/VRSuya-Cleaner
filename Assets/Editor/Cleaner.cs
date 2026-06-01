@@ -14,7 +14,6 @@ using VRSuya.Core;
 
 namespace VRSuya.Cleaner {
 
-	[ExecuteInEditMode]
 	public class Cleaner : EditorWindow {
 
 		[MenuItem("Assets/VRSuya/Clean up Prefab", true)]

@@ -16,7 +16,6 @@ using VRSuya.Core;
 
 namespace VRSuya.Cleaner {
 
-	[ExecuteInEditMode]
 	public class UnityLineCleaner : EditorWindow {
 
 		class YamlFormattingRule {

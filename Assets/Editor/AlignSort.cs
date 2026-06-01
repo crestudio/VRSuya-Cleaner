@@ -21,7 +21,6 @@ using Animator = VRSuya.Core.Animator;
 
 namespace VRSuya.Cleaner {
 
-	[ExecuteInEditMode]
 	public class AlignSortVRChat : EditorWindow {
 
 		static readonly string[] OldAvatarNames = new string[] { "Haku", "Miko" };

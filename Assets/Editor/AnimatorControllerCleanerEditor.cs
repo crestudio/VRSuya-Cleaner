@@ -13,7 +13,6 @@ using VRSuya.Core;
 
 namespace VRSuya.Cleaner {
 
-	[ExecuteInEditMode]
 	public class AnimatorControllerCleanerEditor : EditorWindow {
 
 		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", true)]

@@ -17,7 +17,6 @@ using Anatawa12.ContinuousAvatarUploader.Editor;
 
 namespace VRSuya.Cleaner {
 
-	[ExecuteInEditMode]
 	public class SortCAU : EditorWindow {
 
 		[MenuItem("Assets/VRSuya/Asset/Sort CAU", true)]

@@ -24,7 +24,6 @@ using Object = UnityEngine.Object;
 
 namespace VRSuya.Cleaner {
 	
-	[ExecuteInEditMode]
     public class UnityCleaner : EditorWindow {
 
 		[MenuItem("Assets/VRSuya/Animator/Standardize fileID", true)]

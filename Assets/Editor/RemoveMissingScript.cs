@@ -15,7 +15,6 @@ using static VRSuya.Core.Unity;
 
 namespace VRSuya.Cleaner {
 
-	[ExecuteInEditMode]
 	public class RemoveMissingScript : EditorWindow {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Scene/Select All GameObject of Missing Script", priority = 1000)]
