@@ -121,6 +121,7 @@ namespace VRSuya.Cleaner {
 						List<bool> Results = new List<bool>();
 						Results.Add(UnityCleaner.StandardizefileID(TargetAnimator));
 						Results.Add(CleanerInstance.CleanupAnimatorController(TargetAnimator));
+						Results.Add(UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath));
 						if (Results.Contains(true)) {
 							ModifiedCount++;
 						}
