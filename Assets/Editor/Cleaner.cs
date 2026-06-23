@@ -35,10 +35,11 @@ namespace VRSuya.Cleaner {
 						if (TargetAssetName.EndsWith("Original")) continue;
 						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
 						GameObject TargetGameObject = AssetDatabase.LoadAssetAtPath<GameObject>(TargetAssetPath);
-						List<bool> Results = new List<bool>();
-						Results.Add(PrefabPhysBoneCleaner.ClosePhysBoneComponent(TargetGameObject));
-						Results.Add(PrefabCleaner.ClearPrefabObjectRecursively(TargetGameObject));
-						Results.Add(UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath));
+						List<bool> Results = new List<bool>() {
+							PrefabPhysBoneCleaner.ClosePhysBoneComponent(TargetGameObject),
+							PrefabCleaner.ClearPrefabObjectRecursively(TargetGameObject),
+							UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath)
+						};
 						if (Results.Contains(true)) {
 							ModifiedCount++;
 						}
@@ -73,10 +74,11 @@ namespace VRSuya.Cleaner {
 						if (TargetAssetName.EndsWith("Original")) continue;
 						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
 						Object TargetObject = AssetDatabase.LoadAssetAtPath<Object>(TargetAssetPath);
-						List<bool> Results = new List<bool>();
-						Results.Add(UnityCleaner.StandardizeIndirectSpecularColor(AssetGUIDs[Index]));
-						Results.Add(PrefabCleaner.ClearSceneObject(TargetObject));
-						Results.Add(UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath));
+						List<bool> Results = new List<bool>() {
+							UnityCleaner.StandardizeIndirectSpecularColor(AssetGUIDs[Index]),
+							PrefabCleaner.ClearSceneObject(TargetObject),
+							UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath)
+						};
 						if (Results.Contains(true)) {
 							ModifiedCount++;
 						}
@@ -112,10 +114,11 @@ namespace VRSuya.Cleaner {
 						if (TargetAssetName.EndsWith("Original")) continue;
 						string TargetAssetPath = AssetDatabase.GUIDToAssetPath(AssetGUIDs[Index]);
 						AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
-						List<bool> Results = new List<bool>();
-						Results.Add(UnityCleaner.StandardizefileID(TargetAnimator));
-						Results.Add(CleanerInstance.CleanupAnimatorController(TargetAnimator));
-						Results.Add(UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath));
+						List<bool> Results = new List<bool>() {
+							UnityCleaner.StandardizefileID(TargetAnimator),
+							CleanerInstance.CleanupAnimatorController(TargetAnimator),
+							UnityLineCleaner.FixYAMLBrokenLines(TargetAssetPath)
+						};
 						if (Results.Contains(true)) {
 							ModifiedCount++;
 						}
