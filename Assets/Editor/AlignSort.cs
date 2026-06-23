@@ -27,8 +27,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Parameter", true)]
 		static bool ValidateVRChatParameter() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainAsset(Selection.objects);
+			return Asset.ContainAsset(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Parameter", priority = 1000)]
@@ -48,11 +47,10 @@ namespace VRSuya.Cleaner {
 		}
 
 		static void SortVRChatParameters(string[] TargetGUIDs) {
-			Asset AssetInstance = new Asset();
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Sorting VRChat Parameter",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
@@ -75,8 +73,7 @@ namespace VRSuya.Cleaner {
 
 		static bool SortParameter(VRCExpressionParameters TargetParameter) {
 			if (TargetParameter && TargetParameter is VRCExpressionParameters) {
-				Avatar AvatarInstance = new Avatar();
-				string[] AvatarNames = AvatarInstance.GetAvatarNames();
+				string[] AvatarNames = Avatar.GetAvatarNames();
 				AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
 				List<string> OldParameterNameList = TargetParameter.parameters.Select(Parameter => Parameter.name).ToList();
 				List<string> NewParameterNameList = OldParameterNameList
@@ -102,8 +99,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Menu", true)]
 		static bool ValidateVRChatMenu() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainAsset(Selection.objects);
+			return Asset.ContainAsset(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Asset/Sort VRChat Menu", priority = 1000)]
@@ -123,11 +119,10 @@ namespace VRSuya.Cleaner {
 		}
 
 		static void SortVRChatMenus(string[] TargetGUIDs) {
-			Asset AssetInstance = new Asset();
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Sorting VRChat Menu",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
@@ -175,8 +170,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Animator/Sort Animator", true)]
 		static bool ValidateAnimator() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainAnimatorController(Selection.objects);
+			return Asset.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Animator/Sort Animator", priority = 1000)]
@@ -196,11 +190,10 @@ namespace VRSuya.Cleaner {
 		}
 
 		static void SortAnimators(string[] TargetGUIDs) {
-			Asset AssetInstance = new Asset();
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Sorting AnimatorController",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
@@ -232,8 +225,7 @@ namespace VRSuya.Cleaner {
 		}
 
 		static bool SortLayers(AnimatorController TargetAnimator) {
-			Avatar AvatarInstance = new Avatar();
-			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			string[] AvatarNames = Avatar.GetAvatarNames();
 			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
 			List<string> OldLayerNameList = TargetAnimator.layers.Select(Layer => Layer.name).ToList();
 			List<string> NewLayerNameList = OldLayerNameList
@@ -258,8 +250,7 @@ namespace VRSuya.Cleaner {
 		}
 
 		static bool SortParameters(AnimatorController TargetAnimator) {
-			Avatar AvatarInstance = new Avatar();
-			string[] AvatarNames = AvatarInstance.GetAvatarNames();
+			string[] AvatarNames = Avatar.GetAvatarNames();
 			AvatarNames = AvatarNames.Concat(OldAvatarNames).ToArray();
 			List<string> OldParameterNameList = TargetAnimator.parameters.Select(Parameter => Parameter.name).ToList();
 			List<string> NewParameterNameList = OldParameterNameList
@@ -288,13 +279,12 @@ namespace VRSuya.Cleaner {
 		static void AlignAllAnimatorState() {
 			AnimatorController CurrentAnimator = GetCurrentAnimatorController();
 			if (CurrentAnimator) {
-				Animator AnimatorInstance = new Animator();
 				AnimatorStateMachine[] AllAnimatorStateMachines = CurrentAnimator.layers
-					.SelectMany(Item => AnimatorInstance.GetAllStateMachines(Item.stateMachine).ToArray())
+					.SelectMany(Item => Animator.GetAllStateMachines(Item.stateMachine).ToArray())
 					.ToArray();
 				foreach (AnimatorStateMachine TargetStateMachine in AllAnimatorStateMachines) {
 					string LayerName = CurrentAnimator.layers
-					.First(Item => AnimatorInstance.GetAllStateMachines(Item.stateMachine).Contains(TargetStateMachine)).name;
+					.First(Item => Animator.GetAllStateMachines(Item.stateMachine).Contains(TargetStateMachine)).name;
 					AlignAnimationStates(TargetStateMachine, LayerName);
 				}
 				EditorUtility.SetDirty(CurrentAnimator);
@@ -320,9 +310,8 @@ namespace VRSuya.Cleaner {
 
 		static AnimatorController GetCurrentAnimatorController() {
 			AnimatorController CurrentAnimatorController = null;
-			DuplicateGameObject DuplicatorInstance = new DuplicateGameObject();
 			Type AnimatorWindowType = Type.GetType("UnityEditor.Graphs.AnimatorControllerTool, UnityEditor.Graphs");
-			EditorWindow CurrentWindow = DuplicatorInstance.FindFirstWindow(AnimatorWindowType);
+			EditorWindow CurrentWindow = DuplicateGameObject.FindFirstWindow(AnimatorWindowType);
 			System.Type CurrentWindowType = CurrentWindow.GetType();
 			System.Reflection.PropertyInfo CurrentWindowProperty = CurrentWindowType.GetProperty("animatorController", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 			if (CurrentWindowProperty != null) {

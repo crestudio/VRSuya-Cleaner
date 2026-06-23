@@ -18,19 +18,17 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Clean up Prefab", true)]
 		static bool ValidatePrefab() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainPrefab(Selection.objects);
+			return Asset.ContainPrefab(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Clean up Prefab", priority = 1100)]
 		static void RequestCleanupPrefab() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Clean up Prefab",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -58,19 +56,17 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Clean up Scene", true)]
 		static bool ValidateScene() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainScene(Selection.objects);
+			return Asset.ContainScene(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Clean up Scene", priority = 1100)]
 		static void RequestCleanupScene() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Clean up Scene",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -98,20 +94,18 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Clean up Animator", true)]
 		static bool ValidateAnimator() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainAnimatorController(Selection.objects);
+			return Asset.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Clean up Animator", priority = 1100)]
 		static void RequestCleanupAnimator() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				AnimatorControllerCleaner CleanerInstance = new AnimatorControllerCleaner();
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Clean up Animator",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);

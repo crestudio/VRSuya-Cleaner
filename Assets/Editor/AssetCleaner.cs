@@ -34,11 +34,10 @@ namespace VRSuya.Cleaner {
 		static void RequestStandardizeTexture2D() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Standardizing Texture2D",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -59,13 +58,12 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Tools/VRSuya/Cleaner/Asset/Standardize Texture2Ds", priority = 1000)]
 		static void RequestAllStandardizeTexture2D() {
-			Asset AssetInstance = new Asset();
 			string[] Texture2DGUIDs = GetTexture2Ds();
 			if (Texture2DGUIDs.Length > 0) {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < Texture2DGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(Texture2DGUIDs[Index], true);
+						string TargetAssetName = Asset.GUIDToAssetName(Texture2DGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Standardizing Texture2D",
 							$"Processing : {TargetAssetName}",
 							(float)Index / Texture2DGUIDs.Length);

@@ -17,20 +17,18 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", true)]
 		static bool ValidateAsset() {
-			Asset AssetInstance = new Asset();
-			return AssetInstance.ContainAnimatorController(Selection.objects);
+			return Asset.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", priority = 1000)]
 		static void RequestCleanAnimatorController() {
 			AnimatorControllerCleaner CleanerInstance = new AnimatorControllerCleaner();
-			Asset AssetInstance = new Asset();
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < Selection.objects.Length; Index++) {
 					string TargetAssetPath = AssetDatabase.GetAssetPath(Selection.objects[Index]);
 					string TargetGUID = AssetDatabase.AssetPathToGUID(TargetAssetPath);
-					string TargetAssetName = AssetInstance.GUIDToAssetName(TargetGUID, true);
+					string TargetAssetName = Asset.GUIDToAssetName(TargetGUID, true);
 					EditorUtility.DisplayProgressBar("Cleaning AnimatorController",
 						$"Processing : {TargetAssetName}",
 						(float)Index / Selection.objects.Length);
@@ -52,11 +50,10 @@ namespace VRSuya.Cleaner {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {
 				AnimatorControllerCleaner CleanerInstance = new AnimatorControllerCleaner();
-				Asset AssetInstance = new Asset();
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = AssetInstance.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Cleaning AnimatorController",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -81,9 +78,8 @@ namespace VRSuya.Cleaner {
 		static void ClearAllFXLayerMask() {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
+					if (Asset.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
 					if (TargetFXLayer) ClearAnimatorMask(TargetFXLayer);
 				}
@@ -114,9 +110,8 @@ namespace VRSuya.Cleaner {
 		static void CleanupAllFXLayerTransition() {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
+					if (Asset.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
 					if (TargetFXLayer) CleanupFXAnimationTransition(TargetFXLayer);
 				}
@@ -128,9 +123,8 @@ namespace VRSuya.Cleaner {
 		static void CleanupAllGestureLayerTransition() {
 			string[] GestureLayerGUIDs = AssetDatabase.FindAssets("Gesture t:AnimatorController", new[] { "Assets/" });
 			if (GestureLayerGUIDs.Length > 0) {
-				Asset AssetInstance = new Asset();
 				foreach (string TargetGestureLayerGUID in GestureLayerGUIDs) {
-					if (AssetInstance.GUIDToAssetName(TargetGestureLayerGUID, true).EndsWith("Original")) continue;
+					if (Asset.GUIDToAssetName(TargetGestureLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetGestureLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetGestureLayerGUID));
 					if (TargetGestureLayer) CleanupGestureAnimationTransition(TargetGestureLayer);
 				}
