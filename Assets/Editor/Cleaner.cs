@@ -18,7 +18,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Clean up Prefab", true)]
 		static bool ValidatePrefab() {
-			return Asset.ContainPrefab(Selection.objects);
+			return AssetUtility.ContainPrefab(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Clean up Prefab", priority = 1100)]
@@ -28,7 +28,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Clean up Prefab",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -57,7 +57,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Clean up Scene", true)]
 		static bool ValidateScene() {
-			return Asset.ContainScene(Selection.objects);
+			return AssetUtility.ContainScene(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Clean up Scene", priority = 1100)]
@@ -67,7 +67,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Clean up Scene",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -96,7 +96,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Clean up Animator", true)]
 		static bool ValidateAnimator() {
-			return Asset.ContainAnimatorController(Selection.objects);
+			return AssetUtility.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Clean up Animator", priority = 1100)]
@@ -107,7 +107,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Clean up Animator",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);

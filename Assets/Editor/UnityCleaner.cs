@@ -28,7 +28,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Animator/Standardize fileID", true)]
 		static bool ValidateAnimator() {
-			return Asset.ContainAnimatorController(Selection.objects);
+			return AssetUtility.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Animator/Standardize fileID", priority = 1000)]
@@ -51,7 +51,7 @@ namespace VRSuya.Cleaner {
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = AssetUtility.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Standardizing AnimatorController",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
@@ -86,7 +86,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Scene/Standardize IndirectSpecularColor", true)]
 		static bool ValidateScene() {
-			return Asset.ContainScene(Selection.objects);
+			return AssetUtility.ContainScene(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Scene/Standardize IndirectSpecularColor", priority = 1000)]
@@ -109,7 +109,7 @@ namespace VRSuya.Cleaner {
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = AssetUtility.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Standardizing Scene",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
@@ -146,7 +146,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Prefab/Close Prefab PhysBone", true)]
 		static bool ValidatePrefab() {
-			return Asset.ContainPrefab(Selection.objects);
+			return AssetUtility.ContainPrefab(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Prefab/Close Prefab PhysBone", priority = 1000)]
@@ -161,7 +161,7 @@ namespace VRSuya.Cleaner {
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = AssetUtility.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Closing PhysBones in Prefab",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
@@ -219,7 +219,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Prefab/Clear Prefab Overrides", true)]
 		static bool ValidatePrefab() {
-			return Asset.ContainPrefab(Selection.objects);
+			return AssetUtility.ContainPrefab(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Prefab/Clear Prefab Overrides", priority = 1000)]
@@ -234,7 +234,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Scene/Clear Scene Overrides", true)]
 		static bool ValidateScene() {
-			return Asset.ContainScene(Selection.objects);
+			return AssetUtility.ContainScene(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Scene/Clear Scene Overrides", priority = 1000)]

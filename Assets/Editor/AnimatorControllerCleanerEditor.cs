@@ -17,7 +17,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", true)]
 		static bool ValidateAsset() {
-			return Asset.ContainAnimatorController(Selection.objects);
+			return AssetUtility.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Animator/Clean up AnimatorController", priority = 1000)]
@@ -28,7 +28,7 @@ namespace VRSuya.Cleaner {
 				for (int Index = 0; Index < Selection.objects.Length; Index++) {
 					string TargetAssetPath = AssetDatabase.GetAssetPath(Selection.objects[Index]);
 					string TargetGUID = AssetDatabase.AssetPathToGUID(TargetAssetPath);
-					string TargetAssetName = Asset.GUIDToAssetName(TargetGUID, true);
+					string TargetAssetName = AssetUtility.GUIDToAssetName(TargetGUID, true);
 					EditorUtility.DisplayProgressBar("Cleaning AnimatorController",
 						$"Processing : {TargetAssetName}",
 						(float)Index / Selection.objects.Length);
@@ -53,7 +53,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Cleaning AnimatorController",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -79,7 +79,7 @@ namespace VRSuya.Cleaner {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
 				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
-					if (Asset.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
+					if (AssetUtility.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
 					if (TargetFXLayer) ClearAnimatorMask(TargetFXLayer);
 				}
@@ -111,7 +111,7 @@ namespace VRSuya.Cleaner {
 			string[] FXLayerGUIDs = AssetDatabase.FindAssets("FX t:AnimatorController", new[] { "Assets/" });
 			if (FXLayerGUIDs.Length > 0) {
 				foreach (string TargetFXLayerGUID in FXLayerGUIDs) {
-					if (Asset.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
+					if (AssetUtility.GUIDToAssetName(TargetFXLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetFXLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetFXLayerGUID));
 					if (TargetFXLayer) CleanupFXAnimationTransition(TargetFXLayer);
 				}
@@ -124,7 +124,7 @@ namespace VRSuya.Cleaner {
 			string[] GestureLayerGUIDs = AssetDatabase.FindAssets("Gesture t:AnimatorController", new[] { "Assets/" });
 			if (GestureLayerGUIDs.Length > 0) {
 				foreach (string TargetGestureLayerGUID in GestureLayerGUIDs) {
-					if (Asset.GUIDToAssetName(TargetGestureLayerGUID, true).EndsWith("Original")) continue;
+					if (AssetUtility.GUIDToAssetName(TargetGestureLayerGUID, true).EndsWith("Original")) continue;
 					AnimatorController TargetGestureLayer = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GUIDToAssetPath(TargetGestureLayerGUID));
 					if (TargetGestureLayer) CleanupGestureAnimationTransition(TargetGestureLayer);
 				}

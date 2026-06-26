@@ -45,7 +45,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Asset/Fix YAML Broken Lines", true)]
 		static bool ValidateAsset() {
-			return (Asset.ContainScene(Selection.objects) || Asset.ContainPrefab(Selection.objects));
+			return (AssetUtility.ContainScene(Selection.objects) || AssetUtility.ContainPrefab(Selection.objects));
 		}
 
 		[MenuItem("Assets/VRSuya/Asset/Fix YAML Broken Lines")]
@@ -55,7 +55,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Cleaning Broken YAML Formatting",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -79,7 +79,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Cleaning Broken YAML Formatting",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);

@@ -37,7 +37,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < AssetGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(AssetGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(AssetGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Standardizing Texture2D",
 							$"Processing : {TargetAssetName}",
 							(float)Index / AssetGUIDs.Length);
@@ -63,7 +63,7 @@ namespace VRSuya.Cleaner {
 				int ModifiedCount = 0;
 				try {
 					for (int Index = 0; Index < Texture2DGUIDs.Length; Index++) {
-						string TargetAssetName = Asset.GUIDToAssetName(Texture2DGUIDs[Index], true);
+						string TargetAssetName = AssetUtility.GUIDToAssetName(Texture2DGUIDs[Index], true);
 						EditorUtility.DisplayProgressBar("Standardizing Texture2D",
 							$"Processing : {TargetAssetName}",
 							(float)Index / Texture2DGUIDs.Length);

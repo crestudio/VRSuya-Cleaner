@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
 
-using static VRSuya.Core.Unity;
+using VRSuya.Core;
 
 /*
  * VRSuya Cleaner
@@ -32,7 +32,7 @@ namespace VRSuya.Cleaner {
 		static void RemoveMissingScriptComponents() {
 			GameObject[] MissingGameObjects = GetAllGameObjectHasMissingScriptComponent();
 			if (MissingGameObjects.Length > 0) {
-				int UndoGroupIndex = InitializeUndoGroup(UndoGroupName);
+				int UndoGroupIndex = UnityUtility.InitializeUndoGroup(UndoGroupName);
 				int DeletedComponentCount = 0;
 				foreach (GameObject TargetGameObject in MissingGameObjects) {
 					Undo.RecordObject(TargetGameObject, UndoGroupName);

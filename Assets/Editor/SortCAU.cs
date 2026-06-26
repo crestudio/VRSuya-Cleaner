@@ -21,7 +21,7 @@ namespace VRSuya.Cleaner {
 
 		[MenuItem("Assets/VRSuya/Asset/Sort CAU", true)]
 		static bool ValidateCAU() {
-			return Asset.ContainAsset(Selection.objects);
+			return AssetUtility.ContainAsset(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Asset/Sort CAU", priority = 1000)]
@@ -44,7 +44,7 @@ namespace VRSuya.Cleaner {
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
-					string TargetAssetName = Asset.GUIDToAssetName(TargetGUIDs[Index], true);
+					string TargetAssetName = AssetUtility.GUIDToAssetName(TargetGUIDs[Index], true);
 					EditorUtility.DisplayProgressBar("Sorting Continuous Avatar Uploader",
 						$"Processing : {TargetAssetName}",
 						(float)Index / TargetGUIDs.Length);
