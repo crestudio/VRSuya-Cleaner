@@ -340,24 +340,25 @@ namespace VRSuya.Cleaner {
 		}
 
 		static bool IsCacheProperty(string TargetPropertyPath) {
-			if (TargetPropertyPath.StartsWith("cachedExecutionGroupIndex") ||
-				TargetPropertyPath.StartsWith("latestValidExecutionGroupIndex") ||
-				TargetPropertyPath.StartsWith("unityVersion.") ||
-				TargetPropertyPath.StartsWith("fallbackStatus") ||
-				TargetPropertyPath.StartsWith("completedSDKPipeline") ||
-				TargetPropertyPath.StartsWith("animationHashSet") ||
+			if (TargetPropertyPath.StartsWith("animationHashSet") ||
 				(TargetPropertyPath.StartsWith("baseAnimationLayers") && TargetPropertyPath.EndsWith("mask")) ||
-				TargetPropertyPath.StartsWith("m_TranslationOffsets") ||
-				TargetPropertyPath.StartsWith("m_TranslationAtRest") ||
-				TargetPropertyPath.StartsWith("m_PositionOffset") ||
+				TargetPropertyPath.StartsWith("cachedExecutionGroupIndex") ||
+				TargetPropertyPath.StartsWith("completedSDKPipeline") ||
+				TargetPropertyPath.StartsWith("fallbackStatus") ||
+				TargetPropertyPath.StartsWith("foldout_") ||
+				TargetPropertyPath.StartsWith("latestValidExecutionGroupIndex") ||
+				TargetPropertyPath.StartsWith("m_Bones") ||
 				TargetPropertyPath.StartsWith("m_PositionAtRest") ||
-				TargetPropertyPath.StartsWith("m_RotationOffset") ||
+				TargetPropertyPath.StartsWith("m_PositionOffset") ||
 				TargetPropertyPath.StartsWith("m_RotationAtRest") ||
-				TargetPropertyPath.StartsWith("PositionOffset") ||
+				TargetPropertyPath.StartsWith("m_RotationOffset") ||
+				TargetPropertyPath.StartsWith("m_TranslationAtRest") ||
+				TargetPropertyPath.StartsWith("m_TranslationOffsets") ||
 				TargetPropertyPath.StartsWith("PositionAtRest") ||
-				TargetPropertyPath.StartsWith("RotationOffset") ||
+				TargetPropertyPath.StartsWith("PositionOffset") ||
 				TargetPropertyPath.StartsWith("RotationAtRest") ||
-				TargetPropertyPath.StartsWith("foldout_")) {
+				TargetPropertyPath.StartsWith("RotationOffset") ||
+				TargetPropertyPath.StartsWith("unityVersion.")) {
 				return true;
 			}
 			return false;
