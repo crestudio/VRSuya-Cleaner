@@ -36,7 +36,7 @@ namespace VRSuya.Cleaner {
 			}
 		}
 
-		[MenuItem("Tools/VRSuya/Asset/VRChat/Sort VRChat Parameters", priority = 1000)]
+		[MenuItem("Tools/VRSuya/Cleaner/VRChat/Sort VRChat Parameters", priority = 1000)]
 		static void RequestSortAllVRChatParameters() {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("t:VRCExpressionParameters", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {
