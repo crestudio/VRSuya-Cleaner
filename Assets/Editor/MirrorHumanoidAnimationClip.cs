@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.Linq;
+﻿using System.Linq;
 
 using UnityEngine;
 using UnityEditor;
@@ -40,13 +39,13 @@ namespace VRSuya.Cleaner {
 						}
 						AnimationUtility.SetEditorCurve(MirroredAnimationClip, Binding, Curve);
 					} else if (Binding.propertyName.Contains("Left") && !Binding.propertyName.Contains("Left-Right")) {
-						EditorCurveBinding newBinding = Binding;
-						newBinding.propertyName = Binding.propertyName.Replace("Left", "Right");
-						AnimationUtility.SetEditorCurve(MirroredAnimationClip, newBinding, Curve);
+						EditorCurveBinding NewBinding = Binding;
+						NewBinding.propertyName = Binding.propertyName.Replace("Left", "Right");
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, NewBinding, Curve);
 					} else if (Binding.propertyName.Contains("Right") && !Binding.propertyName.Contains("Left-Right")) {
-						EditorCurveBinding newBinding = Binding;
-						newBinding.propertyName = Binding.propertyName.Replace("Right", "Left");
-						AnimationUtility.SetEditorCurve(MirroredAnimationClip, newBinding, Curve);
+						EditorCurveBinding NewBinding = Binding;
+						NewBinding.propertyName = Binding.propertyName.Replace("Right", "Left");
+						AnimationUtility.SetEditorCurve(MirroredAnimationClip, NewBinding, Curve);
 					} else if (Binding.propertyName.Contains("RootT.x")) {
 						for (int Index = 0; Index < Curve.keys.Length; Index++) {
 							Curve.keys[Index].value = -Curve.keys[Index].value;
@@ -65,4 +64,3 @@ namespace VRSuya.Cleaner {
 		}
 	}
 }
-#endif

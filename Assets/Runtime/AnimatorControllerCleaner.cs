@@ -66,11 +66,11 @@ namespace VRSuya.Cleaner {
 							foreach (int TargetIndex in RemoveLineIndexs.ToList()) {
 								if (AssetFile[TargetIndex].Contains("fileID:")) {
 									if (!AssetFile[TargetIndex].Contains("guid:") && !AssetFile[TargetIndex].Contains("m_Motion:")) {
-										string newTargetfileID = ExtractfileIDFromLine(AssetFile[TargetIndex]);
-										if (!string.IsNullOrEmpty(newTargetfileID)) {
-											if (!Array.Exists(TargetRemovefileIDs, fileID => newTargetfileID == fileID)) {
-												if (!VerifyfileID(newTargetfileID)) {
-													RemoveLineIndexs.AddRange(GetRemoveLineIndexs(newTargetfileID));
+										string NewTargetfileID = ExtractfileIDFromLine(AssetFile[TargetIndex]);
+										if (!string.IsNullOrEmpty(NewTargetfileID)) {
+											if (!Array.Exists(TargetRemovefileIDs, fileID => NewTargetfileID == fileID)) {
+												if (!VerifyfileID(NewTargetfileID)) {
+													RemoveLineIndexs.AddRange(GetRemoveLineIndexs(NewTargetfileID));
 												}
 											}
 										}
@@ -80,14 +80,14 @@ namespace VRSuya.Cleaner {
 						}
 						RemoveLineIndexs.AddRange(AdditionRemoveLineIndexs);
 						if (RemoveLineIndexs.Count > 0) {
-							List<string> newAssetFile = new List<string>(AssetFile);
+							List<string> NewAssetFile = new List<string>(AssetFile);
 							int[] ArrayRemoveLineIndexs = RemoveLineIndexs.Distinct().ToArray();
 							Array.Sort(ArrayRemoveLineIndexs);
 							Array.Reverse(ArrayRemoveLineIndexs);
 							foreach (int TargetIndex in ArrayRemoveLineIndexs) {
-								newAssetFile.RemoveAt(TargetIndex);
+								NewAssetFile.RemoveAt(TargetIndex);
 							}
-							File.WriteAllLines(AssetFilePath, newAssetFile.ToArray());
+							File.WriteAllLines(AssetFilePath, NewAssetFile.ToArray());
 							Debug.LogWarning($"[VRSuya] Cleaned up {ArrayRemoveLineIndexs.Length} lines of unused data from {TargetAnimatorController.name}");
 							return true;
 						}

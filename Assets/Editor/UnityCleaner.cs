@@ -76,8 +76,8 @@ namespace VRSuya.Cleaner {
 				string TargetAssetPath = AssetDatabase.GetAssetPath(TargetAnimator);
 				string RawAnimatorController = File.ReadAllText(TargetAssetPath);
 				if (RawAnimatorController.Contains("m_Controller: {fileID: 0}")) {
-					string newRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 0}", "m_Controller: {fileID: 9100000}");
-					File.WriteAllText(TargetAssetPath, newRawAnimatorController);
+					string NewRawAnimatorController = RawAnimatorController.Replace("m_Controller: {fileID: 0}", "m_Controller: {fileID: 9100000}");
+					File.WriteAllText(TargetAssetPath, NewRawAnimatorController);
 					return true;
 				}
 			}
@@ -132,9 +132,9 @@ namespace VRSuya.Cleaner {
 			string Pattern = $@"{"m_IndirectSpecularColor"}:\s*{{[^}}]*}}";
 			string NewValue = "m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}";
 			if (Regex.IsMatch(RawScene, Pattern)) {
-				string newRawScene = Regex.Replace(RawScene, Pattern, NewValue);
-				if (RawScene != newRawScene) {
-					File.WriteAllText(AssetDatabase.GUIDToAssetPath(TargetSceneGUID), newRawScene);
+				string NewRawScene = Regex.Replace(RawScene, Pattern, NewValue);
+				if (RawScene != NewRawScene) {
+					File.WriteAllText(AssetDatabase.GUIDToAssetPath(TargetSceneGUID), NewRawScene);
 					return true;
 				}
 			}
@@ -278,10 +278,10 @@ namespace VRSuya.Cleaner {
 		}
 
 		static bool ClearPrefabObject(GameObject TargetGameObject) {
-			bool IsChanged = false;
-			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsChanged;
+			bool IsModified = false;
+			if (!PrefabUtility.IsPartOfPrefabInstance(TargetGameObject)) return IsModified;
 			PropertyModification[] PropertyModifications = PrefabUtility.GetPropertyModifications(TargetGameObject);
-			if (PropertyModifications == null || PropertyModifications.Length == 0) return IsChanged;
+			if (PropertyModifications == null || PropertyModifications.Length == 0) return IsModified;
 			List<PropertyModification> ValidModifications = new List<PropertyModification>();
 			int RemovedCount = 0;
 			foreach (PropertyModification TargetPropertyModification in PropertyModifications) {
@@ -304,19 +304,19 @@ namespace VRSuya.Cleaner {
 					}
 				}
 				if (NeedRemoved) {
-					IsChanged = true;
+					IsModified = true;
 					RemovedCount++;
 				} else {
 					ValidModifications.Add(TargetPropertyModification);
 				}
 			}
-			if (IsChanged) {
+			if (IsModified) {
 				PrefabUtility.SetPropertyModifications(TargetGameObject, ValidModifications.ToArray());
 				EditorUtility.SetDirty(TargetGameObject);
 				AssetDatabase.SaveAssetIfDirty(TargetGameObject);
 				Debug.Log($"[VRSuya] Reverted/Removed {RemovedCount} overridden or orphaned properties on {TargetGameObject.name}");
 			}
-			return IsChanged;
+			return IsModified;
 		}
 
 		static bool NeedRevertTransform(Transform SourcePrefabTransform, string TargetPropertyPath, float TargetValue) {
