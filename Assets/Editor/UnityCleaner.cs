@@ -85,27 +85,27 @@ namespace VRSuya.Cleaner {
 		}
 
 		[MenuItem("Assets/VRSuya/Animator/Standardize Exit Time", true)]
-		static bool ValidateAnimatorTransition() {
+		static bool ValidateAnimatorExitTime() {
 			return AssetUtility.ContainAnimatorController(Selection.objects);
 		}
 
 		[MenuItem("Assets/VRSuya/Animator/Standardize Exit Time", priority = 1000)]
-		static void RequestFixAnimatorTransitions() {
+		static void RequestFixAnimatorExitTime() {
 			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
 			if (AssetGUIDs.Length > 0) {
-				FixAnimatorTransitions(AssetGUIDs);
+				FixAnimatorTransitionExitTime(AssetGUIDs);
 			}
 		}
 
 		[MenuItem("Tools/VRSuya/Cleaner/Animator/Standardize Exit Time", priority = 1000)]
-		static void RequestAllFixAnimatorTransitions() {
+		static void RequestAllFixAnimatorExitTime() {
 			string[] AssetGUIDs = AssetDatabase.FindAssets("t:AnimatorController", new[] { "Assets/" });
 			if (AssetGUIDs.Length > 0) {
-				FixAnimatorTransitions(AssetGUIDs);
+				FixAnimatorTransitionExitTime(AssetGUIDs);
 			}
 		}
 
-		static void FixAnimatorTransitions(string[] TargetGUIDs) {
+		static void FixAnimatorTransitionExitTime(string[] TargetGUIDs) {
 			int ModifiedCount = 0;
 			try {
 				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
