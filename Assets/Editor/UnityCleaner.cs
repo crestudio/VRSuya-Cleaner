@@ -147,6 +147,73 @@ namespace VRSuya.Cleaner {
 			return false;
 		}
 
+		[MenuItem("Assets/VRSuya/Animator/Clear Transitions", true)]
+		static bool ValidateAnimatorTransition() {
+			return AssetUtility.ContainAnimatorController(Selection.objects);
+		}
+
+		[MenuItem("Assets/VRSuya/Animator/Clear Transitions", priority = 1000)]
+		static void RequestFixAnimatorTransition() {
+			string[] AssetGUIDs = Selection.objects.Select(Item => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Item))).ToArray();
+			if (AssetGUIDs.Length > 0) {
+				bool IsApproved = EditorUtility.DisplayDialog(
+					"VRSuya Cleaner",
+					"Are you sure clear all of transitions in Animator Controllers?",
+					"Clear",
+					"Cancel"
+				);
+				if (IsApproved) FixAnimatorTransitionTransition(AssetGUIDs);
+			}
+		}
+
+		static void FixAnimatorTransitionTransition(string[] TargetGUIDs) {
+			int ModifiedCount = 0;
+			try {
+				for (int Index = 0; Index < TargetGUIDs.Length; Index++) {
+					string TargetAssetName = AssetUtility.GUIDToAssetName(TargetGUIDs[Index], true);
+					EditorUtility.DisplayProgressBar("Clear Transitions",
+						$"Processing : {TargetAssetName}",
+						(float)Index / TargetGUIDs.Length);
+					if (TargetAssetName.EndsWith("Original")) continue;
+					string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUIDs[Index]);
+					AnimatorController TargetAnimator = AssetDatabase.LoadAssetAtPath<AnimatorController>(TargetAssetPath);
+					if (ClearTransitions(TargetAnimator)) {
+						ModifiedCount++;
+					}
+				}
+			} finally {
+				EditorUtility.ClearProgressBar();
+				if (ModifiedCount > 0) {
+					AssetDatabase.Refresh();
+				}
+			}
+			Debug.Log($"[VRSuya] Cleared transitions of {ModifiedCount} Animator Controllers");
+		}
+
+		public static bool ClearTransitions(AnimatorController TargetAnimator) {
+			if (TargetAnimator && TargetAnimator is AnimatorController) {
+				AnimatorStateTransition[] AllTransition = AnimatorHelper.GetAllTransitions(TargetAnimator)
+					.Where(Item => Item != null)
+					.ToArray();
+				if (AllTransition.Length > 0) {
+					foreach (AnimatorStateTransition TargetTransition in AllTransition) {
+						TargetTransition.hasExitTime = false;
+						TargetTransition.exitTime = 0f;
+						TargetTransition.hasFixedDuration = true;
+						TargetTransition.duration = 0f;
+						TargetTransition.offset = 0f;
+						TargetTransition.interruptionSource = TransitionInterruptionSource.None;
+						TargetTransition.orderedInterruption = true;
+						TargetTransition.canTransitionToSelf = false;
+						EditorUtility.SetDirty(TargetTransition);
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+
+
 		[MenuItem("Assets/VRSuya/Scene/Standardize IndirectSpecularColor", true)]
 		static bool ValidateScene() {
 			return AssetUtility.ContainScene(Selection.objects);
