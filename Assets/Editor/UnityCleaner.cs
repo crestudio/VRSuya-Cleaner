@@ -431,6 +431,14 @@ namespace VRSuya.Cleaner {
 								NeedRemoved = true;
 							}
 						}
+					} else if (TargetPropertyPath.StartsWith("m_BlendShapeWeights.Array.data")) {
+						if (SourcePrefabObject is SkinnedMeshRenderer SourcePrefabSkinnedMeshRenderer) {
+							if (float.TryParse(TargetPropertyModification.value, NumberStyles.Float, CultureInfo.InvariantCulture, out float TargetValue)) {
+								if (NeedRevertBlendshape(SourcePrefabSkinnedMeshRenderer, TargetPropertyPath, TargetValue)) {
+									NeedRemoved = true;
+								}
+							}
+						}
 					}
 				}
 				if (NeedRemoved) {
@@ -460,6 +468,21 @@ namespace VRSuya.Cleaner {
 			}
 			float OriginalValue = SourceProperty.floatValue;
 			return Math.Abs(OriginalValue - TargetValue) <= Tolerance;
+		}
+
+		static bool NeedRevertBlendshape(SkinnedMeshRenderer SourcePrefabSkinnedMeshRenderer, string TargetPropertyPath, float TargetValue) {
+			string RegexPattern = @"\[(\d+)\]";
+			Match RegexResult = Regex.Match(TargetPropertyPath, RegexPattern);
+			if (RegexResult.Success) {
+				string TargetString = RegexResult.Groups[1].Value;
+				int TargetIndex = int.Parse(TargetString);
+				int BlendShapeCount = SourcePrefabSkinnedMeshRenderer.sharedMesh.blendShapeCount;
+				if (TargetIndex >= 0 && TargetIndex < BlendShapeCount) {
+					float SourceValue = SourcePrefabSkinnedMeshRenderer.GetBlendShapeWeight(TargetIndex);
+					return Mathf.Approximately(SourceValue, TargetValue);
+				}
+			}
+			return false;
 		}
 
 		static bool IsTransformProperty(string TargetPropertyPath) {
