@@ -19,7 +19,7 @@ namespace VRSuya.Cleaner {
 		const TextureImporterMipFilter TargetMipmap = TextureImporterMipFilter.KaiserFilter;
 		const FilterMode TargetFilterMode = FilterMode.Trilinear;
 		const int TargetAnisoLevel = 16;
-		const TextureImporterCompression TargetTextureCompression = TextureImporterCompression.CompressedLQ;
+		const TextureImporterCompression TargetTextureCompression = TextureImporterCompression.CompressedHQ;
 		const bool TargetCrunchedCompression = false;
 		const int TargetCompressionQuality = 50;
 
