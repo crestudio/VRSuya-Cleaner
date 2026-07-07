@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using UnityEditor;
 using UnityEngine;
@@ -124,8 +127,46 @@ namespace VRSuya.Cleaner {
 			}
 			return false;
 		}
+
+		[MenuItem("Tools/VRSuya/Cleaner/Asset/Get Missing GUIDs", priority = 1000)]
+		static void RequestGetMissingGUIDs() {
+			string[] AssetGUIDs = AssetDatabase.FindAssets("glob:\"*.*\"", new[] { "Assets" });
+			string[] MissingGUIDs = GetMissingGUIDs(AssetGUIDs);
+			if (MissingGUIDs.Length > 0) {
+				EditorUtility.DisplayDialog(
+					"VRSuya Cleaner",
+					$"Found {MissingGUIDs.Length} missing GUID references, Please check Unity Console",
+					"Okay"
+				);
+				Debug.Log($"[VRSuya] Missing GUID List\n{string.Join("\n", MissingGUIDs)}");
+			} else {
+				EditorUtility.DisplayDialog(
+					"VRSuya Cleaner",
+					"No missing GUID references found",
+					"Okay"
+				);
+			}
+		}
+
+		static string[] GetMissingGUIDs(string[] TargetGUIDs) {
+			string Pattern = @"guid:\s*([a-fA-F0-9]{32})";
+			List<string> NewMissingGUIDs = new List<string>();
+			foreach (string TargetGUID in TargetGUIDs) {
+				string TargetAssetPath = AssetDatabase.GUIDToAssetPath(TargetGUID);
+				string TargetAssetName = AssetUtility.GetAssetName(TargetAssetPath, false);
+				string[] RawAssetLines = File.ReadAllLines(TargetAssetPath)
+					.Where(Item => Item.Contains("guid:"))
+					.ToArray();
+				foreach (string RawAssetLine in RawAssetLines) {
+					Match RegexMatch = Regex.Match(RawAssetLine, Pattern);
+					if (!RegexMatch.Success) continue;
+					if (string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(RegexMatch.Groups[1].Value))) {
+						NewMissingGUIDs.Add($"{TargetAssetName}\t{RegexMatch.Groups[1].Value}");
+					}
+				}
+			}
+			return NewMissingGUIDs.Distinct().OrderBy(Item => Item).ToArray();
+		}
 	}
-
-
 }
 
